@@ -1,0 +1,47 @@
+<div title="<?php echo e($bet->msg); ?>" class="deposits-container <?php if($bet->id == \App\Http\Controllers\GameController::getLastBet()): ?> fade-in-up <?php endif; ?>" id="bet_<?php echo e($bet->id); ?>">
+    <div class="deposit-head">
+        <div class="left-block">
+            <div class="profile-img"><img <?php if($bet->vip): ?> style="border: 1px dashed #F9FF2F;" <?php endif; ?> src="<?php echo e($bet->user->avatar); ?>"></div>
+            <ul class="list-reset">
+                <li class="profile-block">
+				<span class="profile-name"><a href="/user/<?php echo e($bet->user->steamid64); ?>" style="color: <?php if($bet->vip): ?> #F9FF2F <?php else: ?> #b4fca6; <?php endif; ?>"><div id="username_<?php echo e($bet->id); ?>"><?php echo e($bet->user->username); ?></div> </a></span> 
+				<?php if($bet->user->steamid64 != 76561197960265728): ?>
+					<span class="profile-level" data-original-title="" title=""></span> <span class="deposit-count">внес <?php echo e($bet->itemsCount); ?> <?php echo e(trans_choice('lang.items', $bet->itemsCount)); ?></span></li>
+				<?php else: ?>
+					<?php if(!isset($i->img)): ?>
+						<span class="profile-level" data-original-title="" title=""></span> <span class="deposit-count">внес <?php echo e($bet->itemsCount); ?> <?php echo e(trans_choice('lang.items', $bet->itemsCount)); ?></span></li>
+					<?php else: ?>
+						<span class="profile-level" data-original-title="" title=""></span> <span class="deposit-count">внес 1% с предыдущей игры:</span></li>
+					<?php endif; ?>
+				<?php endif; ?>
+                <li class="deposit-sum"><?php echo e($bet->price); ?> <span>руб</span></li>
+                <?php if($bet->user->steamid64 != 76561197960265728): ?>
+					<li class="deposit-chance">(шанс: <span class="id-<?php echo e($bet->user->steamid64); ?>"><?php echo e(\App\Http\Controllers\GameController::_getUserChanceOfGame($bet->user, $bet->game)); ?>%</span>)</li>
+				<?php endif; ?>
+            </ul>
+        </div>
+        <div class="right-block">
+		<?php if($bet->user->steamid64 != 76561197960265728): ?>
+            <div class="ticket-number" data-original-title="1 билет = 1 копейка" title="1 билет = 1 копейка">Билеты: от <span class="color-orange">#<?php echo e($bet->from); ?></span> до <span class="color-orange">#<?php echo e($bet->to); ?></span> <span class="help"></span>
+            </div>
+		<?php endif; ?>
+        </div>
+    </div>
+    <div class="deposit-content">
+        <?php foreach(json_decode($bet->items) as $i): ?>
+        <div class="deposit-item <?php if(!isset($i->img)): ?><?php echo e($i->rarity); ?> <?php else: ?> card up-card <?php endif; ?>" title="<?php echo e($i->name); ?>" style="<?php if($bet->user->steamid64 == 76561197960265728): ?> border: 1px solid #FFA000; <?php endif; ?>" data-toggle="tooltip">
+            <div class="deposit-item-wrap">
+				<?php if(isset($i->com)): ?>
+					<?php if($i->com == true): ?><span class="comission">Комиссия</span><?php endif; ?>
+				<?php endif; ?>
+                <?php if(!isset($i->img)): ?>
+                    <div class="img-wrap"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/<?php echo e(\App\Http\Controllers\GameController::APPID); ?>/<?php echo e($i->classid); ?>/101fx100f"></div>
+                <?php else: ?>
+                    <div class="img-wrap"><img style="<?php if(isset($i->style)): ?> <?php echo e($i->style); ?> <?php endif; ?>" src="<?php echo e(asset($i->img)); ?>"></div>
+                <?php endif; ?>
+                </div>
+                <div style="<?php if($bet->user->steamid64 == 76561197960265728): ?> background: #000000; <?php endif; ?>" class="deposit-price"><?php echo e($i->price); ?> <span>руб</span></div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>

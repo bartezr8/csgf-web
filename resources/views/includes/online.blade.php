@@ -1,0 +1,1 @@
+<img style="height: 64px;width: 64px;margin: 5px;" onclick="window.open('http://csgf.ru/user/{{ $user->steamid64 }}')" src="{{ $user->avatar }}"></img>

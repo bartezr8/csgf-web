@@ -1,0 +1,247 @@
+.dice #roll-wrap #dice .sf {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    padding: 18px;
+    background-color: white;
+    font-size: 37px;
+    color: black;
+    text-align: center;
+    line-height: 100px;
+    box-shadow: inset 0 0 20px #ccc;
+}
+.dice #roll-wrap #dice .sf.inner {
+    background: #e0e0e0;
+}
+.dice #roll-wrap #dice .sf.cover {
+    border-radius: 0;
+    transform: translateZ(0px);
+    background: #e0e0e0;
+    box-shadow: none;
+    width: 58px;
+    height: 58px;
+}
+.dice #roll-wrap #dice .sf.cover.x {
+    transform: rotateY(90deg);
+}
+.dice #roll-wrap #dice .sf.cover.z {
+    transform: rotateX(90deg);
+}
+.dice #roll-wrap #dice .sf.f1 {
+    transform: rotateX(90deg) translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f1.inner {
+    transform: rotateX(90deg) translateZ(48px);
+}
+.dice #roll-wrap #dice .sf.f2 {
+    transform: translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f2.inner {
+    transform: translateZ(48px);
+}
+.dice #roll-wrap #dice .sf.f3 {
+    transform: rotateY(90deg) translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f3.inner {
+    transform: rotateY(90deg) translateZ(48px);
+}
+.dice #roll-wrap #dice .sf.f4 {
+    transform: rotateY(180deg) translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f4.inner {
+    transform: rotateY(180deg) translateZ(48px);
+}
+.dice #roll-wrap #dice .sf.f5 {
+    transform: rotateY(-90deg) translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f5.inner {
+    transform: rotateY(-90deg) translateZ(48px);
+}
+.dice #roll-wrap #dice .sf.f6 {
+    transform: rotateX(-90deg) rotate(180deg) translateZ(50px);
+}
+.dice #roll-wrap #dice .sf.f6.inner {
+    transform: rotateX(-90deg) rotate(180deg) translateZ(48px);
+}
+.dice #roll-wrap #dice .sf .dot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 13px;
+    background: #444;
+    box-shadow: inset 3px 0 5px #000;
+}
+.dice #roll-wrap #dice .sf .dot.center {
+    margin: 20px 0 0 20px;
+}
+.dice #roll-wrap #dice .sf .dot.dtop {
+    margin-top: -5px;
+}
+.dice #roll-wrap #dice .sf .dot.dleft {
+    margin-left: 45px;
+}
+.dice #roll-wrap #dice .sf .dot.dright {
+    margin-left: -5px;
+}
+.dice #roll-wrap #dice .sf .dot.dbottom {
+    margin-top: 45px;
+}
+.dice #roll-wrap #dice .sf .dot.center.dleft {
+    margin: 45px 0 0 20px;
+}
+.dice #roll-wrap #dice .sf .dot.center.dright {
+    margin: -5px 0 0 20px;
+}
+
+.dice .play-area {
+    margin: 0 20px;
+}
+.dice .play-area .dice-colors {
+    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 15px 5px;
+    box-sizing: border-box;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+.dice .play-area .dice-colors .dice-color {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border: 1px solid;
+    margin: 0 5px;
+}
+.dice .play-area .dice-colors .dice-color .color-header {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-info {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    text-align: center;
+    padding: 10px;
+}
+@media only screen and (max-width: 1600px) .dice .play-area .dice-colors .dice-color .color-header .header-button {
+    padding: 10px 25px;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button {
+    border: none;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 25px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.dice .play-area .dice-colors .dice-color .dice-your-bet {
+    font-size: 1rem;
+    display: -ms-flexbox;
+    display: flex;
+    text-align: center;
+}
+@media only screen and (max-width: 1600px) .dice .play-area .dice-colors .dice-color .dice-your-bet > div .title {
+    font-size: 0.8rem;
+}
+.dice .play-area .dice-colors .dice-color .dice-your-bet > div .title {
+    color: #BBB;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+@media only screen and (max-width: 1600px) .dice .play-area .title {
+    font-size: 2rem;
+}
+.dice .play-area .title {
+    text-transform: uppercase;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+}
+.dice .play-area .dice-colors .dice-color.green {
+    border-color: #44a21c;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button.green {
+    background-color: #44a21c;
+}
+.dice .play-area .dice-colors .dice-color.green .dice-your-bet > div {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border-top: 1px solid #44a21c;
+    padding: 5px;
+}
+.dice .play-area .dice-colors .dice-color.black {
+    border-color: #424242;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button.black {
+    background-color: #424242;
+}
+.dice .play-area .dice-colors .dice-color.black .dice-your-bet > div {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border-top: 1px solid #424242;
+    padding: 5px;
+}
+.dice .play-area .dice-colors .dice-color.orange {
+    border-color: #fa7437;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button.orange {
+    background-color: #fa7437;
+}
+.dice .play-area .dice-colors .dice-color.orange .dice-your-bet > div {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border-top: 1px solid #fa7437;
+    padding: 5px;
+}
+.dice .play-area .dice-colors .dice-color.blue {
+    border-color: #06acdf;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button.blue {
+    background-color: #06acdf;
+}
+.dice .play-area .dice-colors .dice-color.blue .dice-your-bet > div {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border-top: 1px solid #06acdf;
+    padding: 5px;
+}
+.dice .play-area .dice-colors .dice-color.red {
+    border-color: #a80e19;
+}
+.dice .play-area .dice-colors .dice-color .color-header .header-button.red {
+    background-color: #a80e19;
+}
+.dice .play-area .dice-colors .dice-color.red .dice-your-bet > div {
+    -ms-flex: 1 0 0;
+    flex: 1 0 0;
+    border-top: 1px solid #a80e19;
+    padding: 5px;
+}
+.balance-button {
+    color: #8B9094;
+    padding: 5px 29px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    background-color: #1F2D38;
+    border: 1px solid #314657;
+}
+.amount {
+    background-color: #1F2D38;
+    border: 1px solid #314657;
+    height: 32px;
+    line-height: 23px;
+    color: #FFF;
+    transition: 0.2s;
+    width: 200px;
+    font-size: 15px;
+    text-align: center;
+    text-transform: uppercase;
+}

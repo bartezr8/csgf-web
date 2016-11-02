@@ -1,0 +1,284 @@
+.form-group .amount {
+	background-color: #1F2D38;
+    border: 1px solid #314657;
+    height: 32px;
+    line-height: 23px;
+    color: #FFF;
+    transition: 0.2s;
+    width: 200px;
+    font-size: 15px;
+    text-align: center;
+    text-transform: uppercase;
+}
+.balance-button {
+    color: #8B9094;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    background-color: #1F2D38;
+    border: 1px solid #314657;
+}
+
+.balance-button:hover,
+.balance-button:focus,
+.balance-button:active {
+	background: rgba(0, 0, 0, 0.43);
+}
+.DoubleCarouselConatiner{
+    width: 1010px;
+    height: 75px;
+    overflow: hidden;
+}
+.DoubleCarouselLine{
+	background: url("../img/cr.png");
+    background-repeat: repeat-y;
+    width: 16px;
+    height: 80px;
+    position: absolute;
+    margin-top: -3px;
+}
+.DoubleCarousel	{
+	background-repeat: repeat-x;
+	margin-left: -50px;
+    background: url(/assets/img/double/double_scroll.png) repeat-x;
+    height: 75px;
+    display: block;
+}
+
+.red-button {
+    color: #FFFFFF;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    background-color: #C9302C;
+    border: 1px solid #CEA0A0;
+}
+
+.red-button:hover,
+.red-button:focus,
+.red-button:active {
+	background: rgb(230, 18, 12);
+}
+
+.black-button {
+	color: #FFFFFF;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    background-color: #444444;
+    border: 1px solid #A5A5A5;
+}
+
+.black-button:hover,
+.black-button:focus,
+.black-button:active {
+	background: rgba(0, 0, 0, 0.43);
+}
+
+.green-button {
+	color: #FFFFFF;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    background-color: #449D44;
+    border: 1px solid #BAFFAC;
+}
+
+.green-button:hover,
+.green-button:focus,
+.green-button:active {
+	background: rgba(19, 224, 19, 0.71);
+}
+
+.DoubleMoney{
+	padding: 5px;
+    background-color: #1F2D38;
+    border: 1px solid #314657;
+    color: #FFF;
+    transition: 0.2s;
+    width: 20%;
+    text-align: center;
+    text-transform: uppercase;
+    float: left;
+}
+
+.double-deposit-head{
+    border: 1px solid #314657;
+    padding: 5px;
+    height: 50px;
+    margin-bottom: 15px;
+}
+.double-deposit-head .profile-img{
+	position: absolute;
+    top: 0px;
+    left: 0px;
+}
+.double-deposit-head .profile-img img {
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+}
+.double-deposit-head .left-block{
+	float: left;
+    margin-right: 30px;
+    position: relative;
+}
+.double-deposit-head ul li.profile-block {
+    margin-left: 3px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #58666e;
+}
+.double-deposit-head ul li.profile-block .deposit-count {
+    color: #c1f2ff;
+    font-weight: 400;
+}
+.double-deposit-head ul li.profile-block .profile-name a {
+    text-decoration: none;
+}
+.double-deposit-head ul li.profile-block .profile-name {
+    color: #b4fca6;
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.double-deposit-head ul li.deposit-sum {
+    margin-left: 7px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #ffd0bc;
+    font-size: 15px;
+    font-weight: 600;
+}
+.double-deposit-head ul li.deposit-sum > span {
+    font-weight: 300;
+}
+.double-deposit-head ul li {
+    display: inline-block;
+    vertical-align: top;
+    line-height: 38px;
+}
+.dep_block {
+	width: 33%;
+	vertical-align: top;
+	position: relative;
+    display: inline-block;
+    border: 1px solid #314657;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.tbet{
+	font-size: 14px;
+    border-bottom: 1px solid #314657;
+    padding: 10px;
+	color: white;
+}
+.dul{
+	margin-bottom: 0px;
+    border-bottom: none;
+    padding-left: 0;
+    margin-top: 0;
+}
+.dl{
+    position: relative;
+    display: block;
+    padding: 5px 5px;
+    margin-bottom: -1px;
+    border-bottom: 1px solid #314657;
+}
+.pull-left {
+    float: left!important;
+}
+.pull-right {
+    float: right!important;
+}
+.rounded {
+    border-radius: 4px;
+    width: 32px;
+}
+#lastGames {
+	margin-left: 4px;
+    float: left;
+    height: 32px;
+    width: 397px;
+	overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.redg {
+	margin-left: 3px;
+	float: left;
+	border-radius: 50px;
+    background: #C9302C;
+    width: 32px;
+    height: 32px;
+    color: #FFFFFF;
+    padding-top: 5px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #CEA0A0;
+}
+.blackg {
+	margin-left: 3px;
+	float: left;
+	border-radius: 50px;
+    background: #444444;
+    width: 32px;
+    height: 32px;
+    color: #FFFFFF;
+    padding-top: 5px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #A5A5A5;
+}
+.greeng {
+	margin-left: 3px;
+	float: left;
+	border-radius: 50px;
+    background: #449D44;
+    width: 32px;
+    height: 32px;
+    color: #FFFFFF;
+    padding-top: 5px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #BAFFAC;
+}

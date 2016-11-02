@@ -1,0 +1,135 @@
+
+
+<!--<script type="text/javascript" src="https://steamcommunity-a.akamaihd.net/public/shared/javascript/shared_global.js?v=qjG6RzSe7HOJ&amp;l=russian"></script>-->
+
+<?php $__env->startSection('content'); ?>
+    <div class="user-profile-container">
+
+    <div class="user-profile-head">
+
+        <div class="user-avatar">
+            <img src="<?php echo e($avatar); ?>">
+        </div>
+
+        <div class="left-block">
+
+            <div class="user-info">
+                <div class="username">
+                    <?php echo e($username); ?>
+
+                </div>
+                <div class="reputation-container">
+                    Уровень:
+                    <div class="reputation-block">
+                        <?php echo e($betssum); ?>
+
+                        <a id="user-level-btn" class="popover-btn"></a>
+                    </div>
+                </div>
+				<?php if(!Auth::guest()): ?>
+				<?php if($userId == $u->steamid64 ): ?>
+				<div class="input-group" style="width: 72.8%;margin-top: -29px;margin-left: 172px;position: relative;">
+					<input class="save-password-input" onchange="updatepassword(this.value)" type="text" pattern="^[a-zA-Z0-9]+$" placeholder="Пароль" maxlength="17" style="text-align: center;" value="">
+				</div>
+				<?php endif; ?>
+				<?php endif; ?>
+            </div>
+
+            <div class="right-block">
+                <ul class="list-reset">
+                    <li>Игры: <span><?php echo e($games); ?></span> </li>
+                    <li>Победы: <span class="lightgreen"><?php echo e($wins); ?></span></li>
+                    <li>Win rate: <span class="lightgreen"><?php echo e($winrate); ?>%</span></li>
+                    <li>Сумма раундов: <span class="currency-icon"><?php echo e($totalBank); ?></span></li>
+                </ul>
+            </div>
+			<?php if(!Auth::guest()): ?>
+			<?php if( $userId == $u->steamid64 ): ?>
+				
+			<div class="input-group" style="width: 75.8%; position: relative;">
+			<?php if($u->trade_link): ?>
+			<input class="save-trade-link-input" type="text" placeholder="Введите вашу ссылку на обмен" value="<?php echo e($u->trade_link); ?>">
+			<?php endif; ?>
+			<?php if(!$u->trade_link): ?>
+			<input class="save-trade-link-input" type="text" placeholder="Введите вашу ссылку на обмен" >
+			<?php endif; ?>
+			<span class="save-trade-link-input-btn"></span>
+			</div>
+			<a class="getLink" href="http://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">Узнать мою ссылку на обмен</a>
+			<?php endif; ?>
+			<?php if( $userId != $u->steamid64 ): ?>
+			<div class="input-group">
+				<a class="userLink" href="<?php echo e($url); ?>" target="_blank" style="width:65%; display:-webkit-inline-box;"><?php echo e($url); ?></a>
+				<?php if( $tradeurl != NULL ): ?>
+				<a class="getLink" href="<?php echo e($tradeurl); ?>" target="_blank">Отправить обмен</a>
+				<?php endif; ?>
+				<a class="getLink" onclick="sendMoney('<?php echo e($userId); ?>')" target="_blank">Перевод</a>
+				<?php if($u->is_moderator == 1 ): ?>
+				<a class="getLink" href="/admin/user/<?php echo e($userId); ?>" target="_blank">Управление</a>
+				<?php endif; ?>
+			</div>
+			<?php endif; ?>
+			<?php endif; ?>
+			<?php if(Auth::guest()): ?>
+			<div class="input-group">
+				<a class="userLink" href="<?php echo e($url); ?>" target="_blank"><?php echo e($url); ?></a>
+			</div>
+			<?php endif; ?>
+        </div>
+
+    </div>
+
+    <div class="user-profile-content">
+        <table>
+            <tbody id="showMoreContainer">
+
+            <?php foreach($list as $game): ?>
+            <tr>
+                <td><a href="/game/<?php echo e($game -> id); ?>" class="game-number">Игра <span><?php echo e($game -> id); ?></span></a></td>
+                <td class="round-money"><?php echo e($game -> bank); ?></td>
+                <td class="game-status">
+                    <?php if($game->win == 1): ?>
+						<?php if($game->chance == 100): ?>
+							<span class="prize-status status-wait">Бонус</span>
+						<?php else: ?>
+							<span class="prize-status status-win">Победа</span>
+						<?php endif; ?>
+                    <?php elseif($game->win == -1): ?>
+                    <span class="prize-status status-wait">Не завершена</span>
+                    <?php else: ?>
+                    <span class="prize-status status-err">Проигрыш</span>
+                    <?php endif; ?>
+                </td>
+                <td class="chance-td"><div class="chance">с шансом <span><?php echo e($game->chance); ?>%</span></div></td>
+                <td><a href="/game/<?php echo e($game -> id); ?>" class="round-history">Посмотреть историю игры</a></td>
+            </tr>
+            <?php endforeach; ?>
+
+            </tbody>
+        </table>
+    </div>
+<script type="text/javascript">
+function updatepassword(value) {
+	$.ajax({
+		url: '/updatepassword',
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			value: value
+		},
+		success: function () {
+			$.notify("Пароль изменен", {
+				className: "success"
+			});
+		},
+		error: function () {
+			$.notify("Произошла ошибка. Попробуйте еще раз", {
+				className: "error"
+			});
+		}
+	});
+}
+</script>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

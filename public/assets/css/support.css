@@ -1,0 +1,467 @@
+﻿.support {
+    overflow: hidden;
+    /*padding: 10px 97px;*/
+}
+a,
+a:link {
+    text-decoration: none;
+    color: #cd4949;
+}
+a:active {
+    color: #cd4949;
+}
+a:visited {
+    text-decoration: none;
+}
+a:hover {
+    color: #fff;
+}
+.newticket {
+    background: #cd4949;
+    color: #FFF;
+    width: 400px;
+    float: left;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 50px;
+}
+.listticket {
+    background: #cd4949;
+    color: #FFF;
+    width: 400px;
+    float: right;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 50px;
+}
+.support .table {
+    width: 1010px;
+    margin-top: 10px;
+    position: relative;
+    float: left;
+}
+.support .table .list:nth-of-type(1) {
+    border: 0 none;
+    line-height: 45px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    background: #1D2123;
+    color: #000!important;
+}
+.support .table .list {
+    white-space: nowrap;
+    margin-bottom: 5px;
+    border: 0 none;
+    line-height: 45px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    background: #1D2123;
+    color: #c14d4d!important;
+    border-radius: 10px;
+}
+.support .table .list .tb0 {
+    width: 5%;
+    text-align: center;
+    float: left;
+    display: inline-block;
+    color: #FFF;
+}
+.support .table .list .tb1 {
+    width: 10%;
+    text-align: center;
+    float: left;
+    display: inline-block;
+    color: #FFF;
+}
+.support .table .list .tbId {
+    width: 15%;
+    text-align: center;
+    float: left;
+    display: inline-block;
+    color: #cd4949;
+}
+.support .table .list .tb8 {
+    width: 34%;
+    float: center;
+    text-align: center;
+    display: inline-block;
+    color: #FFF;
+}
+.support .table .list .tb9 {
+    width: 34%;
+    float: center;
+    text-align: center;
+    display: inline-block;
+    color: #cd4949;
+}
+.support .table .list .tb3 {
+    width: 22%;
+    text-align: center;
+    display: inline-block;
+    float: right;
+    color: #FFF;
+}
+.support .table .list .tb4 {
+    width: 22%;
+    float: right;
+    text-align: center;
+    margin-right: 10px;
+    display: inline-block;
+    color: #FFF;
+}
+.support .table .list .tbStatus {
+    width: 19%;
+    float: right;
+    text-align: center;
+    margin-right: 10px;
+    display: inline-block;
+    color: #cd4949;
+}
+.support .table .list .tbStatusZokrit {
+    width: 19%;
+    float: right;
+    text-align: center;
+    margin-right: 84px;
+    display: inline-block;
+    color: #5ccd49;
+}
+span.ntitle {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+}
+span.nabout {
+    text-align: center;
+    display: block;
+}
+.nticket {
+    margin-top: 10px;
+    display: block;
+    position: relative;
+    float: left;
+}
+.nticket input[type="text"] {
+    width: 1010px;
+    height: 34px;
+    border: 1px solid rgba(93, 103, 113, 0.71);
+    font: 13px 'Open Sans';
+    color: #b7d5e7;
+    float: left;
+    background-color: rgba(27, 42, 53, 0.68);
+    margin-bottom: 5px;
+    padding: 0 12px;
+}
+.nticket select {
+    width: 1010px;
+    height: 34px;
+    border: 1px solid rgba(93, 103, 113, 0.71);
+    font: 13px 'Open Sans';
+    color: #b7d5e7;
+    float: left;
+    background-color: rgb(29, 44, 56); /*rgba(27, 42, 53, 0.68);*/
+    margin-bottom: 5px;
+    padding: 0 12px;
+}
+.nticket input[type="submit"] {
+	margin-left: 4px;
+	position: relative;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: middle;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0.2px;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+	background: rgba(63, 190, 90, 0.34);
+	border: 1px solid #399B4E;
+	color: #fff;
+	text-align: center;
+}
+.nticket input[type="submit"]:hover,
+.nticket input[type="submit"]:focus,
+.nticket input[type="submit"]:active {
+	background: rgba(63, 190, 90, 0.40);
+}
+.fticket {
+    display: block;
+    float: left;
+    background: #d9534f;
+    color: #FFF;
+    text-align: center;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 5px;
+    padding: 10px 0;
+}
+.fticket2 {
+    display: block;
+    float: center;
+    background: #5cb85c;
+    color: #FFF;
+    text-align: center;
+    width: 126%;
+    margin-top: 15px;
+    border-radius: 5px;
+    padding: 10px 0;
+}
+.oticket {
+    display: block;
+    float: left;
+    background: #5cb85c;
+    color: #FFF;
+    text-align: center;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 5px;
+    padding: 10px 0;
+}
+.sticket {
+    float: left;
+    margin-top: -10px;
+    display: block;
+    position: relative;
+}
+.sticket .avatar img {
+    border-radius: 5%;
+    width: 60px;
+}
+.sticket .avatar_user img {
+    border-radius: 50%;
+    width: 60px;
+}
+.sticket .tfe {
+    display: block;
+    float: left;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 500px;
+}
+.sticket .title {
+    line-height: 17px;
+    color: #adadad;
+}
+.sticket .title_admin {
+    color: #5ccd49;
+}
+.sticket .msg {
+    width: 700px;
+    margin-top: 5px;
+    display: block;
+    line-height: 15px;
+    padding-top: 1px;
+    color: #eee;
+}
+.newtif input[type="text"] {
+    border: 2px #c14d4d solid;
+    width: 740px;
+    height: 34px;
+    font: 13px 'Open Sans';
+    color: #d9534f;
+    float: left;
+    margin-bottom: 5px;
+    padding: 0 12px;
+}
+.newtif input[type="submit"] {
+	/*margin-left: 4px;*/
+	width: 119px;
+	position: relative;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: middle;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0.2px;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+	background: rgba(63, 190, 90, 0.34);
+	border: 1px solid #399B4E;
+	color: #fff;
+	text-align: center;
+	float: left;
+}
+.newtif input[type="submit"]:hover,
+.newtif input[type="submit"]:focus,
+.newtif input[type="submit"]:active {
+	background: rgba(63, 190, 90, 0.40);
+}
+.newtif {
+    width: 100%;
+    float: left;
+    margin-bottom: 15px;
+}
+span.infsff {
+    display: block;
+    margin-top: 30px;
+    color: #d9534f;
+}
+span.thanks {
+    display: block;
+    margin-top: 30px;
+    color: #5cb85c;
+}
+.title-block {
+    margin-bottom: 20px;
+}
+.title-block .icon-support {
+    display: inline-block;
+    height: 83px;
+    position: relative;
+    top: -20px;
+}
+.other-title {
+    font-size: 16px;
+    font-weight: 300;
+    text-align: center;
+    display: inline-block;
+    margin-top: 20px;
+}
+.game-info-wrap {
+    position: relative;
+    margin: -1px -20px 0;
+}
+.game-info-wrap.game-start {
+    position: relative;
+}
+.game-info-wrap.game-start:after {
+    content: '';
+    width: 66px;
+    height: 75px;
+    position: absolute;
+    bottom: 21px;
+    left: 49.8%;
+    margin: 0 -35px;
+}
+.game-info {
+    text-align: center;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+}
+.game-info .game-info-title:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.game-info .game-info-title .left-block {
+    float: left;
+    width: 470px;
+    text-align: right;
+}
+.game-info .game-info-title .right-block {
+    float: right;
+    width: 470px;
+    text-align: left;
+}
+.game-info .game-info-title .text-wrap {
+    display: inline-block;
+}
+.game-info .game-info-title {
+    font-size: 26px;
+    font-weight: 300;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.26);
+    text-transform: uppercase;
+    text-align: center;
+    position: relative;
+    z-index: 105;
+    top: 16px;
+    height: 46px;
+    display: inline-block;
+    left: -5px;
+    white-space: nowrap;
+}
+.deposit-txt-info {
+    background-color: #573c46;
+    border: solid 1px #734857;
+    color: #fad8f1;
+    font-weight: 400;
+    line-height: 26px;
+    font-size: 14px;
+    text-align: center;
+    margin: 0 0 20px;
+}
+.escrow-banner {
+    background: #573c46;
+    color: #F9F9F9;
+    text-transform: uppercase;
+    line-height: 17px;
+    font-size: 13px;
+    position: relative;
+    margin: 0 -20px 1px;
+    padding: 6px 6px 6px 15px;
+}
+.escrow-banner a {
+    background: #4b363e;
+    border: 1px solid #76515F;
+    color: #E7E7E7;
+    text-transform: uppercase;
+    line-height: 17px;
+    font-size: 11px;
+    text-decoration: none;
+    position: absolute;
+    right: 20px;
+    top: 4px;
+    padding: 1px 10px;
+}
+.escrow-banner a:hover {
+    background: #573e48;
+}
+.support .table .list .tb2,
+.support .table .list .tb10 {
+    width: 25%;
+    float: center;
+    text-align: center;
+    display: inline-block;
+    color: #FFF;
+}
+.support .table .list .tb5,
+.support .table .list .tb6 {
+    width: 15%;
+}
+.nticket textarea,
+.newtif textarea {
+    width: 1010px;
+    height: 120px;
+    font: 13px 'Open Sans';
+    float: left;
+    border: 1px solid rgba(93, 103, 113, 0.71);
+    color: #b7d5e7;
+    background-color: rgba(27, 42, 53, 0.68);
+    margin-bottom: 5px;
+    padding: 5px 12px 74px;
+}
+.sticket .avatar,
+.sticket .avatar_user {
+    float: left;
+    display: block;
+    position: relative;
+}
+.sticket .tfe .time,
+.sticket .tfe .time_user {
+    text-align: center;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 79px;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: rgba(8, 20, 16, 0.24);
+    border: 1px solid rgba(97, 177, 143, 0.5);
+    line-height: 25px;
+    height: 25px;
+}
+.suticket,
+.suticket_admin {
+    float: left;
+    display: block;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #273A49;
+    padding: 10px 0;
+}
