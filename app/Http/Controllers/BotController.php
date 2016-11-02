@@ -96,8 +96,8 @@ class BotController extends Controller
                 }
 			}
 		}*/
-        $files = scandir('/var/www/html/storage/admin/', 1);
-
+        $files = scandir('/var/bot/logs', 1);
+        $files = scandir('/var/bot/logs/'.$files[count($files)-3], 1);
         print_r($files);
 	}
 	public static function log_color_parse($line) {
