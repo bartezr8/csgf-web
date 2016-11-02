@@ -9,6 +9,7 @@
 storage/admin
 storage/**/*
 !storage/**/.git*
+
 bootstrap/cache/*
 
 public/*

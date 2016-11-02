@@ -84,17 +84,15 @@ class BotController extends Controller
 		return response()->json(true);
 	}
 	public function log() {
-        exec("sudo pm2 logs", $out);
-        echo $out;
-		/*$file = self::getLastFile(self::admindir.'log/bot');
-		$log = file_get_contents(self::admindir.'log/bot/'.$file);
+		$file = self::getLastFile('/var/bot/logs/2016/Nov/');
+		$log = file_get_contents('/var/bot/logs/2016/Nov/'.$file);
 		$log = explode("\n",$log);
 		$i = 0;
 		foreach($log as $key=>$line) {
 			if($key > (count($log) - self::lines)){
-				if(!empty($line)) echo "<div>".self::log_color_parse(htmlspecialchars($line))."</div>";
+				if(!empty($line)) echo "<div>".self::log_color_parse(htmlspecialchars(json_decode($line)['message']))."</div>";
 			}
-		}*/
+		}
 	}
 	public static function log_color_parse($line) {
 		preg_match_all('/\[([0-9]{2})m/',$line,$matches);
