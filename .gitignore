@@ -7,8 +7,7 @@
 *.txt
 
 storage/admin
-storage/**/*
-!storage/**/.git*
+#storage/**/*
 
 bootstrap/cache/*
 
