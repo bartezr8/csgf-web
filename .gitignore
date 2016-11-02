@@ -8,8 +8,6 @@
 
 storage/admin
 
-bootstrap/cache/*
-
 public/*
 !public/assets
 !public/index.php

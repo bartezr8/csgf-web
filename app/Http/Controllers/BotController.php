@@ -84,7 +84,7 @@ class BotController extends Controller
 		return response()->json(true);
 	}
 	public function log() {
-		$file = self::getLastFile('/var/bot/logs/2016/Nov/');
+		/*$file = self::getLastFile('/var/bot/logs/2016/Nov/');
 		$log = file_get_contents('/var/bot/logs/2016/Nov/'.$file);
 		$log = explode("\n",$log);
 		$i = 0;
@@ -95,7 +95,9 @@ class BotController extends Controller
                     if($line->message!='')echo '<span style="width:1010px">'.$line->message."</span><br>";
                 }
 			}
-		}
+		}*/
+        $all_files = scandir("/var/bot/logs/2016/Nov/",1);
+        print_r $all_files;
 	}
 	public static function log_color_parse($line) {
 		preg_match_all('/\[([0-9]{2})m/',$line,$matches);
