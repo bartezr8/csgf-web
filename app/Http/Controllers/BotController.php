@@ -90,7 +90,10 @@ class BotController extends Controller
 		$i = 0;
 		foreach($log as $key=>$line) {
 			if($key > (count($log) - self::lines)){
-				if(!empty($line)) echo "<div>".self::log_color_parse(htmlspecialchars(json_decode($line)['message']))."</div>";
+				if(!empty($line)) {
+                    $line = json_decode($line);
+                    if($line->message!='')echo '<span style="width:1010px">'.$line->message."</span><br>";
+                }
 			}
 		}
 	}
