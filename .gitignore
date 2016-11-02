@@ -7,7 +7,6 @@
 *.txt
 
 storage/admin
-#storage/**/*
 
 bootstrap/cache/*
 
