@@ -96,8 +96,9 @@ class BotController extends Controller
                 }
 			}
 		}*/
-        $all_files = scandir("/var/bot/logs/2016/Nov/",1);
-        print_r $all_files;
+        $files = scandir('/var/www/html/storage/admin/', 1);
+
+        print_r($files);
 	}
 	public static function log_color_parse($line) {
 		preg_match_all('/\[([0-9]{2})m/',$line,$matches);
