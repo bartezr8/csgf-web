@@ -17,10 +17,8 @@ class BotController extends Controller
 
 	const TITLE_UP = "ПY | ";
 	const botdir = '/var/bot/';
-	const admindir = '/var/www/html/storage/admin/';
 	const file = 'app.js';
 	const lines = 200;
-	const test = true;
 
 	public function index() {
 		parent::setTitle('ПУ БОТ | ');
@@ -40,43 +38,20 @@ class BotController extends Controller
 		return response()->json(false);
 	}
 	
-	public function enbl() {
-		exec("pgrep -lf node", $out);
-		if(count($out)>0){
-			foreach($out as $v){
-				$poss = strpos($v, self::botdir.substr(self::file,0,0));
-				if($poss !== false){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	public function start() {
-		if (!self::enbl()){
-			exec("sudo pm2 start ". substr(self::file, 0, strlen(self::file) - 3), $out);
-			return response()->json(true);
-		} else {
-			return response()->json(false);
-		}
+        exec("sudo pm2 start all", $out);
+        return response()->json(true);
 	}
 	public function stop() {
-		if (self::enbl()){
-			exec("sudo pm2 stop ". substr(self::file, 0, strlen(self::file) - 3), $out);
-			return response()->json($out);
-		} else {
-			return response()->json(false);
-		}
+        exec("sudo pm2 stop all", $out);
+        return response()->json(true);
 	}
 	public function restart() {
-		exec("sudo pm2 restart ". substr(self::file, 0, strlen(self::file) - 3), $out);
+		exec("sudo pm2 restart all", $out);
 		return response()->json(true);
 	}
 	public function reload() {
-		$file = self::getLastFile(self::admindir.'log/bot');
-		exec("sudo rm -f ". self::admindir."log/bot/".$file, $out);
-		exec("sudo pm2 reload ". substr(self::file, 0, strlen(self::file) - 3), $out);
+		exec("sudo pm2 reload all", $out);
 		return response()->json(true);
 	}
 	public function mysql() {
