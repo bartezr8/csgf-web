@@ -84,21 +84,21 @@ class BotController extends Controller
 		return response()->json(true);
 	}
 	public function log() {
-		/*$file = self::getLastFile('/var/bot/logs/2016/Nov/');
-		$log = file_get_contents('/var/bot/logs/2016/Nov/'.$file);
-		$log = explode("\n",$log);
-		$i = 0;
-		foreach($log as $key=>$line) {
-			if($key > (count($log) - self::lines)){
-				if(!empty($line)) {
+		/*$history = file_get_contents(self::botdir.'logs/history.json');
+        $history = json_decode($history,1);
+        $lastfile = $history['dates'][max(array_keys($history['dates']))];*/
+        $lastfile = self::getLastFile(self::botdir.'logs/2016/Nov/');
+        $logs = file_get_contents(self::botdir.'logs/2016/Nov/'.$lastfile);
+		//$logs = file_get_contents(self::botdir.$lastfile[0]);
+        $logs = explode("\n",$logs);
+        foreach($logs as $key=>$line) {
+			if($key > (count($logs) - self::lines)){
+				if(!empty($line)){
                     $line = json_decode($line);
                     if($line->message!='')echo '<span style="width:1010px">'.$line->message."</span><br>";
                 }
 			}
-		}*/
-        $files = scandir('/var/bot/logs', 1);
-        $files = scandir('/var/bot/logs/'.$files[count($files)-3], 1);
-        print_r($files);
+		}
 	}
 	public static function log_color_parse($line) {
 		preg_match_all('/\[([0-9]{2})m/',$line,$matches);
