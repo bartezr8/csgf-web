@@ -12,11 +12,10 @@
 
         body {
             margin: 0;
+            font-family: Comfortaa;
             padding: 0;
             width: 100%;
-            font-family: 'Roboto', sans-serif;
-            font-size:14px;
-            background: #F9FAFB url({{ asset('assets/img/bg.png') }});
+            font-size: 14px;
             color: #333;
             display: table;
             font-weight: 100;
@@ -42,7 +41,7 @@
 <body>
 <div class="container">
     <div class="content">
-        <div class="title">Oops. Error 404.</div>
+        <div class="title"><img src="/assets/img/404_image.png"></div>
         <a class="btn btn-primary" href="{{ route('index') }}">На главную</a>
     </div>
 </div>
