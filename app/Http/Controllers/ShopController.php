@@ -176,7 +176,7 @@ class ShopController extends Controller {
 
         foreach ($items as $item) {
             $value = $item['classid'];
-            if ($item['appid'] == GameController::APPID) {
+            if ($item['appid'] == config('mod_game.appid')) {
                 $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
                 if (is_null($dbItemInfo)) {
                     if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
