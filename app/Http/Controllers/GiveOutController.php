@@ -35,7 +35,7 @@ class GiveOutController extends Controller {
 	public function startOut(){
 		if (\Cache::has('out.user.' . $this->user->id)) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
 		\Cache::put('out.user.' . $this->user->id, '', 1);
-		if (strpos(strtolower($this->user->username),  strtolower(config('mod_game.sitename'))) != false){
+		if (strpos(strtolower($this->user->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false){
 			$currout = \DB::table('giveouts')->where('user_id', $this->user->id)->where('status', '<', 2)->first();
 			if(!is_null($currout)){
 				return response()->json(['text' => 'Вы уже участвуете в раздаче.', 'type' => 'error']);
@@ -48,7 +48,7 @@ class GiveOutController extends Controller {
 				]);
 				return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 			}
-		} else return response()->json(['text' => 'Ваш ник должен содержать ' . config('mod_game.sitename') , 'type' => 'error']);
+		} else return response()->json(['text' => 'Ваш ник должен содержать ' . strtoupper(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url')))))) , 'type' => 'error']);
 		
 	}
 	public function getOut(){
@@ -106,7 +106,7 @@ class GiveOutController extends Controller {
 		
 		foreach($outs as $out){
 			$u = User::find($out->user_id);
-			if (strpos(strtolower($u->username),  strtolower(config('mod_game.sitename'))) != false){
+			if (strpos(strtolower($u->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false){
 				if((Carbon::parse($out->date)->timestamp + self::outtime) < Carbon::now()->timestamp){
 					if($out->status == 0)\DB::table('giveouts')->where('id', $out->id)->update(['status' => 1]);
 					self::_responseMessageToSite('Вы победили в раздаче, заберите приз', $u->steamid64);

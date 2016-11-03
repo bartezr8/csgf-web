@@ -39,7 +39,7 @@ class ChatController extends Controller
         $admin = $this->user->is_admin;
 		$moder = $this->user->is_moderator;
 		$vip = 0;
-		if (strpos(strtolower(' '.$this->user->username),  strtolower(config('mod_game.sitename'))) != false) $vip = 1;
+		if (strpos(strtolower(' '.$this->user->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false) $vip = 1;
         $username = htmlspecialchars($this->user->username);
         $avatar = $this->user->avatar;
         $time = date('H:i', time());
