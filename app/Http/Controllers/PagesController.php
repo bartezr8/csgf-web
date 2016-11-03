@@ -167,7 +167,7 @@ class PagesController extends Controller
 					$gamesList[$i]->bank = $game->price;
 					if ($game->status != Game::STATUS_FINISHED) $gamesList[$i]->win = -1;
 					if ($game->winner_id == $user->id) $gamesList[$i]->win = true;
-					if ($userId != GameController::BONUS_ID){
+					if ($userId != config('mod_game.bot_steamid')){
 						$gamesList[$i]->chance = round($game->betValue / $game->price, 3) * 100;
 						//if ($gamesList[$i]->chance < 100){
 							if ($gamesList[$i]->win) $wins++;
@@ -361,14 +361,9 @@ class PagesController extends Controller
 		if (!$amount) $amount = 1;
 		if ($amount<1) $amount = 1;
         $user = $this->user;
-		if(\App\Http\Controllers\GameController::PayType == 0){
-			header('Location: https://api.gdonate.ru/pay?public_key='.\App\Http\Controllers\GameController::GDonateKeyPublic.'&sum='.$amount.'&account='.$user->id.'&desc=Пополнение_баланса_на_CSGF.RU');
-        }
-		if(\App\Http\Controllers\GameController::PayType == 1){
-			$id = \DB::table('freekassa_payments')->insertGetId(['account' => $user->id, 'AMOUNT' => $amount, 'dateCreate' => Carbon::now()->toDateTimeString(), 'status' => 0 ]);
-			$hash = md5(\App\Http\Controllers\GameController::FreeKassaID.':'.$amount.':'.\App\Http\Controllers\GameController::FreeKassaSecret1.':'.$id);
-			header('Location: https://www.free-kassa.ru/merchant/cash.php?m='.\App\Http\Controllers\GameController::FreeKassaID.'&oa='.$amount.'&o='.$id.'&s='.$hash);
-        }
+        $id = \DB::table('freekassa_payments')->insertGetId(['account' => $user->id, 'AMOUNT' => $amount, 'dateCreate' => Carbon::now()->toDateTimeString(), 'status' => 0 ]);
+        $hash = md5(config('pay.freekassa_id').':'.$amount.':'.config('pay.freekassa_s1').':'.$id);
+        header('Location: https://www.free-kassa.ru/merchant/cash.php?m='.config('pay.freekassa_id').'&oa='.$amount.'&o='.$id.'&s='.$hash);
 		exit();
     }
 }//&paySystem=robokassa

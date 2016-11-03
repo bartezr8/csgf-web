@@ -27,24 +27,6 @@ class GameController extends Controller
 {
 	const URL_REQUEST = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
 	
-	const SENDSHOP_ON = 1;										# 0 - выключить откравку комиссии магазину, 1 - включить отправку.
-	const SHOPSTEAMID64 = 76561198073063637;					# SteamID64 От аккаута магазина. (он должен быть авторизирован на сайте)!
-	const BOTSTEAMID64 = 76561198067721846;						# SteamID64 От аккаута магазина. (он должен быть авторизирован на сайте)!    
-    
-    const BONUS_ON = 1;											# 0 - выключить бонус бота, 1 - включить.
-	const BONUS_ID = 76561197960265728;							# SteamID64 бонус бота
-	
-	const LOWCHANSE = 6; 										# Шанс выпадения лоу кф (↓число - ↑шанс) [0, беск]
-    
-    const PayType = 1;											# 0 - GDonate, 1 - FreeKassa
- 
-	const GDonateKeyPublic = '18810-672';
-    const GDonateKey = 'abd201ef3ddd051d6af8a2812f71eb2b';
-	
-	const FreeKassaID = '28279';
-    const FreeKassaSecret1 = 'twj6ecdi';
-	const FreeKassaSecret2 = 'vocivn29';
-	
     const SEND_OFFERS_LIST = 'send.offers.list';
     const NEW_BET_CHANNEL = 'newDeposit';
     const BET_DECLINE_CHANNEL = 'depositDecline';
@@ -242,7 +224,7 @@ class GameController extends Controller
 	public static function _fixGame($id)
 	{
         $game = Game::where('id', $id)->first();
-		$bonus = User::where('steamid64', self::BONUS_ID)->first();
+		$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 		$bets = Bet::where('game_id', $id)->where('user_id', '!=', $bonus->id)->orderBy('id')->get();
 		$lastTicket = 0;
 		foreach ($bets as $bet){
@@ -256,7 +238,7 @@ class GameController extends Controller
         $game->price = $lastTicket/100;
         $chance = 0;
         if (!is_null($game->winner)) {
-			if ($game->winner->steamid64 != self::BONUS_ID) {
+			if ($game->winner->steamid64 != config('mod_game.bot_steamid')) {
 				$bet = Bet::where('game_id', $game->id)
 					->where('user_id', $game->winner->id)
 					->sum('price');
@@ -408,7 +390,7 @@ class GameController extends Controller
 		$nextbetItems = [];
         $returnItems = [];
         $tempPrice = 0;
-		$bonus = User::where('steamid64', self::BONUS_ID)->first();
+		$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 		$firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
 		if(!is_null($firstBet)){
 			if ($firstBet->user == $user) $commission = $commission - config('mod_game.comission_first_bet');
@@ -460,7 +442,7 @@ class GameController extends Controller
 			'game' => $this->game->id
 		];
 		$this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
-		if (self::BONUS_ON == 1) {
+		if (config('mod_game.bonus_bot')) {
 			$bonusdrop = \DB::table('bonus_items')->first();
 			if(is_null($bonusdrop)){
 				$bonusItemsPrice =  round(($this->game->price / 100),2);
@@ -480,7 +462,7 @@ class GameController extends Controller
 				\DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
 			}
 			$bonusitems[] = $bonusitem;
-			$bonus = User::where('steamid64', self::BONUS_ID)->first();
+			$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 			$returnValue = [
 				'offerid' => 0,
 				'userid' => $bonus->id,
@@ -493,14 +475,14 @@ class GameController extends Controller
 			];
 			$this->redis->lpush('bets.list', json_encode($returnValue)); 
 		}
-		if (self::SENDSHOP_ON == 1) {
+		if (config('mod_game.comission_to_shop')) {
 			$shopItems = [];
 			foreach ($commissionItems as $item) {
 				if (isset($item['classid'])) {
 					$shopItems[] = $item['classid'];
 				}
 			}
-			$shop = User::where('steamid64', self::SHOPSTEAMID64)->first();
+			$shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
 			if ($shop != NULL) {
 				$valueShop = [
 					'appId' => config('mod_game.appid'),
@@ -526,8 +508,8 @@ class GameController extends Controller
         if(is_null($rand)) {
 			$rand_number = "0.";
 			$firstrand = mt_rand(20, 80);
-			if (mt_rand(0, self::LOWCHANSE) == 0) $firstrand = mt_rand(3, 96);
-			if (mt_rand(0, (self::LOWCHANSE * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
+			if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
+			if (mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
 			if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
 			$rand_number .= $firstrand;
 			for($i = 1; $i < 15; $i++) {
@@ -657,7 +639,7 @@ class GameController extends Controller
     public function newBet(){
 		if (\Cache::has('new_game')) return $this->_responseSuccess();
         $data = $this->redis->lrange('bets.list', 0, -1);
-		$bonus = User::where('steamid64', self::BONUS_ID)->first();
+		$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 		if ($bonus == NULL) \DB::table('users')->insertGetId([
 			'username' => 'BONUS',
 			'avatar' => 'http://www.csgofear.ru/assets/img/gift.png',
@@ -718,11 +700,11 @@ class GameController extends Controller
 				$this->lastTicket = $this->redis->get('last.ticket.' . $this->game->id);
 				$ticketFrom = $this->lastTicket + 1;
 				$ticketTo = $ticketFrom + ($newBet['price'] * 100) - 1;
-				if ($user->steamid64 == self::BONUS_ID){
+				if ($user->steamid64 == config('mod_game.bot_steamid')){
 					$ticketFrom = 0;
 					$ticketTo = 0;
 				}
-				if ($user->steamid64 != self::BONUS_ID){
+				if ($user->steamid64 != config('mod_game.bot_steamid')){
 					$this->redis->set('last.ticket.' . $this->game->id, $ticketTo);
 				}
 				$vip = 0;
@@ -880,7 +862,7 @@ class GameController extends Controller
 						$bet = $lastBet;
 					}
                     $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$ticket->price.' р. | '.$this->user->username));
-					$bonus = User::where('steamid64', self::BONUS_ID)->first();
+					$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 					if ($bonus == NULL) \DB::table('users')->insertGetId([
 						'username' => 'BONUS',
 						'avatar' => '/assets/img/gift.png',
@@ -1000,7 +982,7 @@ class GameController extends Controller
         $chs = $chances;
         $chances = [];
         foreach ($chs  as $ch) {
-            if($ch['steamid64'] == self::BONUS_ID)$ch['chance'] = 'BONUS ';
+            if($ch['steamid64'] == config('mod_game.bot_steamid'))$ch['chance'] = 'BONUS ';
             $chances[] = $ch;
         }
         return $chances;
@@ -1012,7 +994,7 @@ class GameController extends Controller
     {
         $chance = 0;
         if (!is_null($user)) {
-			if ($user->steamid64 != self::BONUS_ID) {
+			if ($user->steamid64 != config('mod_game.bot_steamid')) {
 				$bet = Bet::where('game_id', $game->id)
 					->where('user_id', $user->id)
 					->sum('price');
@@ -1132,7 +1114,7 @@ class GameController extends Controller
 	public function curcomm(){
 		$my_comission = config('mod_game.comission');
 		if (!is_null($this->user)){
-			$bonus = User::where('steamid64', self::BONUS_ID)->first();
+			$bonus = User::where('steamid64', config('mod_game.bot_steamid'))->first();
 			$firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
 			if (!is_null($firstBet)){
 				if ($firstBet->user == $this->user) $my_comission = $my_comission - config('mod_game.comission_first_bet');

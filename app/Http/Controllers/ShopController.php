@@ -302,7 +302,7 @@ class ShopController extends Controller {
         $jsonItems = $this->redis->lrange(self::NEW_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
 			$returnValue = [];
-			$userid = GameController::BOTSTEAMID64;
+			$userid = config('mod_game.bot_steamid');
             $items = json_decode($jsonItem, true);
 			$total_price = $this->_parseItems($items);
             foreach($items as $item) {
@@ -339,7 +339,7 @@ class ShopController extends Controller {
 			$this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $userid);
 			$user = User::where('steamid64', $userid)->first();
 			if(!is_null($user)){
-				if($userid != GameController::BOTSTEAMID64){
+				if($userid != config('mod_game.bot_steamid')){
 					$user->money = $user->money + $total_price;
 					$user->save();
 					\DB::table('deposits')->insertGetId([
@@ -439,7 +439,7 @@ class ShopController extends Controller {
 					foreach ($out['items_to_receive'] as $i){
 						$cids[] = $i['classid'];
 					}
-					$botinv = file_get_contents('http://steamcommunity.com/profiles/' . GameController::SHOPSTEAMID64 . '/inventory/json/730/2?l=russian');
+					$botinv = file_get_contents('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
 					$botinv = json_decode($botinv, true);
 					if(isset($botinv['rgInventory']) && isset($botinv['rgDescriptions'])){
 						$returnValue = [];
