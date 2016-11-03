@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateUsersTable extends Migration
+class CreateBetsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,7 @@ class UpdateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function ($table) {
-            $table->float('money')->after('accessToken');
-        });
+        //
     }
 
     /**
@@ -24,8 +22,6 @@ class UpdateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function ($table) {
-            $table->dropColumn('money');
-        });
+        //
     }
 }

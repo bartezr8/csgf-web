@@ -240,7 +240,12 @@ class PagesController extends Controller
 
         return view('pages.escrow');
     }
-
+    public function success(){
+        return redirect()->route('index');
+    }
+    public function fail(){
+        return redirect()->route('index');
+    }
     public function game($gameId){
         if(isset($gameId) && Game::where('status', Game::STATUS_FINISHED)->where('id', $gameId)->count()){
             $game = Game::with(['winner'])->where('status', Game::STATUS_FINISHED)->where('id', $gameId)->first();

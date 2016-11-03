@@ -13,8 +13,8 @@ get('/escrow', ['as' => 'escrow', 'uses' => 'PagesController@escrow']);
 post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
 get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
 get('/donate', 'DonateController@Donate');
-
-get('/lol', 'PagesController@lol');
+get('/success', 'PagesController@success');
+get('/fail', 'PagesController@fail');
 
 get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
 

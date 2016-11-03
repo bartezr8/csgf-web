@@ -21,7 +21,7 @@ class Access
                 if(!$request->user()->is_admin){
                     if($request->ajax())
                         return response('Access Denied')->setStatusCode(403);
-                    abort(404);
+                    App::abort(404);
                 }
             break;
             case 'moderator':
@@ -29,7 +29,7 @@ class Access
 					if(!$request->user()->is_moderator){
 						if($request->ajax())
 							return response('Access Denied')->setStatusCode(403);
-						abort(404);
+						App::abort(404);
 					}
 				}
             break;
