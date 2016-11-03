@@ -20,7 +20,7 @@ class BotController extends Controller
 	const admindir = '/var/www/html/storage/admin/';
 	const file = 'app.js';
 	const lines = 200;
-
+	const test = true;
 
 	public function index() {
 		parent::setTitle('ПУ БОТ | ');
