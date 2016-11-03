@@ -2,6 +2,7 @@
 //config('mod_game.chat_history_length')
 return [
     'appid' => 730,
+   
     'max_items' => 20,
 	'min_price' => 0.1,
     'game_min_price' => 1,

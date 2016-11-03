@@ -3,7 +3,7 @@
 return [
 	'shop' => true,
     
-    'max_daily' = true,
+    'max_daily' => true,
 	'max_daily_sum' => 20,
     
 	'items_per_trade' => 50,
