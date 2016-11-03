@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="content-block">
-        <link rel="stylesheet" href="{{ asset('assets/css/shop.css') }}"/>
+        <link rel="stylesheet" href="{{ $asset('assets/css/shop.css') }}"/>
         <div class="user-history-block bid-history" style="padding-top: 10px;">
 
             <div class="title-block">

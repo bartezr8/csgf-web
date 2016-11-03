@@ -2,8 +2,8 @@
 
 @section('content')
 <title>  {{ $title = 'Монетка | ' }}</title>
-<link href="{{ asset('assets/css/coin.css') }}" rel="stylesheet">
-<script src="{{ asset('assets/js/coin.js') }}"></script>
+<link href="{{ $asset('assets/css/coin.css') }}" rel="stylesheet">
+<script src="{{ $asset('assets/js/coin.js') }}"></script>
 <div class="content">
 	<div class="title-block">
 		<h2 style="color: #ffffff;">Монетка</h2>

@@ -37,7 +37,7 @@
                 @if(!isset($i->img))
                     <div class="img-wrap"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/101fx100f"></div>
                 @else
-                    <div class="img-wrap"><img style="@if(isset($i->style)) {{ $i->style }} @endif" src="{{ asset($i->img) }}"></div>
+                    <div class="img-wrap"><img style="@if(isset($i->style)) {{ $i->style }} @endif" src="{{ $asset($i->img) }}"></div>
                 @endif
                 </div>
                 <div style="@if($bet->user->steamid64 == 76561197960265728) background: #000000; @endif" class="deposit-price">{{ $i->price }} <span>руб</span></div>

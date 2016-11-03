@@ -3,7 +3,7 @@
 @section('content')
 <title>  {{ $title = \App\Http\Controllers\AdminController::TITLE_UP }}</title>
 
-<link href="{{ asset('assets/css/admin.css') }}" rel="stylesheet">
+<link href="{{ $asset('assets/css/admin.css') }}" rel="stylesheet">
     <div class="admin-container">
         <div class="admin-top">
             <div class="logotype active">
