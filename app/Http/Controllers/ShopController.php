@@ -17,24 +17,6 @@ class ShopController extends Controller {
     const NEW_ITEMS_CHANNEL = 				'items.to.sale';
     const GIVE_ITEMS_CHANNEL = 				'items.to.give';
 	const CHECK_ITEMS_CHANNEL = 			'items.to.check';
-	
-	const ENBL = true; 						//Включить магазин
-
-	const MAXSUM = 20;					 	// Сумма вывода в сутки за один уровень
-	const CHECKSUP = true; 					// Включить подтвердение ограничения вывода в сутки
-	const IFT = 50; 						// Максимально Предметов за трейд при отправке
-	
-	const CHECKGAME = true; 				// Проверять на колличество игр.
-	const CHECKGAMECOUNT = 1; 				// колличество игр.
-
-    const PRICE_PERCENT_TO_SALE = 100;   	// Процент от цены steam
-	const COMMISSION_ON_ADD = 5;   			// Комиссия при вводе
-	const COMMISSION_ON_ADD_TO = 50; 		// Комиссия на вещи до ...(руб)
-	
-	const SHOP_PORT = '9770'; 				// Порт магазина
-	const SHOP_IP = 'localhost';			// IP магазина
-	
-	const SHOP_SECRET = 'Y!AJd{(vz;X!Yr6!BJ2q-cI*[5]?w:Ok'; 	// Секретный ключ для магазина
 
     private function _responseMessageToSite($message, $userid)
     {
@@ -198,11 +180,11 @@ class ShopController extends Controller {
                 }
 				$itemInfo[$value] = $dbItemInfo;
                 if ($itemInfo[$value]->price <= 0) $itemInfo[$value]->price = 0.1;
-				if ($itemInfo[$value]->price <= self::COMMISSION_ON_ADD_TO) {
+				if ($itemInfo[$value]->price <= config('mod_shop.comission_on_<')) {
 					if ($itemInfo[$value]->price <= 10) {
 						$itemInfo[$value]->price = $itemInfo[$value]->price/2;
 					}
-					$itemInfo[$value]->price = $itemInfo[$value]->price * (1 - self::COMMISSION_ON_ADD/100);
+					$itemInfo[$value]->price = $itemInfo[$value]->price * (1 - config('mod_shop.comission_on_%')/100);
 				}
 				$total_price += $itemInfo[$value]->price;
 				$items[$i]['price'] = $itemInfo[$value]->price;
@@ -264,11 +246,11 @@ class ShopController extends Controller {
 					
 					$item['price'] = $info->price;
 					
-					if ($item['price'] <= self::COMMISSION_ON_ADD_TO) {
+					if ($item['price'] <= config('mod_shop.comission_on_<')) {
 						if ($item['price'] <= 10) {
 							$item['price'] = $item['price']/2;
 						}
-						$item['price'] = round($item['price'] * (1 - self::COMMISSION_ON_ADD/100) * 100)/100;
+						$item['price'] = round($item['price'] * (1 - config('mod_shop.comission_on_%')/100) * 100)/100;
 					}
 						
 					if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
@@ -319,7 +301,7 @@ class ShopController extends Controller {
                 } 
                 if($info->price > 0){
                     $item['steam_price'] = $info->price;
-                    $item['price'] = $item['steam_price']/100 * self::PRICE_PERCENT_TO_SALE;
+                    $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
                     Shop::create($item);
                 }
 				$returnValue[] = [
@@ -373,11 +355,11 @@ class ShopController extends Controller {
 				if (is_null($dbItemInfo)) {
 					$itemInfo = new SteamItem($item);
 					$item['steam_price'] = $itemInfo->price;
-					$item['price'] = $item['steam_price']/100 * self::PRICE_PERCENT_TO_SALE;
+					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
 					Shop::create($item);
 				}else{
 					$item['steam_price'] = $dbItemInfo->price;
-					$item['price'] = $item['steam_price']/100 * self::PRICE_PERCENT_TO_SALE;
+					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
 					Shop::create($item);
 				}
 				$item = Shop::where('inventoryId', $item['inventoryId'])->first();
@@ -466,7 +448,7 @@ class ShopController extends Controller {
 								} 
 								if($info->price){
 									$item['steam_price'] = $info->price;
-									$item['price'] = $item['steam_price']/100 * self::PRICE_PERCENT_TO_SALE;
+									$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
 									Shop::create($item);
 									
 									if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
@@ -539,7 +521,7 @@ class ShopController extends Controller {
 	public function sellitems(Request $request){
 		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
 		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		if (self::ENBL){
+		if (config('mod_shop.shop')){
 			$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
 			if(is_null($aoffer)){
 				$classids = $request->get('classids');
@@ -558,7 +540,7 @@ class ShopController extends Controller {
 						'accessToken' => $this->user->accessToken,
 					];
 
-					$out = self::curl('http://' . self::SHOP_IP . ':' . self::SHOP_PORT . '/sendTrade/?data='.json_encode($value).'&SHOP_SECRET=' . self::SHOP_SECRET);
+					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&SHOP_SECRET=' . config('mod_shop.shop_strade_secret'));
 					$out = json_decode($out, true);
 					if($out['success'] == true) {
 						$id = \DB::table('shop_offers')->insertGetId([
@@ -586,7 +568,7 @@ class ShopController extends Controller {
     public function getcart(Request $request){
 		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
 		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		if (self::ENBL){
+		if (config('mod_shop.shop')){
 			if ($this->user->ban == 0){
 				$classids = $request->get('classids');
 				if (!is_null($classids)){
@@ -616,7 +598,7 @@ class ShopController extends Controller {
 						->groupBy('bets.game_id')
 						->select('bets.id')->get());
 					if($itemsum <= $this->user->money){
-						if(($games > self::CHECKGAMECOUNT) || (self::CHECKGAME)){
+						if(($games > config('mod_shop.games_need_count')) || config('mod_shop.games_need')){
 							$bsum = \DB::table('shop')->where('buyer_id', $this->user->id)->where('buy_at', '>=', Carbon::now()->subDay())->where('price', '>=', 5)->sum('price');
 							$dsum = \DB::table('deposits')->where('user_id', $this->user->id)->where('date', '>=', Carbon::now()->subDay())->where('type', 0)->sum('price');
 							$fksum = \DB::table('freekassa_payments')->where('account', $this->user->id)->where('status', 1)->where('dateComplete', '>=', Carbon::now()->subDay())->sum('AMOUNT');
@@ -624,8 +606,8 @@ class ShopController extends Controller {
 							$betssum = \DB::table('bets')->where('user_id', $this->user->id)->orderBy('id')->sum('price');
 							$betssum = round($betssum / 1000 , 2); 
 							if($betssum > 50) $betssum = 50.00;
-							$canget = ($betssum * self::MAXSUM) + $dsum + $gdsum + $fksum;
-							if ( $bsum + $takesum <= $canget || !self::CHECKSUP || $this->user->is_admin){
+							$canget = ($betssum * config('mod_shop.max_daily_sum')) + $dsum + $gdsum + $fksum;
+							if ( $bsum + $takesum <= $canget || !config('mod_shop.max_daily') || $this->user->is_admin){
 								$this->user->money = $this->user->money - $itemsum;
 								$this->user->save();
 								$senditems = [];
@@ -639,7 +621,7 @@ class ShopController extends Controller {
 									$thisitem->buy_at = Carbon::now();
 									$thisitem->save();
 									$senditems[] = $thisitem;								
-									if (count($senditems) == self::IFT){
+									if (count($senditems) == config('mod_shop.items_per_trade')){
 										$this->sendItem($senditems);
 										$j = 0;
 										$senditems = [];
@@ -662,7 +644,7 @@ class ShopController extends Controller {
 								return response()->json(['success' => false, 'msg' => 'У вас осталось '.$left.'/'.$canget.'р. в день.']);
 							}
 						} else {
-							return response()->json(['success' => false, 'msg' => 'У вас должно быть больше '.self::CHECKGAMECOUNT.' игр для покупки в магазине']);
+							return response()->json(['success' => false, 'msg' => 'У вас должно быть больше '.config('mod_shop.games_need_count').' игр для покупки в магазине']);
 						}
 					} else {
 						return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);

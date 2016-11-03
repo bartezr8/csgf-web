@@ -14,8 +14,6 @@ use App\Http\Controllers\Controller;
 use Storage;
 
 class GiveOutController extends Controller {
-	const outtime = 21601;			// Время участия неоходимое для получения суммы (сек)
-	const outmoney = 0.30; 			// Сумма (руб) выдаваемая за время участия в раздаче 
 	public function out_index(){
 		$OUTS = \DB::table('giveouts')->where('status', '>', 0)->where('status', '<', 3)->orderBy('id', 'desc')->limit(16)->get();
 		$avatars = [];
@@ -43,7 +41,7 @@ class GiveOutController extends Controller {
 				$id = \DB::table('giveouts')->insertGetId([
 					'user_id' => $this->user->id,
 					'status' => 0,
-					'price' => self::outmoney,
+					'price' => config('mod_out.outmoney'),
 					'date' => Carbon::now()->toDateTimeString()
 				]);
 				return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
@@ -59,16 +57,16 @@ class GiveOutController extends Controller {
 		if(is_null($currout)){
 			return response()->json(['do' => 'false', 'sum' => $sumout, 'thisMon' => '0.00']);
 		} else {
-			if((Carbon::parse($currout->date)->timestamp + self::outtime) < Carbon::now()->timestamp){
+			if((Carbon::parse($currout->date)->timestamp + config('mod_out.outtime')) < Carbon::now()->timestamp){
 				if($currout->status == 0 ){
 					\DB::table('giveouts')->where('id', $currout->id)->update(['status' => 1]);
 					$this->redis->publish('out_new', $this->user->avatar);
 				}
 				$currout->status = 1;
-				$currout->left = (Carbon::parse($currout->date)->timestamp + self::outtime - Carbon::now()->timestamp);
-				return response()->json(['do' => 'true', 'val' => $currout, 'sum' => $sumout, 'thisMon' => self::outmoney]);
+				$currout->left = (Carbon::parse($currout->date)->timestamp + config('mod_out.outtime') - Carbon::now()->timestamp);
+				return response()->json(['do' => 'true', 'val' => $currout, 'sum' => $sumout, 'thisMon' => config('mod_out.outmoney')]);
 			} else {
-				$currout->left = (Carbon::parse($currout->date)->timestamp + self::outtime - Carbon::now()->timestamp);
+				$currout->left = (Carbon::parse($currout->date)->timestamp + config('mod_out.outtime') - Carbon::now()->timestamp);
 				return response()->json(['do' => 'true', 'val' => $currout, 'sum' => $sumout, 'thisMon' => '0.00']);
 			}
 		}
@@ -82,7 +80,7 @@ class GiveOutController extends Controller {
 			return response()->json(['text' => 'Нечего забирать.', 'type' => 'error']);
 		} else {
 			\DB::table('giveouts')->where('id', $currout->id)->update(['status' => 2]);
-			$this->user->money += self::outmoney;
+			$this->user->money += config('mod_out.outmoney');
 			$this->user->save();
 			return response()->json(['text' => 'Средства зачислены.', 'type' => 'success']);
 		}
@@ -107,7 +105,7 @@ class GiveOutController extends Controller {
 		foreach($outs as $out){
 			$u = User::find($out->user_id);
 			if (strpos(strtolower($u->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false){
-				if((Carbon::parse($out->date)->timestamp + self::outtime) < Carbon::now()->timestamp){
+				if((Carbon::parse($out->date)->timestamp + config('mod_out.outtime')) < Carbon::now()->timestamp){
 					if($out->status == 0)\DB::table('giveouts')->where('id', $out->id)->update(['status' => 1]);
 					self::_responseMessageToSite('Вы победили в раздаче, заберите приз', $u->steamid64);
 					$this->redis->publish('out_new', $this->user);

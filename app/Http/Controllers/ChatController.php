@@ -15,7 +15,6 @@ class ChatController extends Controller
 
     const CHAT_CHANNEL = 'chat.message';
     const NEW_MSG_CHANNEL = 'new.msg';
-	const MSG_COUNT = 50;
 
     public function __construct(){
         parent::__construct();
@@ -650,7 +649,7 @@ class ChatController extends Controller
 		$returnValue = [];
         $max = $this->redis->llen(self::CHAT_CHANNEL);
 		$min = 0;
-		if ($max > self::MSG_COUNT) $min = $max - self::MSG_COUNT;
+		if ($max > config('mod_game.chat_history_length')) $min = $max - config('mod_game.chat_history_length');
         $value = $this->redis->lrange(self::CHAT_CHANNEL, $min, $max);
         $i = 0;
         foreach ($value as $key => $newchat[$i]) {

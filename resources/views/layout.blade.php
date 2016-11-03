@@ -339,12 +339,12 @@
 			<div class="text-block-wrap">
 				<div class="text-block">
 					<p class="lead-big">Чем выше ваш уровень – тем больше вы можете выводить из магазина.</p>                    
-					<p class="lead-big" style="margin: 0px -20px 15px;background: rgba(20, 34, 41, 0.5);padding: 15px;-webkit-box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);color: rgb(179, 218, 179);">За каждую поставленную <span>1000р</span> вы получаете <span>+1 уровень</span>.<br><span>+1 уровень</span> = <span>+20р</span> вывода из магазина в сутки.</p>
+					<p class="lead-big" style="margin: 0px -20px 15px;background: rgba(20, 34, 41, 0.5);padding: 15px;-webkit-box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);color: rgb(179, 218, 179);">За каждую поставленную <span>1000р</span> вы получаете <span>+1 уровень</span>.<br><span>+1 уровень</span> = <span>+{{ config('mod_shop.max_daily_sum') }}р</span> вывода из магазина в сутки.</p>
 					<p class="lead-normal">Уровень повышается <span>от ваших ставок</span> на сайте.</p>
 					<p class="lead-normal">Таким образом вам следует <span>больше ставить</span> если вы хотите выводить большие суммы из магазина. Максимальный уровень - <span>50</span>. Запрещена накрутка уровня!</p>
 					<p class="lead-normal">Сумма внесенная в магазин за сутки <span>увеличивает сумму вывода</span> соответственно.</p>
 					<p class="lead-normal">Сумма зачисленная на баланс за сутки <span>увеличивает сумму вывода</span> аналогично.</p>
-					<p class="lead-normal">Вы можете выводить <span>20р</span> * <span>уровень</span> в сутки + <span>2 суммы(↑↑↑)</span>.</p>
+					<p class="lead-normal">Вы можете выводить <span>{{ config('mod_shop.max_daily_sum') }}</span> * <span>уровень</span> в сутки + <span>2 суммы(↑↑↑)</span>.</p>
 					<p class="lead-normal">Ограничение действет на предметы от <span>5р</span>.</p>
 				</div>
 			</div>

@@ -33,7 +33,7 @@
 			<div class="page-mini-title">Как это работает:</div>
 			<div class="page-block" style="padding-top: 10px;">
 				<ul>
-					<li>Через <b>{{ round(\App\Http\Controllers\GiveOutController::outtime / 3600) }} час</b>(-ов) после принятия участия в раздаче и соблюдения условий вы получите <b>{{\App\Http\Controllers\GiveOutController::outmoney }} руб</b>!</li>
+					<li>Через <b>{{ round(config('mod_out.outtime') / 3600) }} час</b>(-ов) после принятия участия в раздаче и соблюдения условий вы получите <b>{{config('mod_out.outmoney') }} руб</b>!</li>
 					<li>Ваш ник должен содержать {{ strtoupper(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url')))))) }}. Ник периодически обновляется поэтому его нельзя менять.<br>
 					<span>Если вы поменяете ник и уберете из него название сайта то все результаты обнуляются!</span></li>
 					<li>У вас должно быть <b>не меньше 2 ставок</b>. Сумма ставок не учитывается. (антинакрутка)</li>
