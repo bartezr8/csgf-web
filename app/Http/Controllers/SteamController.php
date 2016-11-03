@@ -13,7 +13,6 @@ use Invisnik\LaravelSteamAuth\SteamAuth;
 class SteamController extends Controller
 {
     private $steamAuth;
-    const APPID = 730;
     public function __construct(SteamAuth $auth)
     {
         parent::__construct();

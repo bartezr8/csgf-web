@@ -25,7 +25,7 @@
                     <div title="{{ $i->name }}" data-toggle="tooltip" class="item-cont" >
                         <span class="price">{{ $i->price }} руб</span>
                         @if(!isset($i->img))
-                            <div class="item-wrap-img"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ \App\Http\Controllers\GameController::APPID }}/{{ $i->classid }}/200fx200f"></div>
+                            <div class="item-wrap-img"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/200fx200f"></div>
                         @else
                             <div class="item-wrap-img"><img src="{{ $i->img }}"></div>
                         @endif
@@ -38,7 +38,7 @@
                     <div title="{{ $i->name }}" data-toggle="tooltip" class="item-cont" >
                         <span class="price">{{ $i->price }} руб</span>
                         @if(!isset($i->img))
-                            <div class="item-wrap-img"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ \App\Http\Controllers\GameController::APPID }}/{{ $i->classid }}/200fx200f"></div>
+                            <div class="item-wrap-img"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/200fx200f"></div>
                         @else
                             <div class="item-wrap-img"><img src="{{ $i->img }}"></div>
                         @endif

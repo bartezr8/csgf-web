@@ -157,7 +157,7 @@ class ShopController extends Controller {
 	}
     private function get_real_price($price, $mhn){
 		if ($price < 5){
-            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid=730&market_hash_name=' . urlencode($mhn) . '&format=json');
+            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
             $tprice = json_decode($tprice);
             if (isset($tprice->success)){
                 $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));

@@ -29,10 +29,7 @@ class GameController extends Controller
 	
 	const SENDSHOP_ON = 1;										# 0 - выключить откравку комиссии магазину, 1 - включить отправку.
 	const SHOPSTEAMID64 = 76561198073063637;					# SteamID64 От аккаута магазина. (он должен быть авторизирован на сайте)!
-	const BOTSTEAMID64 = 76561198067721846;						# SteamID64 От аккаута магазина. (он должен быть авторизирован на сайте)!
-    const APPID = 730;											# AppID игры: 570 - Dota2, 730 - CS:GO
-    const API_KEY = '5611565eb98d880409cc1ac0';					# Ключ для сайта backpack.tf
-    
+	const BOTSTEAMID64 = 76561198067721846;						# SteamID64 От аккаута магазина. (он должен быть авторизирован на сайте)!    
     
     const BONUS_ON = 1;											# 0 - выключить бонус бота, 1 - включить.
 	const BONUS_ID = 76561197960265728;							# SteamID64 бонус бота
@@ -97,7 +94,7 @@ class GameController extends Controller
     
     public function get_real_price($price, $mhn){
 		if ($price < 5){
-            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid=730&market_hash_name=' . urlencode($mhn) . '&format=json');
+            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
             $tprice = json_decode($tprice);
             if (isset($tprice->success)){
                 $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
@@ -115,7 +112,7 @@ class GameController extends Controller
 
         foreach ($items as $item) {
             $value = $item['classid'];
-            if ($item['appid'] != GameController::APPID) {
+            if ($item['appid'] != config('mod_game.appid')) {
                 $missing = true;
                 break;
             }
@@ -151,7 +148,7 @@ class GameController extends Controller
         $items = \DB::table('items')->where('price','<',1)->get();
         foreach ($items as $item){
             if($item->price<1){
-                $price = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid=730&market_hash_name=' . urlencode($item->market_hash_name) . '&format=json');
+                $price = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($item->market_hash_name) . '&format=json');
                 $price = json_decode($price);
                 if (isset($price->success)){
                     $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$price->lowest_price)));
@@ -167,7 +164,7 @@ class GameController extends Controller
     }*/
     public function getPriceItems()
     {
-        $data = file_get_contents(self::URL_REQUEST . self::API_KEY . '&compress=1&appid=' . self::APPID);
+        $data = file_get_contents(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
         $response = json_decode($data);
         $success = $response->response->success;
         if ($success != 0) {
@@ -456,7 +453,7 @@ class GameController extends Controller
 		$user->save();
         $this->redis->publish(self::LOG_CHANNEL, json_encode('Победил: '. $user->username . ' | Шанс на победу: '.$chance . ' | Комиссия: '.$tempPrice));
 		$value = [
-			'appId' => self::APPID,
+			'appId' => config('mod_game.appid'),
 			'steamid' => $user->steamid64,
 			'accessToken' => $user->accessToken,
 			'items' => $returnItems,
@@ -506,7 +503,7 @@ class GameController extends Controller
 			$shop = User::where('steamid64', self::SHOPSTEAMID64)->first();
 			if ($shop != NULL) {
 				$valueShop = [
-					'appId' => self::APPID,
+					'appId' => config('mod_game.appid'),
 					'steamid' => $shop->steamid64,
 					'accessToken' => $shop->accessToken,
 					'items' => $shopItems,
@@ -1055,7 +1052,7 @@ class GameController extends Controller
 		if(isset($jsonGames['games'])){
 			$Games = $jsonGames['games'];
 			foreach ($Games as $Game) {
-				if ($Game['appid'] == self::APPID) {
+				if ($Game['appid'] == config('mod_game.appid')) {
 					$has = true;
 					continue;
 				}

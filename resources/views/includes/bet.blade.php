@@ -35,7 +35,7 @@
 					@if($i->com == true)<span class="comission">Комиссия</span>@endif
 				@endif
                 @if(!isset($i->img))
-                    <div class="img-wrap"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ \App\Http\Controllers\GameController::APPID }}/{{ $i->classid }}/101fx100f"></div>
+                    <div class="img-wrap"><img src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/101fx100f"></div>
                 @else
                     <div class="img-wrap"><img style="@if(isset($i->style)) {{ $i->style }} @endif" src="{{ asset($i->img) }}"></div>
                 @endif
