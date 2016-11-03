@@ -396,7 +396,7 @@ class GameController extends Controller
 			if ($firstBet->user == $user) $commission = $commission - config('mod_game.comission_first_bet');
 		}
 		$name = strtolower($user->username);
-		if (strpos(strtolower(' '.$name),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false) $commission = $commission - config('mod_game.comission_site_nick');
+		if (strpos(strtolower(' '.$name),  strtolower(config('app.sitename'))) != false) $commission = $commission - config('mod_game.comission_site_nick');
         $commissionPrice = round(($this->game->price / 100) * $commission);
         foreach ($bets as $bet) {
             $betItems = json_decode($bet->items, true);
@@ -708,7 +708,7 @@ class GameController extends Controller
 					$this->redis->set('last.ticket.' . $this->game->id, $ticketTo);
 				}
 				$vip = 0;
-				if (strpos(strtolower(' '.$user->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false) $vip = 1;
+				if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
 				$lastBet = Bet::find(\DB::table('bets')->max('id'));
 				if(is_null($lastBet)){
 					$bet = new Bet();
@@ -833,7 +833,7 @@ class GameController extends Controller
 					$ticketTo = $ticketFrom + ($ticket->price * 100) - 1;
 					$this->redis->set('last.ticket.' . $this->game->id, $ticketTo);
 					$vip = 0;
-					if (strpos(strtolower(' '.$this->user->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false) $vip = 1;
+					if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
 					$lastBet = Bet::find(\DB::table('bets')->max('id'));
 					if ($lastBet === NULL || $lastBet->user_id != $this->user->id || $lastBet->game_id != $this->game->id) {
 						$bet = new Bet();
@@ -1119,7 +1119,7 @@ class GameController extends Controller
 			if (!is_null($firstBet)){
 				if ($firstBet->user == $this->user) $my_comission = $my_comission - config('mod_game.comission_first_bet');
 			}
-			if (strpos(strtolower(' '.$this->user->username),  strtolower(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url'))))))) != false) $my_comission = $my_comission - config('mod_game.comission_site_nick');
+			if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $my_comission = $my_comission - config('mod_game.comission_site_nick');
 		}
         return response()->json($my_comission);
     }

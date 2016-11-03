@@ -772,7 +772,7 @@
         <div id="minDepositMessage" class="msg-wrap">
 			<a href="https://steamcommunity.com/id/user/edit" target="_blank">
 				<div class="black-txt-info " style="width: 33%;float: left;margin-right: 5px;">
-					Снизь комиссию на {{ config('mod_game.comission_site_nick') }}%!<br>Добавь в ник <b>{{ strtoupper(str_replace("/", "", str_replace("://", "", str_replace("http", "", str_replace("https", "", config('app.url')))))) }}</b>
+					Снизь комиссию на {{ config('mod_game.comission_site_nick') }}%!<br>Добавь в ник <b>{{ config('app.sitename') }}</b>
 				</div>
 			</a>
 			<div class="black-txt-info " style="width: 33%;float: left;margin-right: 5px;">
