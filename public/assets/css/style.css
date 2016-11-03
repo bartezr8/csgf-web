@@ -6981,16 +6981,6 @@ div#lw-avatar img {
     width: 196px;
     overflow: hidden;
 }
-.backgroundstatus{
-    background-image: url('/assets/img/backstat.png');
-    margin-top: 1px;
-    /* float: right; */
-    cursor: pointer;
-    height: 24px;
-    width: 24px;
-    background-size: 24px 24px;
-}
-
 .language_switcher {
 	z-index: 2280;
 	width: 32px;
@@ -7002,8 +6992,6 @@ div#lw-avatar img {
     border-radius: 0px 4px 4px 0px;
 	box-shadow: rgb(30, 33, 39) 0px 0px 10px;
 }
-
-
 .player-list .chance {
 	background: rgba(15, 31, 43, 0.7) url("../img/chance-bg.png");
 	-webkit-box-shadow: 0 3px 7px rgba(0,0,0,.14), inset -2px 2px 35px rgba(0,0,0,.14);

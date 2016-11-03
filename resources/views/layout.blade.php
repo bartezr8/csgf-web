@@ -55,9 +55,9 @@
 </head>
 <body>
 <a href="http://csgf.ru" style="opacity: 0;float: left;width: 0px;" target="_blank">Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля</a>
-	<div id="page-background" style='background: url("/assets/img/11-fon-dlya-sayta.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
+	<div id="page-background" style='background: url("/assets/img/background.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
 	<div id="page-preloader">
-	<div id="page-background" style='background: url("/assets/img/11-fon-dlya-sayta.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
+	<div id="page-background" style='background: url("/assets/img/background.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
 		<div class="cssload-thecube">
 			<div class="cssload-cube cssload-c1"></div>
 			<div class="cssload-cube cssload-c2"></div>
