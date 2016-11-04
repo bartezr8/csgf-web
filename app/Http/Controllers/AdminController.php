@@ -229,7 +229,7 @@ class AdminController extends Controller
 			foreach ($words as $key => $value) {
 				$nick = str_ireplace($key, $value, $nick);
 			}
-			\DB::table('users')->where('steamid64', $u['steamid'])->update(['username' => $nick, 'avatar' => $u['avatarfull']]);
+			\DB::table('users')->where('steamid64', $u['steamid'])->update(['username' => $nick, 'avatar' => $u['avatarfull'], 'updated_at' => Carbon::now()->toDateTimeString()]);
 		}
 		return;
 	}
@@ -243,7 +243,7 @@ class AdminController extends Controller
 	public function updateNick(Request $request) {
 		$str = '';
 		$i = 0;
-		$user = \DB::table('users')->get();
+		$user = \DB::table('users')->where(/*'username', 'LIKE', '%.COM%'*/'updated_at', '<', Carbon::today()->subDay())->limit(499)->get();
 		foreach ($user as $u) {
 			if ($str != ''){ $str .= ',' . $u->steamid64; } else { $str .= '' . $u->steamid64; }
 			$i++;
