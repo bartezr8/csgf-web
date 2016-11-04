@@ -567,6 +567,7 @@ if(START) {
             $('.forceClose').removeClass('msgs-not-visible');
         })
         .on('online_add', function(data) {
+            console.log(data);
             updateSocketIO();
             if(!$("a").is("#online_id_" + data.steamid64)) {
                 $('#win-block').append("<a id='online_id_" + data.steamid64 + "' href='/user/" + data.steamid64 + "' target='_blank'><img title='" + data.username + "' class='onine_user' src=" + data.avatar + "></img></a>");

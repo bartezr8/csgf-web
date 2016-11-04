@@ -48,9 +48,19 @@ class GameController extends Controller
         $this->lastTicket = $this->redis->get('last.ticket.' . $this->game->id);
         if(is_null($this->lastTicket)) $this->lastTicket = 0;
     }
-
-    public function  __destruct(){
+    public function  __destruct()
+    {
         $this->redis->disconnect();
+    }
+    public function userinfo(Request $request)
+    {
+        $user = User::where('steamid64', $request->get('steamid'))->select('users.id','users.username','users.avatar','users.steamid64')->first();
+        if(is_null($user)){
+            $user = (object)[
+                'steamid64' => config('mod_game.bonus_bot_steamid64')
+            ];
+        }
+        return response()->json($user);
     }
     public function deposit()
     {
@@ -126,24 +136,6 @@ class GameController extends Controller
         }
         return $total_price;
     }
-    /*public function updatePrices(){
-        $items = \DB::table('items')->where('price','<',1)->get();
-        foreach ($items as $item){
-            if($item->price<1){
-                $price = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($item->market_hash_name) . '&format=json');
-                $price = json_decode($price);
-                if (isset($price->success)){
-                    $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$price->lowest_price)));
-                    $median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$price->median_price)));
-                    if($lowest<$median) $price = $lowest; else $price = $median;
-                    echo $price.' '. $item->market_hash_name .'<br>';
-                    \DB::table('items')->where('market_hash_name', $item->market_hash_name)->update(['price' => $price]);
-                }
-            }
-            sleep(1);
-        }
-        return;
-    }*/
     public function getPriceItems()
     {
         $data = file_get_contents(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
@@ -152,21 +144,6 @@ class GameController extends Controller
         if ($success != 0) {
             if(isset($response->response->items)){
                 Storage::disk('local')->put('items.txt', $data);
-                /*$usd = SteamItem::getActualCurs();
-                try{
-                    $items = $response->response->items;
-                    foreach ($items as $key => $i){
-                        $item = $items->$key->value;
-                        $price_item = $item / 100 * $usd;
-                        $dbItemInfo = Item::where('market_hash_name', $key)->first();
-                        if (!is_null($dbItemInfo)) {
-                            $dbItemInfo->price = self::get_real_price($price_item);
-                            $dbItemInfo->save();
-                        }
-                    }
-                }catch(Exception $e){
-                    return false;
-                }*/
             }
             return 'Successfully Parsing';
         } else {
@@ -250,6 +227,7 @@ class GameController extends Controller
         
 		$game->chance = $chance;
         $game->save();
+        return;
 	}
     public function getWinners()
     {
@@ -587,11 +565,6 @@ class GameController extends Controller
 				$totalItems = $user->itemsCountByGame($this->game);
 				if (($itemsCount + $totalItems) > config('mod_game.max_items')) {
 					$this->_responseErrorToSite('Максимальное кол-во предметов для - ' . config('mod_game.max_items') . '; ' . ($itemsCount + $totalItems - config('mod_game.max_items')) . ' предметов уйдет на следущую игру', $accountID, self::BET_DECLINE_CHANNEL);
-					/*$this->redis->lrem('usersQueue.list', 1, $accountID);
-					$this->redis->lrem('check.list', 0, $offerJson);
-					$this->redis->rpush('decline.list', $offer->offerid);
-					continue;*/
-                    
 				}
 			}
 			$total_price = $this->_parseItems($items, $missing, $price);

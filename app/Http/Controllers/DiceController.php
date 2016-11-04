@@ -46,9 +46,8 @@ class DiceController extends Controller {
         $this->user->money -= $request->get('sum');
         $this->user->save();
         $roll = rand(1, 6);
-        $am = \DB::table('dice')->sum('am');
-        self::_responseMessageToSite($am, '76561198014458552');
-        if (rand(0,1)!= 0) if ($am > 0){
+        //$am = \DB::table('dice')->sum('am');
+        if (rand(0, (ceil($request->get('sum')/10) - 1))!= 0){
             if($request->get('value') == 'low'){
                 $roll = rand(4, 6);
             } elseif($request->get('value') == 'high'){
@@ -59,7 +58,6 @@ class DiceController extends Controller {
                 }
             }
         }
-        
         //$roll = 6;
         $am = -$request->get('sum');
         $win = -$request->get('sum');

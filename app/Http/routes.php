@@ -67,6 +67,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/getPriceItems', 'GameController@getPriceItems');
     post('/clearOnline', 'GameController@clearOnline');
     post('/updateOnline', 'GameController@updateOnline');
+    post('/userinfo', 'GameController@userinfo');
 });
 
 /* SHOP ROUTES */
