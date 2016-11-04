@@ -2,7 +2,7 @@
 
 @section('content')
 <title>  {{ $title = \App\Http\Controllers\RefController::TITLE_UP }}</title>
-<link href="{{ asset('assets/css/ref.css') }}" rel="stylesheet">
+<link href="{{ $asset('assets/css/ref.css') }}" rel="stylesheet">
 
 <div class="content">
 	<div class="title-block">

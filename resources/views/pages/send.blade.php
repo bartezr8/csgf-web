@@ -3,8 +3,8 @@
 @section('content')
  <title>  {{ $title = \App\Http\Controllers\SendController::TITLE_UP }}</title>
 
-	 <link href="{{ asset('assets/css/support.css') }}" rel="stylesheet">
-	 <link href="{{ asset('assets/css/send.css') }}" rel="stylesheet">
+	 <link href="{{ $asset('assets/css/support.css') }}" rel="stylesheet">
+	 <link href="{{ $asset('assets/css/send.css') }}" rel="stylesheet">
 	<script>	
 
   $(document).ready(function() {

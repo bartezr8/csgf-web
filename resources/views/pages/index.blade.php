@@ -1,7 +1,7 @@
 @extends('layout')
 @section('content')
-<link href="{{ asset('assets/css/ref.css') }}" rel="stylesheet">
-<!--<script src="{{ asset('assets/js/dep.js') }}"></script>-->
+<link href="{{ $asset('assets/css/ref.css') }}" rel="stylesheet">
+<!--<script src="{{ $asset('assets/js/dep.js') }}"></script>-->
     <div class="advert-banner">
         <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ЕСЛИ ХОТИТЕ <b>ПОДДЕРЖАТЬ РУЛЕТКУ</b>: НА ЭТОЙ СТРАНИЦЕ В ЯНДЕКСЕ НАЙДИТЕ НАШУ РУЛЕТКУ И ОТКРОЙТЕ!!!</div>
         <a href="{{ $url }}" target="_blank">КЛИК СЮДА</a>

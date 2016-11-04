@@ -2,9 +2,9 @@
 
 @section('content')
 
-<link href="{{ asset('assets/css/double.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/css/ref.css') }}" rel="stylesheet">
-<script src="{{ asset('assets/js/double.js') }}"></script>
+<link href="{{ $asset('assets/css/double.css') }}" rel="stylesheet">
+<link href="{{ $asset('assets/css/ref.css') }}" rel="stylesheet">
+<script src="{{ $asset('assets/js/double.js') }}"></script>
 
     <div class="content">
 

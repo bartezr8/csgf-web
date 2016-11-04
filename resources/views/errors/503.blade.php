@@ -16,7 +16,7 @@
                 width: 100%;
                 font-family: 'Roboto', sans-serif;
                 font-size:14px;
-                background: #F9FAFB url({{ asset('assets/img/bg.png') }});
+                background: #F9FAFB url({{ $asset('assets/img/bg.png') }});
                 color: #333;
                 display: table;
                 font-weight: 100;
@@ -42,7 +42,7 @@
     <body>
         <div class="container">
             <div class="content">
-                <img src="{{ asset('assets/img/logo.png') }}" alt=""/>
+                <img src="{{ $asset('assets/img/logo.png') }}" alt=""/>
                 <div class="title">Coming Soon!</div>
             </div>
         </div>

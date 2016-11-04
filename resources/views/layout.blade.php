@@ -14,21 +14,21 @@
     <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
     <meta name="viewport" content="width=1100" />
     <meta name="csrf-token" content="{!!  csrf_token()   !!}">
-    <link rel="icon" type="image/png" href="{{ asset('assets/img/icon.png') }}"/>
-    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/chat.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/perfect-scrollbar.css') }}" rel="stylesheet">
-	<link href="{{ asset('assets/css/awesome.css') }}" rel="stylesheet">
-	<link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ $asset('assets/img/icon.png') }}"/>
+    <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
+    <link href="{{ $asset('assets/css/perfect-scrollbar.css') }}" rel="stylesheet">
+	<link href="{{ $asset('assets/css/awesome.css') }}" rel="stylesheet">
+	<link href="{{ $asset('assets/css/fonts.css') }}" rel="stylesheet">
     <!--link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=latin,cyrillic' rel='stylesheet' type='text/css' /-->
-    <script src="{{ asset('assets/js/main.js') }}" ></script>
-    <script src="{{ asset('assets/js/vendor.js') }}" ></script>
-	<script src="{{ asset('assets/js/jquery-ui.js') }}" ></script>
-	<script src="{{ asset('assets/js/jquery.cookie.js') }}" ></script>
-	<script src="{{ asset('assets/js/jquery.transform.js') }}" ></script>
+    <script src="{{ $asset('assets/js/main.js') }}" ></script>
+    <script src="{{ $asset('assets/js/vendor.js') }}" ></script>
+	<script src="{{ $asset('assets/js/jquery-ui.js') }}" ></script>
+	<script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
+	<script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
 	<script charset="UTF-8" src="//cdn.sendpulse.com/js/push/afa6e6a9babb8fca7f18d1d432729100_0.js" async></script>
-	<!--script src="{{ asset('assets/js/smooth-scroll.js') }}" ></script-->
-	<script src="{{ asset('assets/js/jquery.spincrement.js') }}" ></script>
+	<!--script src="{{ $asset('assets/js/smooth-scroll.js') }}" ></script-->
+	<script src="{{ $asset('assets/js/jquery.spincrement.js') }}" ></script>
     <script type="text/javascript" src="//vk.com/js/api/openapi.js?129"></script>
     <script>
     @if(!Auth::guest())
@@ -37,7 +37,7 @@
 		const IS_MODER = '{{ $u->is_moderator }}';
 		const IS_ADMIN = '{{ $u->is_admin }}';
 	@else 
-		var avatar = "{{ asset('assets/img/blank.jpg') }}";
+		var avatar = "{{ $asset('assets/img/blank.jpg') }}";
         const USER_ID = '76561197960265728';
 		const IS_MODER = 0;
 		const IS_ADMIN = 0;
@@ -75,7 +75,7 @@
 		<div class="header-container">
 			<div class="header-top">
 				<div class="logotype active">
-					<a class="wobble-horizontal" href="/"><img class="logo" alt="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo" src="{{ asset('assets/img/logo-ru.png') }}"></a>
+					<a class="wobble-horizontal" href="/"><img class="logo" alt="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo" src="{{ $asset('assets/img/logo-ru.png') }}"></a>
 				</div>
 				<div class="header-menu">
 					<ul id="headNav" class="list-reset">
@@ -370,8 +370,8 @@
 		</div>
 	</div>
 </div>
-<script src="{{ asset('assets/js/app.js') }}" ></script>
-<script src="{{ asset('assets/js/chat.js') }}" ></script>
+<script src="{{ $asset('assets/js/app.js') }}" ></script>
+<script src="{{ $asset('assets/js/chat.js') }}" ></script>
 
 <script>
     @if(!Auth::guest())

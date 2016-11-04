@@ -1,8 +1,8 @@
 @extends('layout')
 
 @section('content')
-    <link rel="stylesheet" href="{{ asset('assets/css/shop.css') }}"/>
-    <script src="{{ asset('assets/js/shop.js') }}"></script>
+    <link rel="stylesheet" href="{{ $asset('assets/css/shop.css') }}"/>
+    <script src="{{ $asset('assets/js/shop.js') }}"></script>
 
 	<div class="title-block">
 		<h2>

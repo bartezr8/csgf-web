@@ -2,8 +2,8 @@
 
 @section('content')
 <title>  {{ $title = 'Раздача | ' }}</title>
-<link href="{{ asset('assets/css/support.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/css/send.css') }}" rel="stylesheet">
+<link href="{{ $asset('assets/css/support.css') }}" rel="stylesheet">
+<link href="{{ $asset('assets/css/send.css') }}" rel="stylesheet">
 <div class="content">
 	<div class="title-block">
 		<h2 style="color: #ffffff;">Раздача</h2>

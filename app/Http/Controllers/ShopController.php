@@ -540,7 +540,7 @@ class ShopController extends Controller {
 						'accessToken' => $this->user->accessToken,
 					];
 
-					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&SHOP_SECRET=' . config('mod_shop.shop_strade_secret'));
+					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&SHOP_SECRET=' . config('app.secretKey'));
 					$out = json_decode($out, true);
 					if($out['success'] == true) {
 						$id = \DB::table('shop_offers')->insertGetId([

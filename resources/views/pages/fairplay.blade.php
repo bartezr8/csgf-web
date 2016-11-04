@@ -2,8 +2,8 @@
 
 @section('content')
     <div class="content-block">
-        <script src="{{ asset('assets/js/md5.min.js') }}"></script>
-        <script src="{{ asset('assets/js/check.js') }}"></script>
+        <script src="{{ $asset('assets/js/md5.min.js') }}"></script>
+        <script src="{{ $asset('assets/js/check.js') }}"></script>
         <div class="honest-page">
 
             <div class="title-block">
