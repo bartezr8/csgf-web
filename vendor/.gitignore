@@ -1,0 +1,3 @@
+*
+!.gitignore
+!vendor/laravel/framework/src/Illuminate/Cache/RedisStore.php
