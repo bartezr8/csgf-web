@@ -49,8 +49,7 @@
     socket.on('connect', function() {
         socket.emit('steamid64', USER_ID);
         CONNECT = true;
-    })
-    .on('disconnect', function() {});
+    }).on('disconnect', function() {});
     </script>
 </head>
 <body>
@@ -112,7 +111,7 @@
 				</div>
 
 				<div class="right-block">
-				@if(Auth::guest())
+                    @if(Auth::guest())
 					<div class="profile">
 						<a href="{{ route('login') }}" class="authorization">войти через steam</a>
 						<form action="/auth" method="GET">
@@ -123,36 +122,35 @@
 							</div>
 						</form>
 					</div>
-				@else
-				<div class="profile">
-					   <div class="profile-block">
-							<div class="user-avatar">
-								<img src="{{ $u->avatar }}">
-							</div>
-							<div class="profile-wrap-block">
-								<div class="profile-head">
-									<div class="user-login">{{ $u->username }}</div>
-									<a href="{{ route('logout') }}" class="exit">выйти</a>
-								</div>
+                    @else
+                    <div class="profile">
+                            <div class="profile-block">
+                            <div class="user-avatar">
+                                <img src="{{ $u->avatar }}">
+                            </div>
+                            <div class="profile-wrap-block">
+                                <div class="profile-head">
+                                    <div class="user-login">{{ $u->username }}</div>
+                                    <a href="{{ route('logout') }}" class="exit">выйти</a>
+                                </div>
 
-								<div class="profile-footer">
-									<ul class="list-reset">
-										<li><a href="/user/{{ $u->steamid64 }}" target="_blank">мой профиль</a></li>
-										<!--li><a href="/send" target="_blank">перевод</a></li-->
-										<li><a href="{{ route('my-inventory') }}" target="_blank">инвентарь</a></li>
-										<li><a href="/ref" target="_blank">реферал</a></li>
-										@if($u->is_moderator==1)
-										<li><a href="/admin" target="_blank">панель</a></li>
-										@endif
+                                <div class="profile-footer">
+                                    <ul class="list-reset">
+                                        <li><a href="/user/{{ $u->steamid64 }}" target="_blank">мой профиль</a></li>
+                                        <!--li><a href="/send" target="_blank">перевод</a></li-->
+                                        <li><a href="{{ route('my-inventory') }}" target="_blank">инвентарь</a></li>
+                                        <li><a href="/ref" target="_blank">реферал</a></li>
+                                        @if($u->is_moderator==1)
+                                        <li><a href="/admin" target="_blank">панель</a></li>
+                                        @endif
                                         <li><a style="font-size: 14px;font-weight: bold;color: #d1ff78;" onclick="$('#addBalMod').arcticmodal();" target="_blank">+ <span class="userBalance" style="color: #d1ff78;">{{ $u->money }}</span> р.</a></li>
-									</ul>
-							 </div>
-						   </div>
-						</div>
-					  </div>
-				   @endif
-					</div>
-
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
 			</div>
 		</div>
 	</header>
@@ -219,7 +217,7 @@
 				<a href="//www.free-kassa.ru/"><img style="height: 19px;" src="//www.free-kassa.ru/img/fk_btn/16.png"></a>
 			</div>
 			<div style="float: left; width: 50%; text-align: center;">
-				© CSGF.RU, 2016 | Все права защищены.
+				© CSGF.RU, 2016 | Все права защищены. <a href="https://yadi.sk/d/XKgD5YSoyF8MM" target="_blank">Автобот</a>
 			</div>
 			<div style="float: left; text-align: right; width: 25%; margin-top: -6px;">
 				Наши группы:
@@ -231,7 +229,6 @@
 	<div id="toTop" > ▲ Вверх ▲ </div>
 	<div id="toDown" > ▼ Вниз ▼ </div>
 	<a id="toTrade" href="" class="heartbeat" target="_blank" > ♥ Забрать трейд ♥ </a>
-	
 </div>
 </body>
 </div>

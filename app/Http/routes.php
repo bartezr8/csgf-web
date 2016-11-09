@@ -72,7 +72,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 
 /* SHOP ROUTES */
 Route::group(['middleware' => 'auth'], function () {
-	get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
+	get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index', 'middleware' => 'access:admin']);
     get('/shop/deposit', ['as' => 'shop_deposit', 'uses' => 'ShopController@deposit']);
 	get('/shop/history', ['as' => 'cards-history', 'uses' => 'ShopController@history']);
 	post('/shop/buy', ['as' => 'settings.update', 'uses' => 'ShopController@buyItem']);
@@ -84,6 +84,7 @@ Route::group(['middleware' => 'auth'], function () {
 	post('/shop/checkOffers', ['as' => 'shop_checkOffers', 'uses' => 'ShopController@checkOffers']);
 });
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
+    post('/shop/checkAllOffers', 'ShopController@checkAllOffers');
 	post('/shop/newItems', 'ShopController@addItemsToSale');
 	post('/shop/checkShop', 'ShopController@checkShop');
     post('/shop/setItemStatus', 'ShopController@setItemStatus');

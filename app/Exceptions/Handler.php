@@ -30,7 +30,6 @@ class Handler extends ExceptionHandler
     {
         return parent::report($e);
     }
-
     /**
      * Render an exception into an HTTP response.
      *
@@ -42,7 +41,7 @@ class Handler extends ExceptionHandler
     {
         if ($e instanceof MethodNotAllowedHttpException)
         {
-            App::abort(404);
+            abort(404);
         }
         return parent::render($request, $e);
 
