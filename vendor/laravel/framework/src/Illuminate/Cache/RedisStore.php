@@ -64,13 +64,13 @@ class RedisStore extends TaggableStore implements Store
      * @param  int     $minutes
      * @return void
      */
-    public function put($key, $value, $minutes)
+    public function put($key, $value, $seconds)
     {
         $value = is_numeric($value) ? $value : serialize($value);
 
-        $minutes = max(1, $minutes);
+        $seconds = max(1, $seconds);
 
-        $this->connection()->setex($this->prefix.$key, $minutes * 60, $value);
+        $this->connection()->setex($this->prefix.$key, $seconds /** 60*/, $value);
     }
 
     /**
