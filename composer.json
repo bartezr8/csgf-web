@@ -7,7 +7,7 @@
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.1.*",
-        "invisnik/laravel-steam-auth": "^2.0.0",
+        "invisnik/laravel-steam-auth": "2.*",
         "pragmarx/google2fa": "^0.7.1",
         "predis/predis": "~1.0",
         "barryvdh/laravel-ide-helper": "^2.2",

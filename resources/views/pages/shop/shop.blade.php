@@ -4,40 +4,40 @@
     <link rel="stylesheet" href="{{ $asset('assets/css/shop.css') }}"/>
     <script src="{{ $asset('assets/js/shop.js') }}"></script>
 
-	<div class="title-block">
-		<h2>
-			Магазин
-		</h2>
-	</div>
-	<div class="buy-cards-container" style="padding-top: 10px;">
-		<div class="buy-cards-block">
-			<div class="user-profile-container" style="padding-top: 0px; width: 165px; margin: 0px 0px 0px; float: left; margin-right: 10px;">
-				<div class="user-profile-head" style="padding: 5px 5px 5px;">
-					<div class="left-block" style="width: inherit;">
-						<div class="user-info" style="padding-top: 0px; margin-right: 0px;">
-							<div class="reputation-container">
-								Уровень:
-								<div class="reputation-block">
-									{{ $betssum }}
-									<a id="user-level-btn" class="popover-btn"></a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="msg-wrap" style="width:835px; float: left;">
-				<div class="icon-warning"></div>
-				<div class="msg-green msg-mini" id="whenLoadingOrNoCardsOrTitle">На вашем аккаунте есть средства за которые вы можете покупать предметы или карточки!</div>
-			</div>
-		</div>
-		<div style="overflow: hidden;">
+    <div class="title-block">
+        <h2>
+            Магазин
+        </h2>
+    </div>
+    <div class="buy-cards-container" style="padding-top: 10px;">
+        <div class="buy-cards-block">
+            <div class="user-profile-container" style="padding-top: 0px; width: 165px; margin: 0px 0px 0px; float: left; margin-right: 10px;">
+                <div class="user-profile-head" style="padding: 5px 5px 5px;">
+                    <div class="left-block" style="width: inherit;">
+                        <div class="user-info" style="padding-top: 0px; margin-right: 0px;">
+                            <div class="reputation-container">
+                                Уровень:
+                                <div class="reputation-block">
+                                    {{ $betssum }}
+                                    <a id="user-level-btn" class="popover-btn"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="msg-wrap" style="width:835px; float: left;">
+                <div class="icon-warning"></div>
+                <div class="msg-green msg-mini" id="whenLoadingOrNoCardsOrTitle">На вашем аккаунте есть средства за которые вы можете покупать предметы или карточки!</div>
+            </div>
+        </div>
+        <div style="overflow: hidden;">
             <div class="buy-cards-block" style="margin-top: 0px;">
                 <div class="shop-item-filters">
                     <div class="left-totalitems" style="margin-top: 3px;">
                        Ваши выбранные предметы | Предметов: <span id="cart-total">0</span> | Сумма: <span id="cart-total-price">0</span>
                     </div>
-                    <a onclick="getitems()" class="myhistorylink" style="margin-top: 3px;">Купить предметы</a>
+                    <a class="myhistorylink" id="get-cart" style="margin-top: 3px;">Купить предметы</a>
                 </div>
             </div>
             <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;"></div>
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div id="items-list" class="items-list" style="display: block;"></div>
-		</div>
+        </div>
         <script type="text/template" id="item-template">
             <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" data-id="<%= id %>">
                 <div class="deposit-item-wrap">
@@ -72,38 +72,38 @@
                 </div>
             </div>
         </script>
-	</div>
+    </div>
     
     <!-- Chat -->
     <div id="chatHeader" style="display: none;">Чат</div>
     <div id="chatContainer" class="chat-with-prompt" style="display: none;box-shadow: 0 0 10px #1E2127;">
         <span id="chatClose" class="chat-close"></span>
         <div id="chatHeader">Чат</div>
-			<div class="chat-prompt" id="chat-prompt">
-				<div class="chat-prompt-top">Чат сайта:</div>
-			</div>
+            <div class="chat-prompt" id="chat-prompt">
+                <div class="chat-prompt-top">Чат сайта:</div>
+            </div>
         <div id="chatScroll">
             <div id="messages">
             </div>
         </div>
-		@if(!Auth::guest())
-		<form action="#" class="chat-form">
-			<textarea id="chatInput" maxlength="255" placeholder="Введите сообщение"></textarea>
-			<div class="chat-actions">
-				<a id="chatRules" class="chat-rules">Правила чата</a>
-				
-				<div class="smiles">
-					<div class="sub">
+        @if(!Auth::guest())
+        <form action="#" class="chat-form">
+            <textarea id="chatInput" maxlength="255" placeholder="Введите сообщение"></textarea>
+            <div class="chat-actions">
+                <a id="chatRules" class="chat-rules">Правила чата</a>
+                
+                <div class="smiles">
+                    <div class="sub">
                         <?php for($i = 1; $i< 514; $i++)echo "<img src=\"/assets/img/smiles/smile (".$i.").png\" id=\"smile\" style=\"background:none;\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
-					</div>
-					<span></span>
-				</div>
-				
-			</div>
-			<button class="chat-submit-btn">Отправить</button>
-		</form>
+                    </div>
+                    <span></span>
+                </div>
+                
+            </div>
+            <button class="chat-submit-btn">Отправить</button>
+        </form>
         @else
-		<a id="notLoggedIn" href="{{ route('login') }}">Войти через Steam</a>
+        <a id="notLoggedIn" href="{{ route('login') }}">Войти через Steam</a>
         @endif
 
         <div style="display: none;">
@@ -129,7 +129,7 @@
                                         <li style="margin-bottom: 5px;">Оскорблять других участников;</li>
                                         <li style="margin-bottom: 5px;">Оставлять ссылки на сторонние ресурсы;</li>
                                         <li style="margin-bottom: 5px;">Выпрашивать скины у других участников;</li>
-										<li style="margin-bottom: 5px;">Писать слово подкрутка или обвинять админов в подкрутке;</li>
+                                        <li style="margin-bottom: 5px;">Писать слово подкрутка или обвинять админов в подкрутке;</li>
                                         <li style="margin-bottom: 0px;">Оставлять сообщения о предложении покупки, продажи или обмена скинов.</li>
                                     </ul>
                                 </div>
@@ -141,11 +141,11 @@
         </div>
     </div>
     <!-- Chat END -->
-	<script>
-		function updateBalance() {
-			$.post('/getBalance', function (data) {
-				$('.userBalance').text(data);
-			});
-		}
-	</script>
+    <script>
+        function updateBalance() {
+            $.post('/getBalance', function (data) {
+                $('.userBalance').text(data);
+            });
+        }
+    </script>
 @endsection

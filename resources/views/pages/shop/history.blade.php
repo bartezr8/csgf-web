@@ -44,7 +44,7 @@
                                         @if($item->status == \App\Shop::ITEM_STATUS_SOLD)
                                             Отправка предмета
                                         @elseif($item->status == \App\Shop::ITEM_STATUS_SEND)
-											Предмет отправлен
+                                            Предмет отправлен
                                         @elseif($item->status == \App\Shop::ITEM_STATUS_FOR_SALE)
                                             Обмен истек
                                         @elseif($item->status == \App\Shop::ITEM_STATUS_NOT_FOUND)
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-		
+        
         <div class="user-history-block bid-history" style="padding-top: 10px;">
 
             <div class="title-block">
@@ -83,9 +83,9 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
-								@if($u->is_admin==1)
-								<th>Пользователь</th>
-								@endif
+                                @if($u->is_admin==1)
+                                <th>Пользователь</th>
+                                @endif
                                 <th>Дата</th>
                                 <th>Тип</th>
                                 <th>Цена</th>
@@ -96,20 +96,20 @@
                             @forelse($deposits as $deposit)
                                 <tr>
                                     <td>{{ $deposit->id }}</td>
-									@if($u->is_admin==1)
-									<td>{{ $deposit->user_id }}</td>
-									@endif
+                                    @if($u->is_admin==1)
+                                    <td>{{ $deposit->user_id }}</td>
+                                    @endif
                                     <td>{{ $deposit->date }}</td>
-									<td>@if($deposit->type == 0)
+                                    <td>@if($deposit->type == 0)
                                             Депозит скинами
-										@elseif($deposit->type == 3)
-											Пополнение баланса
+                                        @elseif($deposit->type == 3)
+                                            Пополнение баланса
                                         @else
-											Вывод средств
+                                            Вывод средств
                                         @endif
-									</td>
+                                    </td>
                                     <td>@if($deposit->type == 1)- @endif{{ $deposit->price }} руб</td>
-									<td>Принят</td>
+                                    <td>Принят</td>
                                 </tr>
                             @empty
                                 <tr>

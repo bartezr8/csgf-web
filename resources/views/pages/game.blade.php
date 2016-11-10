@@ -25,10 +25,10 @@
                         <div class="text-wrap">
                             <span class="color-orange">банк</span>
                             <span class="weight-normal">:</span>
-							<span class="color-white">
-								{{ round($game->price) }}
-								<span class="money" style="color: #b3e5ff;">руб</span>
-							</span>
+                            <span class="color-white">
+                                {{ round($game->price) }}
+                                <span class="money" style="color: #b3e5ff;">руб</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -75,19 +75,19 @@
             <div class="current-chance-block items" style="display: none;">
                 <div class="current-chance-wrap">
                     @foreach($bets as $bet)
-						@foreach(json_decode($bet->items) as $i)
-						@if(!isset($i->img))
-							<div class="deposit-item {{ $i->rarity }}" market_hash_name="" title="{{ $i->name }}" data-toggle="tooltip">
-								<div class="deposit-item-wrap">
-										<div class="img-wrap"><img
-											src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/100fx100f">
-										</div>
-								</div>
-								<div class="deposit-price">{{ $i->price }} <span>руб</span>
-								</div>
-							</div>
-						@endif
-						@endforeach
+                        @foreach(json_decode($bet->items) as $i)
+                        @if(!isset($i->img))
+                            <div class="deposit-item {{ $i->rarity }}" market_hash_name="" title="{{ $i->name }}" data-toggle="tooltip">
+                                <div class="deposit-item-wrap">
+                                        <div class="img-wrap"><img
+                                            src="https://steamcommunity-a.akamaihd.net/economy/image/class/{{ config('mod_game.appid') }}/{{ $i->classid }}/100fx100f">
+                                        </div>
+                                </div>
+                                <div class="deposit-price">{{ $i->price }} <span>руб</span>
+                                </div>
+                            </div>
+                        @endif
+                        @endforeach
                     @endforeach
                 </div>
             </div>

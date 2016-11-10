@@ -212,7 +212,7 @@ function toggleChat() {
     }
     //Set viewport height
     setTimeout(updateChatScroll, 0);
-    //var timerChatCheck = setInterval(updateChatScroll, 1000);
+    var timerChatCheck = setInterval(updateChatScroll, 1000);
     //Call perfectBar
     chatScroll.perfectScrollbar();
     // chatScroll.scrollTop( chatScroll.prop( "scrollHeight" ) );

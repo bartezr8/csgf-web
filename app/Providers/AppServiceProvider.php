@@ -16,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
         View::share('asset',function($path){
             return self::cdn($path);
         });
-        //
     }
 
     /**

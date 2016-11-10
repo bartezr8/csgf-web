@@ -3,7 +3,7 @@
 return [
 
     'is_cdn' => true,
-    'cdn_url' => 'http://csgf.ru/',
+    'cdn_url' => 'http://cdn.csgf.ru/',
     /*
     |--------------------------------------------------------------------------
     | View Storage Paths
@@ -14,7 +14,7 @@ return [
     | the usual Laravel view path has already been registered for you.
     |
     */
-
+    
     'paths' => [
         realpath(base_path('resources/views')),
     ],

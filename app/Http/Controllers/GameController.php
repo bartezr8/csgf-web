@@ -169,6 +169,7 @@ class GameController extends Controller
 			'рулетки%20для%20новичков%20кс%20го%20минимальная%20ставка%201%20рубль'
 		];
         $game = Game::orderBy('id', 'desc')->first();
+        if (is_null($game)) $game = $this->newGame();
         $bets = $game->bets()->with(['user', 'game'])->get()->sortByDesc('created_at');
         $user_chance = $this->_getUserChanceOfGame($this->user, $game);
         $chances = json_encode($this->_getChancesOfGame($game));
@@ -1015,74 +1016,6 @@ class GameController extends Controller
 		}
 		return response()->json($has);
     }	
-	
-	public static function getitems($user){
-		$jsonInventory = file_get_contents('http://steamcommunity.com/profiles/' . $user->steamid64 . '/inventory/json/730/2?l=russian');
-		$items = json_decode($jsonInventory, true);
-		$itms = '';
-		if ($items['success']) {
-			foreach ($items['rgDescriptions'] as $class_instance => $item) {
-				$info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-				if (is_null($info)) {
-					$info = new SteamItem($item);
-					if ($info->price != null) {
-						Item::create((array)$info);
-					}
-				}
-				$items['rgDescriptions'][$class_instance]['price'] = $info->price;
-				if ($itms == ''){
-					$itms = $items['rgDescriptions'][$class_instance]['classid'];
-				} else {
-					$itms = $itms . ',' . $items['rgDescriptions'][$class_instance]['classid'];
-				}
-			}
-		}
-		return $itms;
-    }
-	
-	public static function forceupdinv($usr){
-		$items = self::getitems($usr);
-		$user = User::find($usr->id);
-        $user->items = $items;
-        $user->save();
-        return $items;
-    }
-	
-	public function getitemsF(){
-		$items = $this->user->items;
-		if (!$items || !\Cache::has('inv_' . $this->user->steamid64)) {
-			$items = self::forceupdinv($this->user);
-			\Cache::put('inv_' . $this->user->steamid64, $items, 60);
-		}
-		$assetids = explode(',', $items);
-		$items = [];
-		foreach ($assetids as $classid){
-			$info = Item::where('classid', $classid)->first();
-			$info = $info;
-			$items[] = [
-                $info['classid'], 
-				$info['classid'], 
-				$info['name'], 
-				$info['price'], 
-				$info['classid'], 
-				$info['name'], 
-				$info['rarity'], 
-				$info['rarity']
-            ];
-			//$info;
-		}
-
-        return response()->json($items);
-    }
-	
-	public function changebd(){
-		if ($this->user->background == 1) {
-			\DB::table('users')->where('id', $this->user->id)->update(['background' => 0]);
-		} else {
-			\DB::table('users')->where('id', $this->user->id)->update(['background' => 1]);
-		}
-        return;
-    }
 
 	public function curcomm(){
 		$my_comission = config('mod_game.comission');

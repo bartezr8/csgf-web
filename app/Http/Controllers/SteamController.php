@@ -24,34 +24,32 @@ class SteamController extends Controller
 		$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
         $words = GameController::object_to_array(json_decode($words));
         if ($this->steamAuth->validate()) {
-            $steamID = $this->steamAuth->getSteamId();
-            $user = User::where('steamid64', $steamID)->first();
-            if (!is_null($user)) {
-                $steamInfo = $this->steamAuth->getUserInfo();
-				$nick = $steamInfo->getNick();
-				foreach ($words as $key => $value) {
-					$nick = str_ireplace($key, $value, $nick);
-				}
-                \DB::table('users')->where('steamid64', $steamID)->update(['username' => $nick, 'avatar' => $steamInfo->getProfilePictureFull()]);
-            } else {
-                $steamInfo = $this->steamAuth->getUserInfo();
-				$nick = $steamInfo->getNick();
-				foreach ($words as $key => $value) {
-					$nick = str_ireplace($key, $value, $nick);
-				}
-                $user = User::create([
-                    'username' => $nick,
-                    'avatar' => $steamInfo->getProfilePictureFull(),
-                    'steamid' => $steamInfo->getSteamID(),
-                    'steamid64' => $steamInfo->getSteamID64(),
-                ]);
-
+            $info = $this->steamAuth->getUserInfo();
+            if (!is_null($info)) {
+                $user = User::where('steamid64', $info->steamID64)->first();
+                if (is_null($user)) {
+                    $nick = $info->personaname;
+                    foreach ($words as $key => $value) {
+                        $nick = str_ireplace($key, $value, $nick);
+                    }
+                    $user = User::create([
+                        'username' => $nick,
+                        'avatar' => $info->avatarfull,
+                        'steamid' => $info->steamID,
+                        'steamid64' => $info->steamID64,
+                    ]);
+                } else {
+                    $nick = $info->personaname;
+                    foreach ($words as $key => $value) {
+                        $nick = str_ireplace($key, $value, $nick);
+                    }
+                    \DB::table('users')->where('steamid64', $info->steamID64)->update(['username' => $nick, 'avatar' => $info->avatarfull]);
+                }
+                Auth::login($user, true);
+                return redirect('/'); // redirect to site
             }
-            Auth::login($user, true);
-            return redirect('/');
-        } else {
-            return $this->steamAuth->redirect();
         }
+        return $this->steamAuth->redirect();
     }
 	
 	public function auth(Request $request){
