@@ -359,7 +359,6 @@ class PagesController extends Controller
 			return $items;
         }
     }
-
     public function pay(Request $request)
     {
         $amount = $request->get('sum');
@@ -370,5 +369,13 @@ class PagesController extends Controller
         $hash = md5(config('pay.freekassa_id').':'.$amount.':'.config('pay.freekassa_s1').':'.$id);
         header('Location: https://www.free-kassa.ru/merchant/cash.php?m='.config('pay.freekassa_id').'&oa='.$amount.'&o='.$id.'&s='.$hash);
 		exit();
+    }   
+    public function rand_url()
+    {
+        $urls = config('mod_game.urls');
+		$rand = rand(0, (count($urls) - 1));
+		$url = 'https://yandex.ru/search/?text='.urlencode($urls[$rand]);
+        header('Location: '.$url);
+		exit();
     }
-}//&paySystem=robokassa
+}

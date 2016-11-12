@@ -12,10 +12,11 @@ get('/history', ['as' => 'history', 'uses' => 'PagesController@history']);
 get('/escrow', ['as' => 'escrow', 'uses' => 'PagesController@escrow']);
 post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
 get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
+get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
+
 get('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
-
 get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
 
 Route::group(['middleware' => 'auth'], function () {
@@ -72,11 +73,11 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 
 /* SHOP ROUTES */
 get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
+post('/shop/items', ['as' => 'shop_items', 'uses' => 'ShopController@shop']);
 Route::group(['middleware' => 'auth'], function () {
     get('/shop/deposit', ['as' => 'shop_deposit', 'uses' => 'ShopController@deposit']);
     get('/shop/history', ['as' => 'cards-history', 'uses' => 'ShopController@history']);
     post('/shop/buy', ['as' => 'settings.update', 'uses' => 'ShopController@buyItem']);
-    post('/shop/items', ['as' => 'shop_items', 'uses' => 'ShopController@shop']);
     post('/shop/getcart', ['as' => 'getcart', 'uses' => 'ShopController@getcart']);
     post('/shop/sellitems', ['as' => 'sellitems', 'uses' => 'ShopController@sellitems']);
     post('/shop/myinventory', ['as' => 'cards-myinventory', 'uses' => 'ShopController@myinventory']);

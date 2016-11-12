@@ -4,7 +4,7 @@
 <!--<script src="{{ $asset('assets/js/dep.js') }}"></script>-->
     <div class="advert-banner">
         <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ЕСЛИ ХОТИТЕ <b>ПОДДЕРЖАТЬ РУЛЕТКУ</b>: НА ЭТОЙ СТРАНИЦЕ В ЯНДЕКСЕ НАЙДИТЕ НАШУ РУЛЕТКУ И ОТКРОЙТЕ!!!</div>
-        <a href="{{ $url }}" target="_blank">КЛИК СЮДА</a>
+        <a href="{{ route('rand_url') }}" target="_blank">КЛИК СЮДА</a>
     </div>
     <div class="panel-winner" id="panel-winner" style="/*display: none;*/">
         <!-- Последний  победитель -->

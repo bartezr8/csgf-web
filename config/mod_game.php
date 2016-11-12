@@ -24,5 +24,6 @@ return [
     'bonus_bot_steamid64' => 76561197960265728,
     
     'backpack_key' => '5611565eb98d880409cc1ac0',       // Ключ для сайта backpack.tf
-    'bot_trade_link' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B'
+    'bot_trade_link' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B',
+    'urls' => ['рулетка кс го для бомжей','csgf','рулетка для бомжей','рулетка кс го','кс го рулетка для бомжей','рулетки кс го для бомжей','рулетки для бомжей','рулетки кс го','рулетка кс го от 1 рубля','рулетки кс го от 1 рубля']
 ];

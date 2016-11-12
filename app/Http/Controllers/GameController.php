@@ -153,32 +153,14 @@ class GameController extends Controller
     }
     public function currentGame()
     {
-		$urls = [
-			'csgf',
-			'рулетки%20кс%20го%20от%201%20рубля',
-			'рулетка%20для%20бомжей',
-			'рулетка%20кс%20го%20для%20бомжей',
-			'кс%20го%20рулетка%20для%20бомжей',
-			'рулетка%20кс%20го%20бонус%20бот',
-			'csgf.ru',
-			'рулетка%20cs%20go%20для%20бомжей%20и%20новичков%20с%20минимальной%20ставкой%201%20рубль',
-			'рулетка%20кс%20го%20от%201%20рубля',
-			'csgf.',
-			'ксгф',
-			'кс%20го%20рулетки%20для%20бомжей',
-			'рулетки%20для%20новичков%20кс%20го%20минимальная%20ставка%201%20рубль'
-		];
         $game = Game::orderBy('id', 'desc')->first();
         if (is_null($game)) $game = $this->newGame();
         $bets = $game->bets()->with(['user', 'game'])->get()->sortByDesc('created_at');
-        $user_chance = $this->_getUserChanceOfGame($this->user, $game);
+        if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
         $chances = json_encode($this->_getChancesOfGame($game));
         if (!is_null($this->user)) $user_items = $this->user->itemsCountByGame($game);
-		$html = '';
-		$rand = rand(0, (count($urls) - 1));
-		$url = 'https://yandex.ru/search/?text='.$urls[$rand];
 		parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'url'));
+        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items'));
     }
     public function getLastGame()
     {
