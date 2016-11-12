@@ -138,7 +138,7 @@ class GameController extends Controller
     }
     public function getPriceItems()
     {
-        $data = file_get_contents(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
+        $data = self::curl(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
         $response = json_decode($data);
         $success = $response->response->success;
         if ($success != 0) {
@@ -987,7 +987,7 @@ class GameController extends Controller
 	
 	public static function havegame($user){
 		$has = false;
-		$jsonResponse = file_get_contents('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=' . env('STEAM_APIKEY','') . '&steamid=' . $user->steamid64 . '&format=json');
+		$jsonResponse = self::curl('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=' . env('STEAM_APIKEY','') . '&steamid=' . $user->steamid64 . '&format=json');
 		$Response = json_decode($jsonResponse, true);
 		$jsonGames = $Response['response'];
 		if(isset($jsonGames['games'])){

@@ -231,7 +231,7 @@ class ShopController extends Controller {
 		$success = true;
 		$returnValue = [];
 
-		$jsonInventory = file_get_contents('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
+		$jsonInventory = self::curl('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
 		$items = json_decode($jsonInventory, true);
 		if ($items['success']) {
 			foreach ($items['rgInventory'] as $id => $value) {
@@ -412,7 +412,7 @@ class ShopController extends Controller {
 			$value = [
 				'tradeid' => $aoffer->tradeid
 			];
-			$jsonInventory = file_get_contents('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
+			$jsonInventory = self::curl('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
 			$steam = json_decode($jsonInventory, true);
 			$out = $steam['response']['offer'];
 			if(isset($out['trade_offer_state']) && isset($out['items_to_receive'])) {
@@ -427,7 +427,7 @@ class ShopController extends Controller {
 					foreach ($out['items_to_receive'] as $i){
 						$cids[] = $i['classid'];
 					}
-					$botinv = file_get_contents('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
+					$botinv = self::curl('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
 					$botinv = json_decode($botinv, true);
 					if(isset($botinv['rgInventory']) && isset($botinv['rgDescriptions'])){
 						$returnValue = [];
@@ -535,7 +535,7 @@ class ShopController extends Controller {
             \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 1]);
             $user = User::find($aoffer->user_id);
             $value = ['tradeid' => $aoffer->tradeid];
-            $jsonInventory = file_get_contents('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
+            $jsonInventory = self::curl('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
             $steam = json_decode($jsonInventory, true);
             $out = $steam['response']['offer'];
             if(!isset($out['trade_offer_state']) || !isset($out['items_to_receive'])) {
@@ -560,7 +560,7 @@ class ShopController extends Controller {
                     foreach ($out['items_to_receive'] as $i){
                         $cids[] = $i['classid'];
                     }
-                    $botinv = file_get_contents('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
+                    $botinv = self::curl('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
                     $botinv = json_decode($botinv, true);
                     if(!isset($botinv['rgInventory']) || !isset($botinv['rgDescriptions'])){
                         \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
