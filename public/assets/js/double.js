@@ -1,5 +1,5 @@
 if(START) {
-    dsocket = io.connect(':2083');
+    dsocket = io.connect( SITE_URL , {path:'/csgf-double', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
     var ngtimerStatus = true,
         sld = false;
     dsocket.on('ngdouble', function(data) {

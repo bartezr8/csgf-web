@@ -34,20 +34,28 @@
         <div style="overflow: hidden;">
             <div class="buy-cards-block" style="margin-top: 0px;">
                 <div class="shop-item-filters">
-                    <div class="left-totalitems" style="margin-top: 3px;">
+                    <div class="left-totalitems">
                        Ваши выбранные предметы | Предметов: <span id="cart-total">0</span> | Сумма: <span id="cart-total-price">0</span>
                     </div>
-                    <a class="myhistorylink" id="get-cart" style="margin-top: 3px;">Купить предметы</a>
+                    <a href="{{ route('cards-history') }}" class="btn-history">История обменов</a>
+                    <a class="btn-buy" id="get-cart">Купить предметы</a>
                 </div>
             </div>
             <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;"></div>
             <div class="buy-cards-block" style="margin-top: 0px;">
                 <div class="shop-item-filters">
                     <div class="left-totalitems">
-                        Найдено предметов: <span id="filter-total">0</span> / <span
-                                id="items-total">{{ \App\Shop::countItems() }}</span>
+                        Найдено предметов: <span id="filter-total">0</span> / <span id="items-total">{{ \App\Shop::countItems() }}</span>
                     </div>
-                    <a href="{{ route('cards-history') }}" class="myhistorylink">История обменов</a>
+                    <select class="shop-selector" style="margin-left: 10px;" id="exterior_all">
+                        <option id="select_opt" value="">Любое качество</option>
+                        <option id="select_opt" value="Прямо с завода">Прямо с завода</option>
+                        <option id="select_opt" value="Немного поношенное">Немного поношенное</option>
+                        <option id="select_opt" value="После полевых">После полевых</option>
+                        <option id="select_opt" value="Поношенное">Поношенное</option>
+                        <option id="select_opt" value="Закаленное в боях">Закаленное в боях</option>
+                        <option id="select_opt" value="Не покрашено">Не покрашено</option>
+                    </select>
                     <div class="search-form">
                         <span class="search-btn"></span>
                         <input id="searchInput" type="text" placeholder="Поиск по названию">

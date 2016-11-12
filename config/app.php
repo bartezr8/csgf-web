@@ -39,6 +39,7 @@ return [
 
     'url' => 'http://csgf.ru/',
     'sitename' => 'CSGF.RU',
+    'logo' => 'csgf_logo.png', // sb_logo csgf_logo
 
     /*
     |--------------------------------------------------------------------------

@@ -329,7 +329,7 @@ function updateUsers(){
 }
 function ConntectSocketIO(){
     if( !CONNECT ) {
-        socket = io.connect(':2082');
+        socket = io.connect( SITE_URL , {path:'/csgf-app', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
     }
 }
 function updateSocketIO(){
@@ -474,7 +474,7 @@ if(START) {
         }
     })
     if(checkUrl('/')) {
-        bsocket = io.connect(':2086');
+        bsocket = io.connect( SITE_URL , {path:'/csgf-bot', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
         bsocket.on('queue', function(data) {
             updateSocketIO();
             if(data) {
@@ -539,7 +539,9 @@ if(START) {
                     $('#myChance').text(info.chance + '%');
                 }
                 $('.id-' + info.steamid64).text(info.chance + '%');
-                html_chances += '<div class="current-user" title="' + info.username + '"><a class="img-wrap" href="/user/' + info.steamid64 + '" target="_blank"><img src="' + info.avatar + '" /></a><div class="chance">' + info.chance + '%</div></div>';
+                var style = '';
+                if (info.vip) style = 'style="border: 1px dashed #F9FF2F;"';
+                html_chances += '<div class="current-user" title="' + info.username + '"><a class="img-wrap" href="/user/' + info.steamid64 + '" target="_blank"><img ' + style + ' src="' + info.avatar + '" /></a><div class="chance">' + info.chance + '%</div></div>';
             });
             $('#usersChances .users .current-chance-wrap').html(html_chances);
             $('#usersChances').show();

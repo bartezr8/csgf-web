@@ -276,7 +276,7 @@
             <div class="current-chance-block users">
                 <div class="current-chance-wrap">
                     @foreach(json_decode($chances) as $info)
-                        <div class="current-user" title="" data-original-title="{{ $info->username }}"><a class="img-wrap" href="/user/{{ $info->steamid64 }}" target="_blank"><img src="{{ $info->avatar }}"></a><div class="chance">{{ $info->chance }}%</div></div>
+                        <div class="current-user" title="" data-original-title="{{ $info->username }}"><a class="img-wrap" href="/user/{{ $info->steamid64 }}" target="_blank"><img style="@if( $info->vip ) border: 1px dashed #F9FF2F; @endif" src="{{ $info->avatar }}"></a><div class="chance">{{ $info->chance }}%</div></div>
                     @endforeach
                 </div>
             </div>

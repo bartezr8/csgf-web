@@ -31,6 +31,9 @@
 	<script src="{{ $asset('assets/js/jquery.spincrement.js') }}" ></script>
     <script type="text/javascript" src="//vk.com/js/api/openapi.js?129"></script>
     <script>
+    var SITE_URL = "{{ config('app.url') }}";
+    var APPS_SECURE = "env('APPS_SECURE', false)";
+    var APPS_FCONNS = "env('APPS_FCONNS', false)";
     @if(!Auth::guest())
 		var avatar = '{{ $u->avatar }}';
         const USER_ID = '{{ $u->steamid64 }}';
@@ -45,14 +48,14 @@
 	var START = true;
 	var LOAD = false;
     var CONNECT = false;
-    var socket = io.connect(':2082');
+    var socket = io.connect( SITE_URL , {path:'/csgf-app', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
     socket.on('connect', function() {
         socket.emit('steamid64', USER_ID);
         CONNECT = true;
     }).on('disconnect', function() {});
     </script>
 </head>
-<body>
+<body> 
 <a href="http://csgf.ru" style="opacity: 0;float: left;width: 0px;" target="_blank">Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля</a>
 	<div id="page-background" style='background: url("/assets/img/background.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
 	<div id="page-preloader">
@@ -74,7 +77,8 @@
 		<div class="header-container">
 			<div class="header-top">
 				<div class="logotype active">
-					<a class="wobble-horizontal" href="/"><img class="logo" alt="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo" src="{{ $asset('assets/img/logo-ru.png') }}"></a>
+					<a href="/"><img class="logo" alt="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo" 
+                    src="{{ $asset('/assets/img/' . config('app.logo')) }}" style="margin-top: -12px;"></a>
 				</div>
 				<div class="header-menu">
 					<ul id="headNav" class="list-reset">

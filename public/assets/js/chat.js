@@ -30,7 +30,7 @@ $(document).ready(function() {
     });
 });
 if(START && checkPage()) {
-    csocket = io.connect(':2084');
+    csocket = io.connect( SITE_URL , {path:'/csgf-chat', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
     csocket.on('chat_messages', function(data) {
         updateChatScroll();
         message = data;

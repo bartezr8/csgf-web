@@ -940,12 +940,15 @@ class GameController extends Controller
     {
         $chances = [];
         foreach ($game->users() as $user) {
+            $vip = false;
+            if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = true;
             $chances[] = [
                 'chance' => self::_getUserChanceOfGame($user, $game),
                 'items' => User::find($user->id)->itemsCountByGame($game),
                 'steamid64' => $user->steamid64,
                 'username' => $user->username,
-                'avatar' => $user->avatar
+                'avatar' => $user->avatar,
+                'vip' => $vip
             ];
         }
 		uasort($chances,function($f1,$f2){

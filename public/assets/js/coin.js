@@ -1,5 +1,4 @@
 if(START) {
-    
     socket.on('coin_new', function(data) {
         data = JSON.parse(data);
         var audio = new Audio('/assets/sounds/coin/coinnew.ogg');

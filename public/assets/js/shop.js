@@ -3,6 +3,7 @@ $(function() {
     window.shop = ({
         shop_loader: '<div id="inventory_load" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div style="text-align: center;margin-top: 5px;">Обновляем список предметов!</div>',
         user_money: 0,
+        items_per_page: 40,
         item_tpl: _.template($('#item-template').html()),
         shop_items: {},
         shop_items_Holder: $('#items-list'),
@@ -25,21 +26,21 @@ $(function() {
             };
             if (zipItem.exterior == 'Прямо с завода') {
                 zipItem.shortexterior = 'FN';
-            }
-            if (zipItem.exterior == 'Немного поношенное') {
+            } else if (zipItem.exterior == 'Немного поношенное') {
                 zipItem.shortexterior = 'MW';
-            }
-            if (zipItem.exterior == 'После полевых испытаний') {
+            } else if (zipItem.exterior == 'После полевых испытаний') {
                 zipItem.shortexterior = 'FT';
-            }
-            if (zipItem.exterior == 'Поношенное') {
+                zipItem.exterior = 'После полевых';
+            } else if (zipItem.exterior == 'Поношенное') {
                 zipItem.shortexterior = 'WW';
-            }
-            if (zipItem.exterior == 'Закаленное в боях') {
+            } else if (zipItem.exterior == 'Закаленное в боях') {
                 zipItem.shortexterior = 'BS';
-            }
-            if (zipItem.exterior == null) {
+            } else if (zipItem.exterior == null) {
                 zipItem.shortexterior = '*';
+                zipItem.exterior = 'Не покрашено';
+            } else {
+                zipItem.shortexterior = '*';
+                zipItem.exterior = 'Не покрашено';
             }
             if(zipItem.name.length > 35) {
                 zipItem.name = zipItem.name.substr(0, 34) + '...'
@@ -105,22 +106,24 @@ $(function() {
         },
         show_items: function(){
             var args = [];
+            var items_list = makeArray(shop.shop_items);
             ['exterior_all', 'rarity_all', 'type_all'].forEach(function(sel) {
                 var exterior = $('#' + sel).val();
                 if (exterior) {
-                    var arr = [];
-                    _.each(exterior, function(tag) {
-                        arr.push(window['filter_' + sel][tag]);
+                    var p = _.filter(items_list, function (item) {
+                        var _exterior = item.filter_exterior;
+                        return _exterior == exterior;
                     });
-                    args.push(_.union.apply(null, arr));
+                    p = _.pluck(p, 'id');
+                    args.push(p);
                 }
             });
+            
             var from = parseFloat($('#priceFrom').val()) || 0;
             var to = parseFloat($('#priceTo').val()) || 10e10;
             if (to < from) to = 10e10;
-            var items_list = makeArray(shop.shop_items);
             var p = _.filter(items_list, function (item) {
-                var _price = Math.round(item.price);
+                var _price = num(item.price);
                 return _price >= from && _price <= to;
             });
             p = _.pluck(p, 'id');
@@ -325,9 +328,8 @@ $(function() {
     $(document).on('click', '#cart-list .deposit-item', function () {
         shop.sell_cart($(this).data('id'));
     });
-    $(document).on('click', '#get-cart', function () {
-        shop.get_cart();
-    });
+    $(document).on('click', '#get-cart', function () { shop.get_cart() });
+    $(document).on('change', '#exterior_all', '#select_page', shop.show_items);
     $('#searchInput, #priceFrom, #priceTo').keyup(shop.show_items);
     document.onkeyup = function checkKeycode(event){
         if(!event) var event = window.event;
@@ -348,7 +350,7 @@ $(function() {
         }
     }
     if(START) {
-        ssocket = io.connect(':2085');
+        ssocket = io.connect( SITE_URL , {path:'/csgf-shop', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
         ssocket.on('addShop', function(data) {
             shop.add_new_items(data);
         }).on('delShop', function(data) {
