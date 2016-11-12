@@ -71,8 +71,8 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 });
 
 /* SHOP ROUTES */
+get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
 Route::group(['middleware' => 'auth'], function () {
-    get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
     get('/shop/deposit', ['as' => 'shop_deposit', 'uses' => 'ShopController@deposit']);
     get('/shop/history', ['as' => 'cards-history', 'uses' => 'ShopController@history']);
     post('/shop/buy', ['as' => 'settings.update', 'uses' => 'ShopController@buyItem']);
