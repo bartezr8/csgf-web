@@ -11,7 +11,3 @@ storage/admin
 public/*
 !public/assets
 !public/index.php
-
-vendor/*
-!vendor/.*
-!vendor/laravel/framework/src/Illuminate/Cache/RedisStore.php

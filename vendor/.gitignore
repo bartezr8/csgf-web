@@ -1,0 +1,8 @@
+*
+!.gitignore
+!laravel
+!laravel/framework
+!laravel/framework/src
+!laravel/framework/src/Illuminate
+!laravel/framework/src/Illuminate/Cache
+!laravel/framework/src/Illuminate/Cache/RedisStore.php
