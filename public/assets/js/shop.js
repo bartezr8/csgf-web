@@ -67,6 +67,7 @@ $(function() {
             return item_obj;
         },
         draw_items: function(){
+            this.clear_items;
             var items_list = makeArray(this.shop_items);
             $('#items-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
@@ -165,7 +166,7 @@ $(function() {
         },
         load_items: function(){
             this.update_shop_balance();
-            this.clear_items;
+            this.shop_items_Holder.html(shop.shop_loader);
             $.ajax({
                 url: '/shop/items',
                 type: 'POST',

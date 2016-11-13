@@ -41,13 +41,13 @@
                     <a class="btn-buy" id="get-cart">Купить предметы</a>
                 </div>
             </div>
-            <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;"></div>
+            <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;overflow: auto;max-height: 464px;"></div>
             <div class="buy-cards-block" style="margin-top: 0px;">
                 <div class="shop-item-filters">
                     <div class="left-totalitems">
                         Найдено предметов: <span id="filter-total">0</span> / <span id="items-total">{{ \App\Shop::countItems() }}</span>
                     </div>
-                    <select class="shop-selector" style="margin-left: 10px;" id="exterior_all">
+                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="exterior_all">
                         <option id="select_opt" value="">Любое качество</option>
                         <option id="select_opt" value="Прямо с завода">Прямо с завода</option>
                         <option id="select_opt" value="Немного поношенное">Немного поношенное</option>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <div id="items-list" class="items-list" style="display: block;"></div>
+            <div id="items-list" class="items-list" style="display: block;overflow: auto;max-height: 464px;"></div>
         </div>
         <script type="text/template" id="item-template">
             <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" data-id="<%= id %>">

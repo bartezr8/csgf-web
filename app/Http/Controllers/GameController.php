@@ -894,9 +894,12 @@ class GameController extends Controller
 
     public function setPrizeStatus(Request $request){
         $game = Game::find($request->get('game'));
-        $game->status_prize = $request->get('status');
-        $game->save();
-        return $game;
+        if(!is_null($game)){
+            $game->status_prize = $request->get('status');
+            $game->save();
+            return $game;
+        }
+        return;
     }
 
     public static function getPreviousWinner()
