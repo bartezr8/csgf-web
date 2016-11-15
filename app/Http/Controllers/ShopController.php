@@ -690,10 +690,10 @@ class ShopController extends Controller {
 							'tradeid' => $out['tradeid'],
 							'status' => 0
 						]);
-						return response()->json(['success' => true, 'msg' => 'Обмен отправлен. Код: ' . $out['code'], 'tradeid' => $out['tradeid']]);
+						return response()->json(['success' => true, 'msg' => 'хуй Обмен отправлен. Код: ' . $out['code'], 'tradeid' => $out['tradeid']]);
 					} else {
-						$msg = 'Ошибка';
-						if(isset($out['error'])) $msg = $out['error'];
+						$msg = 'Ошибка блять';
+						if(isset($out['error'])) $msg = $out['error'].'lol';
 						return response()->json(['success' => false, 'msg' => $msg]);
 					}
 				} else {

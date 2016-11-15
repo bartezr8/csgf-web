@@ -276,36 +276,6 @@ class PagesController extends Controller
         }
         return redirect()->route('index');
     }
-    private function curl($url) {
-		$ch = curl_init();
-
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-
-		$data = curl_exec($ch);
-		curl_close($ch);
-
-		return $data;
-	}
-    private function get_real_price($price, $mhn){
-		if ($price < 5){
-            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
-            $tprice = json_decode($tprice);
-            if (isset($tprice->success)){
-                $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
-                $median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
-                if($lowest<$median) $price = $lowest; else $price = $median;
-            }
-            sleep(1);
-		}
-		return $price;
-	}
     public function myinventory(Request $request)
     {
         parent::setTitle('Мой инвентарь | ');
@@ -313,7 +283,7 @@ class PagesController extends Controller
         if($request->getMethod() == 'GET'){
             return view('pages.myinventory', compact('title'));
         } else {
-			if(!\Cache::has('inventory_' . $this->user->steamid64)) {
+			//if(!\Cache::has('inventory_' . $this->user->steamid64)) {
                 $jsonInventory = file_get_contents('http://steamcommunity.com/profiles/' . $this->user->steamid64 . '/inventory/json/730/2?l=russian');
                 $items = json_decode($jsonInventory, true);
                 if(isset($items['rgDescriptions']) && isset($items['rgInventory'])){
@@ -321,18 +291,12 @@ class PagesController extends Controller
                         foreach ($items['rgInventory'] as $id => $value) {
                             $class_instance = $value['classid'].'_'.$value['instanceid'];
                             $item = $items['rgDescriptions'][$class_instance];
-                            $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                            if (is_null($info)) {
-                                $info = new SteamItem($item);
-                                if (!$info->price){
-                                    $info->price = 0;
-                                } else {
-                                    $info->price = self::get_real_price($info->price, $item['market_hash_name']);
-                                    $info = Item::create((array)$info);
-                                }
+                            $dbItemInfo = Item::updateOrCreate($item);
+                            if(!$dbItemInfo->price){
+                                $dbItemInfo->price = 0;
                             }
-                            $items['rgDescriptions'][$class_instance]['price'] = $info->price;
-                            $items['rgInventory'][$id]['price'] = $info->price;
+                            $items['rgDescriptions'][$class_instance]['price'] = $dbItemInfo->price;
+                            $items['rgInventory'][$id]['price'] = $dbItemInfo->price;
                         }
                     }
                     $arr = (array)$items['rgDescriptions'];
@@ -353,9 +317,9 @@ class PagesController extends Controller
                 } else {
                     return [];
                 }
-			} else {
+			/*} else {
 				$items = \Cache::get('inventory_' . $this->user->steamid64);
-			}
+			}*/
 			return $items;
         }
     }

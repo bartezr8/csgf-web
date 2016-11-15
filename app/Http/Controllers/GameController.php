@@ -52,21 +52,7 @@ class GameController extends Controller
     {
         $this->redis->disconnect();
     }
-    public function userinfo(Request $request)
-    {
-        $user = User::where('steamid64', $request->get('steamid'))->select('users.id','users.username','users.avatar','users.steamid64')->first();
-        if(is_null($user)){
-            $user = (object)[
-                'steamid64' => config('mod_game.bonus_bot_steamid64')
-            ];
-        }
-        return response()->json($user);
-    }
-    public function deposit()
-    {
-        return redirect(config('mod_game.bot_trade_link'));
-    }
-	public function curl($url) {
+    public function curl($url) {
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -83,19 +69,21 @@ class GameController extends Controller
 
 		return $data;
 	}
-    
-    public function get_real_price($price, $mhn){
-		if ($price < 5){
-            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
-            $tprice = json_decode($tprice);
-            if (isset($tprice->success)){
-                $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
-                $median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
-                if($lowest<$median) $price = $lowest; else $price = $median;
-            }
-		}
-		return $price;
-	}
+
+    public function userinfo(Request $request)
+    {
+        $user = User::where('steamid64', $request->get('steamid'))->select('users.id','users.username','users.avatar','users.steamid64')->first();
+        if(is_null($user)){
+            $user = (object)[
+                'steamid64' => config('mod_game.bonus_bot_steamid64')
+            ];
+        }
+        return response()->json($user);
+    }
+    public function deposit()
+    {
+        return redirect(config('mod_game.bot_trade_link'));
+    }
     private function _parseItems(&$items, &$missing = false, &$price = false)
     {
         $itemInfo = [];
@@ -108,27 +96,28 @@ class GameController extends Controller
                 $missing = true;
                 break;
             }
-            $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
-            if (is_null($dbItemInfo)) {
-                if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
-                if (!$itemInfo[$value]->price){
-                    $price = true;
-                    break;
-                } else {
-                    $itemInfo[$value]->price = self::get_real_price($itemInfo[$value]->price, $item['market_hash_name']);
-                    $dbItemInfo = Item::create((array)$itemInfo[$item['classid']]);
-                }
+            if(isset($itemInfo[$value])){
+                $dbItemInfo = $itemInfo[$value];
             } else {
-                if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
-                    $si = new SteamItem($item);
-                    if ($si->price){
-						$dbItemInfo->price = self::get_real_price($si->price, $item['market_hash_name']);
-						$dbItemInfo->save();
-					}
+                $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                if (is_null($dbItemInfo)) {
+                    if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
+                    if (!$itemInfo[$value]->price){
+                        $price = true;
+                        break;
+                    }
+                    $dbItemInfo = Item::create((array)$itemInfo[$value]);
+                } else {
+                    if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
+                        $si = new SteamItem($item);
+                        if ($si->price){
+                            $dbItemInfo->price = $si->price;
+                        $dbItemInfo->save();
+                        }
+                    }
                 }
             }
             $itemInfo[$value] = $dbItemInfo;
-            if ($itemInfo[$value]->price <= 0) $itemInfo[$value]->price = 0.1;          //Если цена меньше единицы, ставим единицу
             $total_price = $total_price + $itemInfo[$value]->price;
             $items[$i]['price'] = $itemInfo[$value]->price;
             unset($items[$i]['appid']);
@@ -139,17 +128,16 @@ class GameController extends Controller
     public function getPriceItems()
     {
         $data = self::curl(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
+        if(!$data) return $this->_responseSuccess();
         $response = json_decode($data);
-        $success = $response->response->success;
-        if ($success != 0) {
+        if(!isset($response->response->success)) return $this->_responseSuccess();
+        if ($response->response->success != 0) {
             if(isset($response->response->items)){
                 Storage::disk('local')->put('items.txt', $data);
             }
-            return 'Successfully Parsing';
-        } else {
-            $message = $response->response->message;
-            return $message;
+            return;
         }
+        return $this->_responseSuccess();
     }
     public function currentGame()
     {
@@ -374,13 +362,15 @@ class GameController extends Controller
                 }
             }
         } 
+        foreach ($items as $item) {
+			if (!isset($item['price'])) $item['price'] = 0.1;
+        }
 		uasort($items,function($f1,$f2){
 			if($f1['price'] < $f2['price']) return 1;
 			elseif($f1['price'] > $f2['price']) return -1;
 			else return 0;
 		});
 		foreach ($items as $item) {
-			if ($item['price'] == 0) $item['price'] = 0.1;
 			if ((($item['price'] + $tempPrice) <= $commissionPrice)) {
 				$commissionItems[] = $item;
 				$tempPrice = $tempPrice + $item['price'];
@@ -900,20 +890,6 @@ class GameController extends Controller
             return $game;
         }
         return;
-    }
-
-    public static function getPreviousWinner()
-    {
-        $game = Game::with('winner')->where('status', Game::STATUS_FINISHED)->orderBy('created_at', 'desc')->first();
-        $winner = null;
-        if (!is_null($game)) {
-            $winner = [
-                'user' => $game->winner,
-                'price' => $game->price,
-                'chance' => self::_getUserChanceOfGame($game->winner, $game)
-            ];
-        }
-        return $winner;
     }
 
     public function getBalance()
