@@ -236,11 +236,11 @@ function getitems() {
         success: function (data) {
             if (data.success) {
                 $.notify(data.msg, {className: "success"});
+                $("#acceptTradeUrl").show();
+                $("#acceptTradeUrl").attr("href", "https://steamcommunity.com/tradeoffer/" + data.tradeid);
             } else {
                 if (data.msg) $.notify(data.msg, {className: "error"});
             }
-            $("#acceptTradeUrl").show();
-            $("#acceptTradeUrl").attr("href", "https://steamcommunity.com/tradeoffer/" + data.tradeid);
             update_dep_items();
             updateBalance();
         },

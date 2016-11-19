@@ -20,7 +20,18 @@ class ShopController extends Controller {
     const GIVE_ITEMS_CHANNEL = 				'items.to.give';
 	const CHECK_ITEMS_CHANNEL = 			'items.to.check';
     const DECLINE_ITEMS_CHANNEL =           'shop.decline.list';
-
+    private function curl($url) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+		$data = curl_exec($ch);
+		curl_close($ch);
+		return $data;
+	}
     private function _responseMessageToSite($message, $userid)
     {
         return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
@@ -28,7 +39,6 @@ class ShopController extends Controller {
             'message' => $message
         ]));
     }
-	
     public function index(){
         parent::setTitle('Магазин | ');
         $betssum = 0;
@@ -39,12 +49,6 @@ class ShopController extends Controller {
         }
         return view('pages.shop.shop', compact('betssum'));
     }
-    
-    public function deposit(){
-        parent::setTitle('Депозит | ');
-        return view('pages.shop.deposit');
-    }
-
     public function history()
 	{
         parent::setTitle('История покупок | ');
@@ -56,7 +60,21 @@ class ShopController extends Controller {
 		}
         return view('pages.shop.history', compact('items', 'deposits'));
     }
-	
+	public function itemlist(Request $request)
+    {
+        $items = Shop::all(); $ids = [];
+        foreach($items as $item) $ids[] = $item->inventoryId;
+        return response()->json(['success' => true, 'items' => $ids]);
+    }
+    public function sendItem($items){
+		$senditems = [];
+        foreach ($items as $item) { $senditems[] = $item->inventoryId; }
+        $value = [ 'items' => $senditems, 'steamid' => $this->user->steamid64, 'accessToken' => $this->user->accessToken ];
+        $this->redis->rpush(self::GIVE_ITEMS_CHANNEL, json_encode($value));
+    }
+    private function _responseSuccess(){
+        return response()->json(['success' => true]);
+    }
     public function shop()
 	{
 		$returnValue = [];
@@ -79,7 +97,6 @@ class ShopController extends Controller {
 		}
 		return response()->json(['list' => $returnValue, 'off' => false]);
     }
-	
     public function setItemStatus(Request $request)
 	{
 		$item = \DB::table('shop')->where('inventoryId', $request->get('id'))->first();
@@ -126,71 +143,31 @@ class ShopController extends Controller {
         }
         return response()->json(['success' => false]);
     }
-	private function curl($url) {
-		$ch = curl_init();
-
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-
-		$data = curl_exec($ch);
-		curl_close($ch);
-
-		return $data;
-	}
-    private function get_real_price($price, $mhn){
-		if ($price < 5){
-            $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
-            $tprice = json_decode($tprice);
-            if (isset($tprice->success)){
-                $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
-                $median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
-                if($lowest<$median) $price = $lowest; else $price = $median;
-            }
-            sleep(1);
-		}
-		return $price;
-	}
     public function _parseItems($items)
 	{
-        $itemInfo = [];
-        $total_price = 0;
-        $i = 0;
-
+        $itemInfo = []; $total_price = 0; $i = 0;
         foreach ($items as $item) {
             $value = $item['classid'];
             if ($item['appid'] == config('mod_game.appid')) {
                 $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
                 if (is_null($dbItemInfo)) {
                     if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
-                    if (!$itemInfo[$value]->price){
-                        $price = true;
-                        break;
-                    } else {
-                        $itemInfo[$value]->price = self::get_real_price($itemInfo[$value]->price, $item['market_hash_name']);
-                        $dbItemInfo = Item::create((array)$itemInfo[$item['classid']]);
-                    }
+                    if ($itemInfo[$value]->price) $dbItemInfo = Item::create((array)$itemInfo[$value]);
                 } else {
                     if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
                         $si = new SteamItem($item);
                         if ($si->price){
-                            $dbItemInfo->price = self::get_real_price($si->price, $item['market_hash_name']);
+                            $dbItemInfo->price = $si->price;
                             $dbItemInfo->save();
                         }
                     }
                 }
 				$itemInfo[$value] = $dbItemInfo;
-                if ($itemInfo[$value]->price <= 0) $itemInfo[$value]->price = 0.1;
-				if ($itemInfo[$value]->price <= config('mod_shop.comission_on_<')) {
-					if ($itemInfo[$value]->price <= 10) {
-						$itemInfo[$value]->price = $itemInfo[$value]->price/2;
+				if ($itemInfo[$value]->price <= config('mod_shop.dep_comission_from')) {
+					if ($itemInfo[$value]->price <= config('mod_shop.garbadge_from')) {
+						$itemInfo[$value]->price = $itemInfo[$value]->price/100*config('mod_shop.garbadge_%');
 					}
-					$itemInfo[$value]->price = $itemInfo[$value]->price * (1 - config('mod_shop.comission_on_%')/100);
+					$itemInfo[$value]->price = $itemInfo[$value]->price * (1 - config('mod_shop.dep_comission_%')/100);
 				}
 				$total_price += $itemInfo[$value]->price;
 				$items[$i]['price'] = $itemInfo[$value]->price;
@@ -199,91 +176,6 @@ class ShopController extends Controller {
 			}
         }
         return $total_price;
-    }
-   public function myinventory(Request $request)
-    {
-		$success = true;
-		$returnValue = [];
-
-		if(!\Cache::has('shop_inv_' . $this->user->steamid64)) {
-			$returnValue = self::updatemyinventory($this->user->steamid64);
-			$success = $returnValue['success'];
-			$returnValue = $returnValue['list'];
-			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
-		} else {
-			$returnValue = \Cache::get('shop_inv_' . $this->user->steamid64);
-		}
-		$list = $returnValue;
-		return response()->json(['list' => $list, 'success' => $success]);
-    }
-	public function inv_update(Request $request){
-		$returnValue = self::updatemyinventory($this->user->steamid64);
-		if($returnValue['success']){
-			$success = $returnValue['success'];
-			$returnValue = $returnValue['list'];
-			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
-		}
-		return response()->json(['success' => $success]);
-	}
-	
-    private function updatemyinventory($userid)
-    {
-		$success = true;
-		$returnValue = [];
-
-		$jsonInventory = self::curl('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
-		$items = json_decode($jsonInventory, true);
-		if ($items['success']) {
-			foreach ($items['rgInventory'] as $id => $value) {
-                $class_instance = $value['classid'].'_'.$value['instanceid'];
-                $item = $items['rgDescriptions'][$class_instance];
-                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($info)){
-                    $info = new SteamItem($item);
-                    if (!$info->price){
-                        $info->price = 0;
-                    } else {
-                        $info->price = self::get_real_price($info->price, $item['market_hash_name']);
-                        $info = Item::create((array)$info);
-                    }
-                    //$info = (object)['price'=>0];
-                }
-				if($info->price){
-					
-					$item['price'] = $info->price;
-					
-					if ($item['price'] <= config('mod_shop.comission_on_<')) {
-						if ($item['price'] <= 10) {
-							$item['price'] = $item['price']/2;
-						}
-						$item['price'] = round($item['price'] * (1 - config('mod_shop.comission_on_%')/100) * 100)/100;
-					}
-						
-					if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
-						$name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
-						$quality = $nameval[1][0];
-					} else {
-						$name = $item['market_name'];
-						$quality = NULL;
-					}
-					$rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
-					$rarity = trim($rarity[count($rarity) - 1]);
-					$returnValue[] = [
-						$value['id'], 
-						$name, 
-						$item['price'], 
-						$value['classid'], 
-						$quality, 
-						Shop::getClassRarity($rarity), 
-						$rarity
-					];
-				}
-			}
-		} else {
-			$success = false;
-		}
-
-		return ['list' => $returnValue, 'success' => $success];
     }
     public function addItemsToSale()
 	{
@@ -296,64 +188,36 @@ class ShopController extends Controller {
             foreach($items as $item) {
 				$userid = $item['depositorid'];
                 $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($info)) {
-                    $info = new SteamItem($item);
-                    if (is_null($info->price)) {
-                        $info->price = self::get_real_price($info->price);
-                        $info = Item::create((array)$info);
-                    } else {
-                        $info->price = 0;
-                    }
-                } 
-                if($info->price > 0){
+                if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
+                if($info->price){
                     $item['steam_price'] = $info->price;
                     $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
                     Shop::create($item);
                 }
-				$returnValue[] = [
-					$item['classid'], 
-					Shop::countItem($item['classid']), 
-					$item['name'], 
-					$item['price'], 
-					$item['classid'], 
-					$item['quality'], 
-					Shop::getClassRarity($item['rarity']), 
-					$item['rarity']
-				];
+				$returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
 			}
 			$returnValue = ['list' => $returnValue, 'off' => false];
 			$this->redis->publish('addShop', json_encode($returnValue));
             $this->redis->lrem(self::NEW_ITEMS_CHANNEL, 1, $jsonItem);
-			$this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $userid);
 			$user = User::where('steamid64', $userid)->first();
 			if(!is_null($user)){
 				if($userid != config('mod_game.bot_steamid')){
-					$user->money = $user->money + $total_price;
-					$user->save();
-					\DB::table('deposits')->insertGetId([
-						'user_id' => $user->id, 
-						'date' => Carbon::now()->toDateTimeString(),
-						'price' => $total_price,
-						'type' => 0
-					]);
+                    $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $userid); $user->money = $user->money + $total_price; $user->save();
+					\DB::table('deposits')->insertGetId([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
 				}
 			}
         }		
         return response()->json(['success' => true]);
     }
-	
     public function checkShop(){
 		$items = \DB::table('shop')->get();
 		$delitems = [];
-		foreach ($items as $item){
-			$delitems[] = $item->classid;
-		}
+		foreach ($items as $item){ $delitems[] = $item->classid; }
 		$returnValue = ['list' => $delitems, 'off' => false];
 		$this->redis->publish('delShop', json_encode($returnValue));
 		\DB::table('shop')->truncate();
         $jsonItems = $this->redis->lrange(self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
-			$returnValue = [];
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem(self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
 			foreach($itemsToAdd as $item) {
@@ -369,343 +233,13 @@ class ShopController extends Controller {
 					Shop::create($item);
 				}
 				$item = Shop::where('inventoryId', $item['inventoryId'])->first();
-				$returnValue[] = [
-					$item->id, 
-					Shop::countItem($item->classid), 
-					$item->name, 
-					$item->price, 
-					$item->classid, 
-					$item->quality, 
-					Shop::getClassRarity($item->rarity), 
-					$item->rarity
-				];
-				$returnValue = ['list' => $returnValue, 'off' => false];
-				$this->redis->publish('addShop', json_encode($returnValue));
-				$returnValue = [];
+                $returnValue = [];
+				$returnValue[] = [ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ];
+				$returnValue = ['list' => $returnValue, 'off' => false]; $this->redis->publish('addShop', json_encode($returnValue));
 			}
 		}
         return response()->json(['success' => true]);
     }
-	
-    public function sendItem($items){
-		$senditems = [];
-        foreach ($items as $item) {
-            $senditems[] = $item->inventoryId;
-        }
-		
-        $value = [
-            'items' => $senditems,
-            'steamid' => $this->user->steamid64,
-            'accessToken' => $this->user->accessToken
-        ];
-
-        $this->redis->rpush(self::GIVE_ITEMS_CHANNEL, json_encode($value));
-    }
-	
-    public function checkOffers(){
-		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
-		if(is_null($aoffer)){
-			return response()->json(['success' => false, 'msg' => 'У вас нет обменов к проверке']);
-		} else {
-			$value = [
-				'tradeid' => $aoffer->tradeid
-			];
-			$jsonInventory = self::curl('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
-			$steam = json_decode($jsonInventory, true);
-			$out = $steam['response']['offer'];
-			if(isset($out['trade_offer_state']) && isset($out['items_to_receive'])) {
-				if($out['trade_offer_state'] == 3){
-					$items = \DB::table('shop')->where('status', SHOP::ITEM_STATUS_FOR_SALE)->select('shop.inventoryId')->get();
-					$iids = [];
-					foreach ($items as $i){
-						$iids[] = $i->inventoryId;
-					}
-					$cids = [];
-                    if(count($out['items_to_receive']) == 0) return response()->json(['success' => false, 'msg' => 'Ошибка, не можем загрузить обмен']);
-					foreach ($out['items_to_receive'] as $i){
-						$cids[] = $i['classid'];
-					}
-					$botinv = self::curl('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
-					$botinv = json_decode($botinv, true);
-					if(isset($botinv['rgInventory']) && isset($botinv['rgDescriptions'])){
-						$returnValue = [];
-						$items_for_parse = []; 
-                        if(count($botinv['rgInventory']) == 0) return response()->json(['success' => false, 'msg' => 'Ошибка, не можем загрузить инвентарь']);
-						foreach($botinv['rgInventory'] as $id => $value){
-							if(count($cids) == 0) break;
-							if(!in_array($id, $iids) && in_array($value['classid'], $cids)){
-								$iids[] = $id;
-								unset($cids[array_search($value['classid'], $cids)]);
-								$class_instance = $value['classid'].'_'.$value['instanceid'];
-								
-								$item = $botinv['rgDescriptions'][$class_instance];
-								$item['inventoryId'] = $id;
-								$info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-								if (is_null($info)) {
-									$info = new SteamItem($item);
-									if (is_null($info->price)) {
-										$info->price = self::get_real_price($info->price);
-										$info = Item::create((array)$info);
-									} else {
-                                        $info->price = 0;
-                                    }
-								} 
-								if($info->price){
-									$item['steam_price'] = $info->price;
-									$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-									Shop::create($item);
-									
-									if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
-										$name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
-										$quality = $nameval[1][0];
-									} else {
-										$name = $item['market_name'];
-										$quality = NULL;
-									}
-									$rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
-									$rarity = trim($rarity[count($rarity) - 1]);
-									$item['quality'] = $quality;
-									$item['rarity'] = $rarity;
-									$returnValue[] = [
-										$item['classid'], 
-										Shop::countItem($item['classid']), 
-										$item['name'], 
-										$item['price'], 
-										$item['classid'], 
-										$item['quality'], 
-										Shop::getClassRarity($item['rarity']), 
-										$item['rarity']
-									];
-									$items_for_parse[] = [
-										'classid' => $value['classid'],
-										'appid' => $item['appid'],
-										'name' => $item['name'],
-										'rarity' => $rarity,
-										'type' => $item['type'],
-										'market_hash_name' => $item['market_hash_name']
-									];
-								}
-							}
-						}
-                        if(count($items_for_parse) == 0){
-                            return response()->json(['success' => false, 'msg' => 'Ошибка при оцентке вещей!']);
-                        }
-						$returnValue = ['list' => $returnValue, 'off' => false];
-						$this->redis->publish('addShop', json_encode($returnValue));
-						
-						$user = User::find($aoffer->user_id);
-						$total_price = $this->_parseItems($items_for_parse);
-						$user->money += $total_price;
-						$user->save();
-						\DB::table('deposits')->insertGetId([
-							'user_id' => $user->id, 
-							'date' => Carbon::now()->toDateTimeString(),
-							'price' => $total_price,
-							'type' => 0
-						]);
-						\DB::table('shop_offers')->where('id', $aoffer->id)->update(['price' => $total_price, 'status' => 1]);
-						return response()->json(['success' => true, 'msg' => 'Депозит зачислен | Сумма: ' . $total_price, 'active' => false]);
-					} else {
-						return response()->json(['success' => false, 'msg' => 'Ошибка, не можем загрузить инвентарь']);
-					}
-				} else if($out['trade_offer_state'] == 2){
-					return response()->json(['success' => true, 'msg' => 'Обмен активен', 'active' => true, 'tradeid' => $aoffer->tradeid]);
-				} else {
-					\DB::table('shop_offers')->where('id', $aoffer->id)->delete();
-					return response()->json(['success' => false, 'msg' => 'Обмен закрыт', 'active' => false]);
-				}
-			} else {
-				$msg = 'Ошибка, стим недоступен';
-                
-				if(isset($out['error'])) $msg = $out['error'];
-				return response()->json(['success' => false, 'msg' => $msg]);
-			}
-		}
-    }
-    public function checkAllOffers()
-    {
-		$aoffers = \DB::table('shop_offers')->where('status', 0)->get();
-		if(is_null($aoffers)) return response()->json(['success' => true]);
-        if(!count($aoffers)) return response()->json(['success' => true]);
-        foreach($aoffers as $aoffer){
-            sleep(5);
-            if(!isset($aoffer->id)) continue;
-            \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 1]);
-            $user = User::find($aoffer->user_id);
-            $value = ['tradeid' => $aoffer->tradeid];
-            $jsonInventory = self::curl('https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key=' . env('STEAM_APIKEY','') . '&format=json&tradeofferid=' . $aoffer->tradeid . '&language=russian');
-            $steam = json_decode($jsonInventory, true);
-            $out = $steam['response']['offer'];
-            if(!isset($out['trade_offer_state']) || !isset($out['items_to_receive'])) {
-                \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                continue;
-            }
-            switch ($out['trade_offer_state']) {
-                case 2:
-                    \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                    continue;
-                case 3:
-                    $items = \DB::table('shop')->where('status', SHOP::ITEM_STATUS_FOR_SALE)->select('shop.inventoryId')->get();
-                    $iids = [];
-                    foreach ($items as $i){
-                        $iids[] = $i->inventoryId;
-                    }
-                    $cids = [];
-                    if(count($out['items_to_receive']) == 0){
-                        \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                        continue;
-                    }
-                    foreach ($out['items_to_receive'] as $i){
-                        $cids[] = $i['classid'];
-                    }
-                    $botinv = self::curl('http://steamcommunity.com/profiles/' . config('mod_game.shop_steamid64') . '/inventory/json/730/2?l=russian');
-                    $botinv = json_decode($botinv, true);
-                    if(!isset($botinv['rgInventory']) || !isset($botinv['rgDescriptions'])){
-                        \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                        continue;
-                    }
-                    $returnValue = [];
-                    $items_for_parse = []; 
-                    if(count($botinv['rgInventory']) == 0){
-                        \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                        continue;
-                    }
-                    foreach($botinv['rgInventory'] as $id => $value){
-                        if(count($cids) == 0) break;
-                        if(!in_array($id, $iids) && in_array($value['classid'], $cids)){
-                            $iids[] = $id;
-                            unset($cids[array_search($value['classid'], $cids)]);
-                            $class_instance = $value['classid'].'_'.$value['instanceid'];
-                            
-                            $item = $botinv['rgDescriptions'][$class_instance];
-                            $item['inventoryId'] = $id;
-                            $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                            if (is_null($info)) {
-                                $info = new SteamItem($item);
-                                if (is_null($info->price)) {
-                                    $info->price = self::get_real_price($info->price);
-                                    $info = Item::create((array)$info);
-                                } else {
-                                    $info->price = 0;
-                                }
-                            } 
-                            if($info->price){
-                                $item['steam_price'] = $info->price;
-                                $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-                                Shop::create($item);
-                                
-                                if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
-                                    $name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
-                                    $quality = $nameval[1][0];
-                                } else {
-                                    $name = $item['market_name'];
-                                    $quality = NULL;
-                                }
-                                $rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
-                                $rarity = trim($rarity[count($rarity) - 1]);
-                                $item['quality'] = $quality;
-                                $item['rarity'] = $rarity;
-                                $returnValue[] = [
-                                    $item['classid'], 
-                                    Shop::countItem($item['classid']), 
-                                    $item['name'], 
-                                    $item['price'], 
-                                    $item['classid'], 
-                                    $item['quality'], 
-                                    Shop::getClassRarity($item['rarity']), 
-                                    $item['rarity']
-                                ];
-                                $items_for_parse[] = [
-                                    'classid' => $value['classid'],
-                                    'appid' => $item['appid'],
-                                    'name' => $item['name'],
-                                    'rarity' => $rarity,
-                                    'type' => $item['type'],
-                                    'market_hash_name' => $item['market_hash_name']
-                                ];
-                            }
-                        }
-                    }
-                    if(count($items_for_parse) == 0){
-                        \DB::table('shop_offers')->where('id', $aoffer->id)->update(['status' => 0]);
-                        continue;
-                    }
-                    $returnValue = ['list' => $returnValue, 'off' => false];
-                    $this->redis->publish('addShop', json_encode($returnValue));
-                    
-                    $user = User::find($aoffer->user_id);
-                    $total_price = $this->_parseItems($items_for_parse);
-                    $user->money += $total_price;
-                    $user->save();
-                    \DB::table('deposits')->insertGetId([
-                        'user_id' => $user->id, 
-                        'date' => Carbon::now()->toDateTimeString(),
-                        'price' => $total_price,
-                        'type' => 0
-                    ]);
-                    \DB::table('shop_offers')->where('id', $aoffer->id)->update(['price' => $total_price, 'status' => 1]);
-                    $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price, $user->steamid64);
-                    continue;
-                default:
-                    if($aoffer->date <= Carbon::now()->subMinutes(10)){
-                        $this->_responseMessageToSite('Вы не приняли обмен в течение 10 минут', $user->steamid64);
-                        $this->redis->rpush(self::DECLINE_ITEMS_CHANNEL, json_encode($aoffer->tradeid));
-                        \DB::table('shop_offers')->where('id', $aoffer->id)->delete();
-                    }
-                    continue;
-            }
-        }
-        return response()->json(['success' => true]);
-    }
-	public function sellitems(Request $request){
-		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		if (config('mod_shop.shop')){
-			$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
-			if(is_null($aoffer)){
-				$classids = $request->get('classids');
-				if($classids != ""){
-					$str = '';
-					foreach($classids as $classid){
-						if($str == ''){
-							$str = $classid;
-						} else {
-							$str += ',' . $classid;
-						}
-					}
-					$value = [
-						'items' => $classids,
-						'steamid' => $this->user->steamid64,
-						'accessToken' => $this->user->accessToken,
-					];
-
-					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&SHOP_SECRET=' . config('app.secretKey'));
-					$out = json_decode($out, true);
-					if($out['success'] == true) {
-						$id = \DB::table('shop_offers')->insertGetId([
-							'user_id' => $this->user->id, 
-							'date' => Carbon::now()->toDateTimeString(),
-							'tradeid' => $out['tradeid'],
-							'status' => 0
-						]);
-						return response()->json(['success' => true, 'msg' => 'хуй Обмен отправлен. Код: ' . $out['code'], 'tradeid' => $out['tradeid']]);
-					} else {
-						$msg = 'Ошибка блять';
-						if(isset($out['error'])) $msg = $out['error'].'lol';
-						return response()->json(['success' => false, 'msg' => $msg]);
-					}
-				} else {
-					return response()->json(['success' => false, 'msg' => 'ВЫ не выбрали предметов']);
-				}
-			} else {
-				return response()->json(['success' => false, 'msg' => 'У вас уже есть неподтвержденный обмен']);
-			}
-		} else {
-			return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
-		}
-	}
     public function getcart(Request $request){
 		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
 		\Cache::put('shop.user.' . $this->user->id, '', 5);
@@ -800,4 +334,184 @@ class ShopController extends Controller {
 			return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
 		}
 	}
+    
+    // DEPOSIT
+    public function deposit(){
+        parent::setTitle('Депозит | ');
+        return view('pages.shop.deposit');
+    }
+    public function depositToCheck(Request $request)
+    {
+        $aoffers = \DB::table('shop_offers')->where('status', 0)->get();
+		if(is_null($aoffers)) return response()->json(['success' => true, 'trades' => []]);
+        if(!count($aoffers)) return response()->json(['success' => true, 'trades' => []]);
+        $trades = []; foreach($aoffers as $offer) $trades[] = $offer->tradeid;
+        if(count($trades) > 0) return response()->json(['success' => true, 'trades' => $trades]);
+        return response()->json(['success' => false]);
+    }
+    public function depositCheck(Request $request)
+    {
+        $data = $this->redis->lrange('offers.deposit.result', 0, -1);
+        foreach ($data as $newTradeCheck) {
+            $tradeCheck = json_decode($newTradeCheck, true);
+            $trade = \DB::table('shop_offers')->where('tradeid', $tradeCheck['id'])->first();
+            if(!is_null($trade)){
+                $user = User::find($trade->user_id);
+                if($tradeCheck['status'] == 1){
+                    $items = $tradeCheck['items'];
+                    $returnValue = [];
+                    $total_price = $this->_parseItems($items);
+                    foreach($items as $item) {
+                        $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                        if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
+                        if($info->price){
+                            $item['steam_price'] = $info->price;
+                            $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
+                            Shop::create($item);
+                        }
+                        $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
+                    }
+                    $returnValue = ['list' => $returnValue, 'off' => false];
+                    $this->redis->publish('addShop', json_encode($returnValue));
+                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                    if(!is_null($user)){
+                        $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); $user->money += $total_price; $user->save();
+                        \DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
+                    }
+                    \DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
+                }
+                if($tradeCheck['id'] == 2){
+                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                }
+                if($tradeCheck['id'] == 0){
+                    $this->_responseMessageToSite('Обмен #' + $trade->tradeid + ' не действителен', $user->steamid64);
+                    \DB::table('shop_offers')->where('id', $trade->id)->delete();
+                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                }
+            }
+        }
+        return $this->_responseSuccess();
+    }
+    public function sellitems(Request $request){
+		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
+		\Cache::put('shop.user.' . $this->user->id, '', 5);
+		if (config('mod_shop.shop')){
+			$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
+			if(is_null($aoffer)){
+				$classids = $request->get('classids');
+				if($classids != ""){
+					$str = '';
+					foreach($classids as $classid){
+						if($str == ''){
+							$str = $classid;
+						} else {
+							$str += ',' . $classid;
+						}
+					}
+					$value = [
+						'items' => $classids,
+						'steamid' => $this->user->steamid64,
+						'accessToken' => $this->user->accessToken,
+					];
+
+					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
+					$out = json_decode($out, true);
+					if($out['success'] == true) {
+						$id = \DB::table('shop_offers')->insertGetId([
+							'user_id' => $this->user->id, 
+							'date' => Carbon::now()->toDateTimeString(),
+							'tradeid' => $out['tradeid'],
+							'status' => 0
+						]);
+						return response()->json(['success' => true, 'msg' => 'Обмен отправлен. Код: ' . $out['code'], 'tradeid' => $out['tradeid']]);
+					} else {
+						$msg = 'Ошибка';
+						if(isset($out['error'])) $msg = $out['error'];
+						return response()->json(['success' => false, 'msg' => $msg]);
+					}
+				} else {
+					return response()->json(['success' => false, 'msg' => 'ВЫ не выбрали предметов']);
+				}
+			} else {
+				return response()->json(['success' => false, 'msg' => 'У вас уже есть неподтвержденный обмен']);
+			}
+		} else {
+			return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
+		}
+	}
+    public function myinventory(Request $request)
+    {
+		$success = true; $returnValue = [];
+		if(!\Cache::has('shop_inv_' . $this->user->steamid64)) {
+			$returnValue = self::updatemyinventory($this->user->steamid64);
+			$success = $returnValue['success'];
+			$returnValue = $returnValue['list'];
+			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
+		} else {
+			$returnValue = \Cache::get('shop_inv_' . $this->user->steamid64);
+		}
+		$list = $returnValue;
+		return response()->json(['list' => $list, 'success' => $success]);
+    }
+	public function inv_update(Request $request){
+		$returnValue = self::updatemyinventory($this->user->steamid64);
+		if($returnValue['success']){
+			$success = $returnValue['success'];
+			$returnValue = $returnValue['list'];
+			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
+		}
+		return response()->json(['success' => $success]);
+	}
+    private function updatemyinventory($userid)
+    {
+		$success = true;
+		$returnValue = [];
+
+		$jsonInventory = self::curl('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
+		$items = json_decode($jsonInventory, true);
+		if ($items['success']) {
+			foreach ($items['rgInventory'] as $id => $value) {
+                $class_instance = $value['classid'].'_'.$value['instanceid'];
+                $item = $items['rgDescriptions'][$class_instance];
+                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                if (is_null($info)){
+                    $info = new SteamItem($item);
+                    if ($info->price){
+                        $info = Item::create((array)$info);
+                    }
+                }
+				if($info->price){
+					$item['price'] = $info->price;
+					if ($item['price'] <= config('mod_shop.dep_comission_from')) {
+						if ($item['price'] <= config('mod_shop.garbadge_from')) {
+							$item['price'] = $item['price']/100*config('mod_shop.garbadge_%');
+						}
+						$item['price'] = round($item['price'] * (1 - config('mod_shop.dep_comission_%')/100) * 100)/100;
+					}
+					if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
+						$name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
+						$quality = $nameval[1][0];
+					} else {
+						$name = $item['market_name'];
+						$quality = NULL;
+					}
+					$rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
+					$rarity = trim($rarity[count($rarity) - 1]);
+					$returnValue[] = [
+						$value['id'], 
+						$name, 
+						$item['price'], 
+						$value['classid'], 
+						$quality, 
+						Shop::getClassRarity($rarity), 
+						$rarity
+					];
+				}
+			}
+		} else {
+			$success = false;
+		}
+
+		return ['list' => $returnValue, 'success' => $success];
+    }
 }

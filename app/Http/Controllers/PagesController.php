@@ -283,7 +283,7 @@ class PagesController extends Controller
         if($request->getMethod() == 'GET'){
             return view('pages.myinventory', compact('title'));
         } else {
-			//if(!\Cache::has('inventory_' . $this->user->steamid64)) {
+			if(!\Cache::has('inventory_' . $this->user->steamid64)) {
                 $jsonInventory = file_get_contents('http://steamcommunity.com/profiles/' . $this->user->steamid64 . '/inventory/json/730/2?l=russian');
                 $items = json_decode($jsonInventory, true);
                 if(isset($items['rgDescriptions']) && isset($items['rgInventory'])){
@@ -291,7 +291,21 @@ class PagesController extends Controller
                         foreach ($items['rgInventory'] as $id => $value) {
                             $class_instance = $value['classid'].'_'.$value['instanceid'];
                             $item = $items['rgDescriptions'][$class_instance];
-                            $dbItemInfo = Item::updateOrCreate($item);
+                            $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                            
+                            if (is_null($dbItemInfo)) {
+                                $dbitem = new SteamItem($item);
+                                if ($dbitem->price) $dbItemInfo = Item::create((array)$dbitem);
+                            } else {
+                                if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
+                                    $si = new SteamItem($item);
+                                    if ($si->price){
+                                        $dbItemInfo->price = $si->price;
+                                        $dbItemInfo->save();
+                                    }
+                                }
+                            }
+                            
                             if(!$dbItemInfo->price){
                                 $dbItemInfo->price = 0;
                             }
@@ -317,9 +331,9 @@ class PagesController extends Controller
                 } else {
                     return [];
                 }
-			/*} else {
+			} else {
 				$items = \Cache::get('inventory_' . $this->user->steamid64);
-			}*/
+			}
 			return $items;
         }
     }

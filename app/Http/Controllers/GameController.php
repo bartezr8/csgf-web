@@ -112,7 +112,7 @@ class GameController extends Controller
                         $si = new SteamItem($item);
                         if ($si->price){
                             $dbItemInfo->price = $si->price;
-                        $dbItemInfo->save();
+                            $dbItemInfo->save();
                         }
                     }
                 }
@@ -124,20 +124,6 @@ class GameController extends Controller
             $i++;
         }
         return $total_price;
-    }
-    public function getPriceItems()
-    {
-        $data = self::curl(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
-        if(!$data) return $this->_responseSuccess();
-        $response = json_decode($data);
-        if(!isset($response->response->success)) return $this->_responseSuccess();
-        if ($response->response->success != 0) {
-            if(isset($response->response->items)){
-                Storage::disk('local')->put('items.txt', $data);
-            }
-            return;
-        }
-        return $this->_responseSuccess();
     }
     public function currentGame()
     {

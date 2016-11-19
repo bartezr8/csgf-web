@@ -65,7 +65,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/getPreviousWinner', 'GameController@getPreviousWinner');
     post('/novigra', 'GameController@newGame');
     post('/checkBrokenGames', 'AdminController@checkBrokenGames');
-    post('/getPriceItems', 'GameController@getPriceItems');
     post('/clearOnline', 'GameController@clearOnline');
     post('/updateOnline', 'GameController@updateOnline');
     post('/userinfo', 'GameController@userinfo');
@@ -85,10 +84,14 @@ Route::group(['middleware' => 'auth'], function () {
     post('/shop/checkOffers', ['as' => 'shop_checkOffers', 'uses' => 'ShopController@checkOffers']);
 });
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
-    post('/shop/checkAllOffers', 'ShopController@checkAllOffers');
+    //post('/shop/checkAllOffers', 'ShopController@checkAllOffers');
     post('/shop/newItems', 'ShopController@addItemsToSale');
+    post('/shop/itemlist', 'ShopController@itemlist');
     post('/shop/checkShop', 'ShopController@checkShop');
     post('/shop/setItemStatus', 'ShopController@setItemStatus');
+    
+    post('/shop/deposit/toCheck', 'ShopController@depositToCheck');
+    post('/shop/deposit/check', 'ShopController@depositCheck');
 });
 
 /* CHAT ROUTES */

@@ -4,6 +4,7 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\SteamController;
 use Exception;
 use Storage;
+use Cache;
 
 class SteamItem {
 
@@ -33,8 +34,6 @@ class SteamItem {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
 
 		$data = curl_exec($ch);
@@ -44,75 +43,72 @@ class SteamItem {
 	}
     
     private function getStemItemPrice($mhn){
-        sleep(1);
+        sleep(5);
+        $lowest = 0; $median=0;
         $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
         $tprice = json_decode($tprice);
-        \Log::error('Item price 3: '.$tprice);
         if (isset($tprice->success)){
             \Log::error('OK');
-            $lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
-            $median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
+            if (isset($tprice->lowest_price))$lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
+            if (isset($tprice->median_price))$median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
             if($lowest<$median){ 
-                \Log::error('Item price 3: '.$lowest);
                 return $lowest;
             }else{
-                \Log::error('Item price 3: '.$median);
                 return $median;
             }
         }
 		return false;
 	}
-    private function UpdateBP(){
-        $data = self::curl(self::URL_REQUEST . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
-        if(!$data) return false;
-        $response = json_decode($data);
-        if(!isset($response->response->success)) return false;
-        if ($response->response->success != 0) {
-            if(isset($response->response->items)){
-                \Cache::put('BP_items', json_encode($response->response->items), 60* 60 * 12);
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    public function getBPItemPrice(){
-        if(!\Cache::has('BP_items')) {
-            self::UpdateBP();
-        }
-        if(\Cache::has('BP_items')) {
-            $usd = $this->getActualCurs();
-            $item_name = $this->market_hash_name;
-            $price_item = 0;
-            $items = json_decode(\Cache::get('BP_items'));
-            
-            if(isset($items->$item_name)){
-                $item = $items->$item_name->value;
-                $price_item = $item / 100 * $usd;
-            }
-        }
-        return $price_item;
-    }
-    
     public function getItemPrice() {
         $price_item = false;
-        if(\Cache::has('BP_items')) {
-            $usd = $this->getActualCurs();
-            $item_name = $this->market_hash_name;
-            $price_item = 0;
-            $items = \Cache::get('BP_items');
-            
-            if(!isset($items->$item_name)){
-                $price_item = 0;
-                \Log::error('isset');
-            } else {
-                \Log::error('!isset');
-                $item = $items->$item_name->value;
-                $price_item = $item / 100 * $usd;
+        $item_name = $this->market_hash_name;
+        $price_item = 0;
+        $usd = self::getActualCurs();
+        
+        $BPitems = Cache::get('bp_market_prices');
+        $FastItems = Cache::get('fast_market_prices');
+        $SItems = Cache::get('steam_market_prices');
+        
+        $fprice = 0; $bprice = 0; $sprice = 0;
+        if(isset($SItems[$item_name])){
+            $sprice = round($SItems[$item_name] * $usd, 2);
+        } else {
+            $sprice = round(self::getStemItemPrice($item_name), 2);
+        }
+        if(isset($FastItems->$item_name)) $fprice = round($FastItems->$item_name * $usd, 2);
+        if(isset($BPitems->$item_name)) $bprice = round($BPitems->$item_name->value * $usd / 100, 2);
+        $del_on = 0;
+        if($sprice > 0){
+            $price_item += $sprice;
+            $del_on++;
+        } 
+        if($fprice > 0){
+            $price_item += $fprice;
+            $del_on++;
+        }
+        if($bprice > 0){
+            $price_item += $bprice;
+            $del_on++;
+        }
+        if($del_on > 0){
+            $price_item = round($price_item / $del_on, 2);
+            if($price_item < 30){
+                if($sprice > 0){
+                    $price_item = $sprice;
+                }
+            } else if($price_item > 20000){
+                if($fprice > 0){
+                    if($bprice > 0){
+                        $price_item = round(($fprice + $bprice)/2, 2);
+                    } else {
+                        $price_item = $fprice;
+                    }
+                } else if($bprice > 0){
+                    $price_item = $bprice;
+                } else {
+                    $price_item = $sprice;
+                }
             }
-            \Log::error('Item price 1: '.$price_item);
-            /*if(($price_item == 0) || $price_item < 10)*/ $price_item = self::getStemItemPrice($item_name);
-            \Log::error('Item price 2: '.$price_item);
         }
         return $price_item;
     }
@@ -125,7 +121,7 @@ class SteamItem {
             $usd = $value[1];
             \Cache::put('ActualCurs', $usd, 12 * 60 * 60);
         } else {
-			$usd = \Cache::get('ActualCurs');
+			$usd = Cache::get('ActualCurs');
         }
         if(!$usd) $usd = 65;
         return $usd;
