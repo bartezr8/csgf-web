@@ -270,7 +270,7 @@ class ShopController extends Controller {
             $left = $canget - $bsum;
             return response()->json(['success' => false, 'msg' => 'У вас осталось '.$left.'/'.$canget.'р. в день.']);
         }
-        if(!User::mchange($this->user->id, $itemsum)) return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);   
+        if(!User::mchange($this->user->id, -$itemsum)) return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);   
         $senditems = [];
         $j = 0;
         $delitems = [];
