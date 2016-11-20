@@ -107,14 +107,6 @@ class GameController extends Controller
                         break;
                     }
                     $dbItemInfo = Item::create((array)$itemInfo[$value]);
-                } else {
-                    if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
-                        $si = new SteamItem($item);
-                        if ($si->price){
-                            $dbItemInfo->price = $si->price;
-                            $dbItemInfo->save();
-                        }
-                    }
                 }
             }
             $itemInfo[$value] = $dbItemInfo;

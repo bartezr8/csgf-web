@@ -295,14 +295,10 @@ class PagesController extends Controller
                             
                             if (is_null($dbItemInfo)) {
                                 $dbitem = new SteamItem($item);
-                                if ($dbitem->price) $dbItemInfo = Item::create((array)$dbitem);
-                            } else {
-                                if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
-                                    $si = new SteamItem($item);
-                                    if ($si->price){
-                                        $dbItemInfo->price = $si->price;
-                                        $dbItemInfo->save();
-                                    }
+                                if ($dbitem->price){ 
+                                    $dbItemInfo = Item::create((array)$dbitem);
+                                } else {
+                                    $dbitem->price = 0;
                                 }
                             }
                             

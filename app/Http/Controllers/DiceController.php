@@ -38,13 +38,9 @@ class DiceController extends Controller {
 		return view('pages.dice', compact('games'));
 	}
     public function bet(Request $request){
-        if (\Cache::has('dice.user.' . $this->user->id)) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
-		\Cache::put('dice.user.' . $this->user->id, '', 1);
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
         if ($request->get('sum') == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
-        if ($this->user->money < $request->get('sum')) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
-        $this->user->money -= $request->get('sum');
-        $this->user->save();
+        if (!User::mchange($this->user->id, -$request->get('sum'))) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
         $roll = rand(1, 6);
         //$am = \DB::table('dice')->sum('am');
         if (rand(0, (ceil($request->get('sum')/10) - 1))!= 0){
@@ -63,23 +59,20 @@ class DiceController extends Controller {
         $win = -$request->get('sum');
         if($request->get('value') == 'low') {
             if ($roll < 4){
-                $this->user->money += $request->get('sum')*2;
+                User::mchange($this->user->id, $request->get('sum')*2);
                 $am += $request->get('sum')*2;
                 $win = $request->get('sum')*2;
-                $this->user->save();
             }
         } else if($request->get('value') == 'high') {
             if ($roll > 3){
-                $this->user->money += $request->get('sum')*2;
+                User::mchange($this->user->id, $request->get('sum')*2);
                 $am += $request->get('sum')*2;
                 $win = $request->get('sum')*2;
-                $this->user->save();
             }
         } else if ($roll == $request->get('value')){
-            $this->user->money += $request->get('sum')*6;
+            User::mchange($this->user->id, $request->get('sum')*5);
             $am += $request->get('sum')*6;
             $win = $request->get('sum')*6;
-            $this->user->save();
         }
         $returnValue = [
             'avatar' => $this->user->avatar,

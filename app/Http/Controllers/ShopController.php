@@ -20,6 +20,7 @@ class ShopController extends Controller {
     const GIVE_ITEMS_CHANNEL = 				'items.to.give';
 	const CHECK_ITEMS_CHANNEL = 			'items.to.check';
     const DECLINE_ITEMS_CHANNEL =           'shop.decline.list';
+    const DEPOSIT_RESULT_CHANNEL =          'offers.deposit.result';
     private function curl($url) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -133,8 +134,7 @@ class ShopController extends Controller {
 					$this->redis->publish('addShop', json_encode($returnValue));
 				}
 				$user = User::find($item->buyer_id);
-				$user->money = $user->money + $item->price;
-				$user->save();
+				User::mchange($user->id, $item->price);
 				if($request->get('status') == Shop::ITEM_STATUS_ERROR_TO_SEND) $this->_responseMessageToSite('Ошибка отправки ' . $item->name . ' - возвращаем: ' . $item->price . 'р.' , $user->steamid64);
 				if($request->get('status') == Shop::ITEM_STATUS_NOT_FOUND) $this->_responseMessageToSite($item->name . ' не найден - возвращаем: ' . $item->price . 'р.' , $user->steamid64);
 				if($request->get('status') == Shop::ITEM_STATUS_RETURNED) $this->_responseMessageToSite($item->name . ' не принят - возвращаем: ' . $item->price . 'р.' , $user->steamid64);
@@ -153,14 +153,6 @@ class ShopController extends Controller {
                 if (is_null($dbItemInfo)) {
                     if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
                     if ($itemInfo[$value]->price) $dbItemInfo = Item::create((array)$itemInfo[$value]);
-                } else {
-                    if ($dbItemInfo->updated_at->getTimestamp() < Carbon::now()->subHours(24)->getTimestamp()) {
-                        $si = new SteamItem($item);
-                        if ($si->price){
-                            $dbItemInfo->price = $si->price;
-                            $dbItemInfo->save();
-                        }
-                    }
                 }
 				$itemInfo[$value] = $dbItemInfo;
 				if ($itemInfo[$value]->price <= config('mod_shop.dep_comission_from')) {
@@ -202,7 +194,7 @@ class ShopController extends Controller {
 			$user = User::where('steamid64', $userid)->first();
 			if(!is_null($user)){
 				if($userid != config('mod_game.bot_steamid')){
-                    $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $userid); $user->money = $user->money + $total_price; $user->save();
+                    $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $userid); User::mchange($user->id, $total_price);
 					\DB::table('deposits')->insertGetId([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
 				}
 			}
@@ -243,96 +235,71 @@ class ShopController extends Controller {
     public function getcart(Request $request){
 		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
 		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		if (config('mod_shop.shop')){
-			if ($this->user->ban == 0){
-				$classids = $request->get('classids');
-				if (!is_null($classids)){
-					$fintems = [];
-					foreach ($classids as $classid){
-						$items = \DB::table('shop')->where('classid', $classid)->where('status', Shop::ITEM_STATUS_FOR_SALE)->get();
-						foreach ($items as $item){
-							if (!in_array($item->id, $fintems)){
-								$fintems[] = $item->id;
-								break;
-							}
-						}
-					}
-					$itemsum = 0;
-					$takesum = 0;
-					if (count($fintems) == 0) {
-						return response()->json(['success' => false, 'msg' => 'Предметы не найдены']);
-					}
-					foreach ($fintems as $i){
-						$item = Shop::find($i);
-						$itemsum += $item->price;
-						if ($item->price >= 5)$takesum+=$item->price;
-					}
-					$games = count(\DB::table('games')
-						->join('bets', 'games.id', '=', 'bets.game_id')
-						->where('bets.user_id', $this->user->id)
-						->groupBy('bets.game_id')
-						->select('bets.id')->get());
-					if($itemsum <= $this->user->money){
-						if(($games > config('mod_shop.games_need_count')) || config('mod_shop.games_need')){
-							$bsum = \DB::table('shop')->where('buyer_id', $this->user->id)->where('buy_at', '>=', Carbon::now()->subDay())->where('price', '>=', 5)->sum('price');
-							$dsum = \DB::table('deposits')->where('user_id', $this->user->id)->where('date', '>=', Carbon::now()->subDay())->where('type', 0)->sum('price');
-							$fksum = \DB::table('freekassa_payments')->where('account', $this->user->id)->where('status', 1)->where('dateComplete', '>=', Carbon::now()->subDay())->sum('AMOUNT');
-							$gdsum = \DB::table('gdonate_payments')->where('account', $this->user->id)->where('status', 1)->where('dateComplete', '>=', Carbon::now()->subDay())->sum('sum');
-							$betssum = \DB::table('bets')->where('user_id', $this->user->id)->orderBy('id')->sum('price');
-							$betssum = round($betssum / 1000 , 2); 
-							if($betssum > 50) $betssum = 50.00;
-							$canget = ($betssum * config('mod_shop.max_daily_sum')) + $dsum + $gdsum + $fksum;
-							if ( $bsum + $takesum <= $canget || !config('mod_shop.max_daily') || $this->user->is_admin){
-								$this->user->money = $this->user->money - $itemsum;
-								$this->user->save();
-								$senditems = [];
-								$j = 0;
-								$delitems = [];
-								foreach ($fintems as $i){
-									$thisitem = Shop::find($i);
-									$delitems[] = $thisitem->classid;
-									$thisitem->status = Shop::ITEM_STATUS_SOLD;
-									$thisitem->buyer_id = $this->user->id;
-									$thisitem->buy_at = Carbon::now();
-									$thisitem->save();
-									$senditems[] = $thisitem;								
-									if (count($senditems) == config('mod_shop.items_per_trade')){
-										$this->sendItem($senditems);
-										$j = 0;
-										$senditems = [];
-									}
-								}
-								if (count($senditems) > 0){
-									$this->sendItem($senditems);
-								}
-								$returnValue = ['list' => $delitems, 'off' => false];
-								$this->redis->publish('delShop', json_encode($returnValue));
-								\DB::table('deposits')->insertGetId([
-									'user_id' => $this->user->id, 
-									'date' => Carbon::now()->toDateTimeString(),
-									'price' => $itemsum,
-									'type' => 1
-								]);
-								return response()->json(['success' => true, 'msg' => 'Предметы будут отправлены в течение 1 мин.']);
-							} else {
-								$left = $canget - $bsum;
-								return response()->json(['success' => false, 'msg' => 'У вас осталось '.$left.'/'.$canget.'р. в день.']);
-							}
-						} else {
-							return response()->json(['success' => false, 'msg' => 'У вас должно быть больше '.config('mod_shop.games_need_count').' игр для покупки в магазине']);
-						}
-					} else {
-						return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);
-					}
-				} else {
-					return response()->json(['success' => false, 'msg' => 'Вы ничего не выбрали!']);
-				}
-			} else {
-				return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте']);
-			}
-		} else {
-			return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
-		}
+		if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
+        if ($this->user->ban != 0) return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте']);
+        $classids = $request->get('classids'); 
+        if (is_null($classids)) return response()->json(['success' => false, 'msg' => 'Вы ничего не выбрали!']);
+        $fintems = [];
+        foreach ($classids as $classid){
+            $items = \DB::table('shop')->where('classid', $classid)->where('status', Shop::ITEM_STATUS_FOR_SALE)->get();
+            foreach ($items as $item){ if (!in_array($item->id, $fintems)){ $fintems[] = $item->id; break; } }
+        }
+        $itemsum = 0;
+        $takesum = 0;
+        if (count($fintems) == 0) { return response()->json(['success' => false, 'msg' => 'Предметы не найдены']); }
+        foreach ($fintems as $i){
+            $item = Shop::find($i);
+            $itemsum += $item->price;
+            if ($item->price >= 5)$takesum+=$item->price;
+        }
+        $games = count(\DB::table('games')
+            ->join('bets', 'games.id', '=', 'bets.game_id')
+            ->where('bets.user_id', $this->user->id)
+            ->groupBy('bets.game_id')
+            ->select('bets.id')->get());
+        if(($games < config('mod_shop.games_need_count')) && config('mod_shop.games_need')) return response()->json(['success' => false, 'msg' => 'У вас должно быть больше '.config('mod_shop.games_need_count').' игр для покупки в магазине']);
+        $bsum = \DB::table('shop')->where('buyer_id', $this->user->id)->where('buy_at', '>=', Carbon::now()->subDay())->where('price', '>=', 5)->sum('price');
+        $dsum = \DB::table('deposits')->where('user_id', $this->user->id)->where('date', '>=', Carbon::now()->subDay())->where('type', 0)->sum('price');
+        $fksum = \DB::table('freekassa_payments')->where('account', $this->user->id)->where('status', 1)->where('dateComplete', '>=', Carbon::now()->subDay())->sum('AMOUNT');
+        $gdsum = \DB::table('gdonate_payments')->where('account', $this->user->id)->where('status', 1)->where('dateComplete', '>=', Carbon::now()->subDay())->sum('sum');
+        $betssum = \DB::table('bets')->where('user_id', $this->user->id)->orderBy('id')->sum('price');
+        $betssum = round($betssum / 1000 , 2); 
+        if($betssum > 50) $betssum = 50.00;
+        $canget = ($betssum * config('mod_shop.max_daily_sum')) + $dsum + $gdsum + $fksum;
+        if ( $bsum + $takesum > $canget && config('mod_shop.max_daily') && !$this->user->is_admin){
+            $left = $canget - $bsum;
+            return response()->json(['success' => false, 'msg' => 'У вас осталось '.$left.'/'.$canget.'р. в день.']);
+        }
+        if(!User::mchange($this->user->id, $itemsum)) return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);   
+        $senditems = [];
+        $j = 0;
+        $delitems = [];
+        foreach ($fintems as $i){
+            $thisitem = Shop::find($i);
+            $delitems[] = $thisitem->classid;
+            $thisitem->status = Shop::ITEM_STATUS_SOLD;
+            $thisitem->buyer_id = $this->user->id;
+            $thisitem->buy_at = Carbon::now();
+            $thisitem->save();
+            $senditems[] = $thisitem;								
+            if (count($senditems) == config('mod_shop.items_per_trade')){
+                $this->sendItem($senditems);
+                $j = 0;
+                $senditems = [];
+            }
+        }
+        if (count($senditems) > 0){
+            $this->sendItem($senditems);
+        }
+        $returnValue = ['list' => $delitems, 'off' => false];
+        $this->redis->publish('delShop', json_encode($returnValue));
+        \DB::table('deposits')->insertGetId([
+            'user_id' => $this->user->id, 
+            'date' => Carbon::now()->toDateTimeString(),
+            'price' => $itemsum,
+            'type' => 1
+        ]);
+        return response()->json(['success' => true, 'msg' => 'Предметы будут отправлены в течение 1 мин.']);
 	}
     
     // DEPOSIT
@@ -351,7 +318,7 @@ class ShopController extends Controller {
     }
     public function depositCheck(Request $request)
     {
-        $data = $this->redis->lrange('offers.deposit.result', 0, -1);
+        $data = $this->redis->lrange(self::DEPOSIT_RESULT_CHANNEL, 0, -1);
         foreach ($data as $newTradeCheck) {
             $tradeCheck = json_decode($newTradeCheck, true);
             $trade = \DB::table('shop_offers')->where('tradeid', $tradeCheck['id'])->first();
@@ -373,20 +340,20 @@ class ShopController extends Controller {
                     }
                     $returnValue = ['list' => $returnValue, 'off' => false];
                     $this->redis->publish('addShop', json_encode($returnValue));
-                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                     if(!is_null($user)){
-                        $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); $user->money += $total_price; $user->save();
+                        $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price);
                         \DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
                     }
                     \DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
                 }
-                if($tradeCheck['id'] == 2){
-                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                if($tradeCheck['status'] == 2){
+                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                 }
-                if($tradeCheck['id'] == 0){
+                if($tradeCheck['status'] == 0){
                     $this->_responseMessageToSite('Обмен #' + $trade->tradeid + ' не действителен', $user->steamid64);
                     \DB::table('shop_offers')->where('id', $trade->id)->delete();
-                    $this->redis->lrem('offers.deposit.result', 1, $newTradeCheck);
+                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                 }
             }
         }

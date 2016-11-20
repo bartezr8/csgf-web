@@ -43,7 +43,7 @@ class SteamItem {
 	}
     
     private function getStemItemPrice($mhn){
-        sleep(5);
+        //sleep(5);
         $lowest = 0; $median=0;
         $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
         $tprice = json_decode($tprice);

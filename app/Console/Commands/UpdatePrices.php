@@ -105,7 +105,7 @@ class UpdatePrices extends Command
                     $this->log("Price for {$itemname} ~{$price} updated");
                     $updated++;
                 }
-                usleep(200000);
+                sleep(1);
             }
         }
         $this->log("Market parsed. Total updated items: {$updated}. New items: {$created}. Market pages parsed: {$parsedPages}");

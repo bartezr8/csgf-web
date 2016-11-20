@@ -14,47 +14,23 @@ use Storage;
 class DoubleController extends Controller {
 	public function double_index(){
 		$gameid = \DB::table('double_games')->max('id');
-		if (is_null($gameid)){$this->newGame();}
+		if (is_null($gameid)){$this->newGame(); $gameid = \DB::table('double_games')->max('id');}
 		$games = \DB::table('double_games')->orderBy('id')->where('id','>=', $gameid-11)->where('id','<', $gameid)->get();
-		foreach ($games as $i){
-			$i->type = $this->_getWinnerType($i->num);
-		}
-		$trp = 0;
+		foreach ($games as $i){ $i->type = $this->_getWinnerType($i->num); } $trp = 0;
 		$tr = \DB::table('double_bets')->where('type', 1)->where('game_id', $gameid)->get();
-		foreach ($tr as $i){
-			$trp += $i->price;
-		}
-		$tgp = 0;
+		foreach ($tr as $i){ $trp += $i->price; } $tgp = 0;
 		$tg = \DB::table('double_bets')->where('type', 2)->where('game_id', $gameid)->get();
-		foreach ($tg as $i){
-			$tgp += $i->price;
-		}
-		$tbp = 0;
+		foreach ($tg as $i){ $tgp += $i->price; } $tbp = 0;
 		$tb = \DB::table('double_bets')->where('type', 3)->where('game_id', $gameid)->get();
-		foreach ($tb as $i){
-			$tbp += $i->price;
-		}
-		$mrp = 0;
+		foreach ($tb as $i){ $tbp += $i->price; } $mrp = 0;
 		$mr = \DB::table('double_bets')->where('type', 1)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-		foreach ($mr as $i){
-			$mrp += $i->price;
-		}
-		$mgp = 0;
+		foreach ($mr as $i){ $mrp += $i->price; } $mgp = 0;
 		$mg = \DB::table('double_bets')->where('type', 2)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-		foreach ($mg as $i){
-			$mgp += $i->price;
-		}
-		$mbp = 0;
+		foreach ($mg as $i){ $mgp += $i->price; } $mbp = 0;
 		$mb = \DB::table('double_bets')->where('type', 3)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-		foreach ($mb as $i){
-			$mbp += $i->price;
-		}
-		$users = [];
+		foreach ($mb as $i){ $mbp += $i->price; } $users = [];
 		$tu = \DB::table('double_bets')->where('game_id', $gameid)/*->groupBy('user_id')*/->get();
-		foreach ($tu as $i){
-			$user = User::where('id', $i->user_id)->first();
-			$users[$i->user_id] = $user;
-		}
+		foreach ($tu as $i){ $user = User::where('id', $i->user_id)->first(); $users[$i->user_id] = $user; }
 		parent::setTitle('DOUBLE | ');
 		$data = [
 			'tr'=>$trp,
@@ -76,72 +52,44 @@ class DoubleController extends Controller {
 		$game = \DB::table('double_games')->where('id', $gameid)->first();
         return response()->json($game);
     }
-	
     public function newGame(){
 		$gameid = \DB::table('double_games')->insertGetId(['status' => 0]);
 		$game = \DB::table('double_games')->where('id', $gameid)->first();
         return response()->json($game);
     }
-	
 	public function newBet(Request $request){
-		if (\Cache::has('double.user.' . $this->user->id))
-			return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('double.user.' . $this->user->id, '', 1);
-		if ($this->user->ban == 0){
-			$amount = floor($request->get('amount'));
-			$type = $request->get('type');
-			$gameid = \DB::table('double_games')->max('id');
-			$bets = \DB::table('double_bets')->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-			$thisgame = \DB::table('double_games')->where('id', $gameid)->first();
-			if (is_null($thisgame)){
-				seld::newGame();
-				$thisgame = \DB::table('double_games')->where('id', $gameid)->first();
-			}
-			if ($thisgame->status <= 1){
-				if (count($bets)<5) {
-					if ($amount >= 1){
-						if ($this->user->money >= $amount){
-							$money = $this->user->money - $amount;
-							\DB::table('users')->where('id', $this->user->id)->update(['money' => $money]);				
-							$bet = \DB::table('double_bets')->insertGetId(['user_id' => $this->user->id, 'game_id' => $gameid, 'price' => $amount, 'type' => $type]);
-							$user = User::where('id', $this->user->id)->first();
-							$bet = \DB::table('double_bets')->where('id', $bet)->first();
-							$price = $amount + $thisgame->price;
-							if (!$user->is_admin) \DB::table('double_games')->where('id', $gameid)->update(['price' => $price]);	
-							$color = $this->_getTypeText($type);
-							$realcolor = $this->_getTypeColor($type);
-							$tbp = 0;
-							$html = view('includes.double_bet', compact('bet','user'))->render();
-							$tb = \DB::table('double_bets')->where('type', $type)->where('game_id', $gameid)->get();
-							foreach ($tb as $i){
-								$tbp += $i->price;
-							}
-							if ($thisgame->status == 0) \DB::table('double_games')->where('id', $gameid)->update(['status' => 1]);
-							$returnValue = [
-								'html' => $html,
-								'tbp' => $tbp,
-								'userid' => $this->user->steamid64,
-								'price' => $amount,
-								'type' => $type
-							];
-							$this->redis->publish('nbdouble', json_encode($returnValue));
-							
-							return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
-						} else {
-							return response()->json(['success' => false, 'msg' => 'Недостаточно средств']);
-						}
-					} else {
-						return response()->json(['success' => false, 'msg' => 'Минимальная ставка 1 руб.']);
-					}
-				} else {
-					return response()->json(['success' => false, 'msg' => 'Максимум 5 ставок за игру']);
-				}
-			} else {
-				return response()->json(['success' => false, 'msg' => 'Дождитесь следующей игры']);
-			}
-		} else {
-			$this->_responseMessageToSite('Вы забанены на сайте.', $this->user->steamid64);
-		}
+		if ($this->user->ban != 0) return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте.']);
+        $amount = floor($request->get('amount'));
+        $type = $request->get('type');
+        $gameid = \DB::table('double_games')->max('id');
+        $bets = \DB::table('double_bets')->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
+        $thisgame = \DB::table('double_games')->where('id', $gameid)->first();
+        if (is_null($thisgame)){ seld::newGame(); $thisgame = \DB::table('double_games')->where('id', $gameid)->first(); }
+        if ($thisgame->status > 1) return response()->json(['success' => false, 'msg' => 'Дождитесь следующей игры']);
+        if (count($bets)>=5) return response()->json(['success' => false, 'msg' => 'Максимум 5 ставок за игру']);
+        if ($amount < 1) return response()->json(['success' => false, 'msg' => 'Минимальная ставка 1 руб.']);
+        if(!User::mchange($this->user->id, -$amount)) return response()->json(['success' => false, 'msg' => 'Недостаточно средств']);
+        $bet = \DB::table('double_bets')->insertGetId(['user_id' => $this->user->id, 'game_id' => $gameid, 'price' => $amount, 'type' => $type]);
+        $user = User::where('id', $this->user->id)->first();
+        $bet = \DB::table('double_bets')->where('id', $bet)->first();
+        $price = $amount + $thisgame->price;
+        if (!$user->is_admin) \DB::table('double_games')->where('id', $gameid)->update(['price' => $price]);	
+        $color = $this->_getTypeText($type);
+        $realcolor = $this->_getTypeColor($type);
+        $tbp = 0;
+        $html = view('includes.double_bet', compact('bet','user'))->render();
+        $tb = \DB::table('double_bets')->where('type', $type)->where('game_id', $gameid)->get();
+        foreach ($tb as $i){ $tbp += $i->price; }
+        if ($thisgame->status == 0) \DB::table('double_games')->where('id', $gameid)->update(['status' => 1]);
+        $returnValue = [
+            'html' => $html,
+            'tbp' => $tbp,
+            'userid' => $this->user->steamid64,
+            'price' => $amount,
+            'type' => $type
+        ];
+        $this->redis->publish('nbdouble', json_encode($returnValue));
+        return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
     }
 
     public function startGame(){

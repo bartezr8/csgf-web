@@ -30,20 +30,17 @@ class SendController extends Controller {
     }
     
 	public function send(Request $request){
-        if (\Cache::has('send.user.' . $this->user->id)) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
-		\Cache::put('send.user.' . $this->user->id, '', 1);
+
         $sum = $request->get('sum');
         if($this->user->ban) return response()->json(['text' => 'Вы забанены на сайте!', 'type' => 'error']);
         if($sum=='') return response()->json(['text' => 'Укажите сумму.', 'type' => 'error']);
         if(trim($request->get('steamid')=='')) return response()->json(['text' => 'Укажите получателя.', 'type' => 'error']);
         if($this->user->steamid64 == trim($request->get('steamid'))) return response()->json(['text' => 'Нельзя переводить себе.', 'type' => 'error']);
-        if($this->user->money < $sum) return response()->json(['text' => 'У вас недостаточно средств.', 'type' => 'error']);
         if($sum <= 0) return response()->json(['text' => 'Укажите сумму.', 'type' => 'error']);
         $user = \DB::table('users')->where('steamid64', trim($request->get('steamid')))->first();
         if(is_null($user)) return response()->json(['text' => 'Пользователь не найден.', 'type' => 'error']);
         $sum = ceil($sum * 100)/100;
-        $this->user->money -= $sum;
-        $this->user->save();
+        if(!User::mchange($this->user->id, -$sum)) return response()->json(['text' => 'У вас недостаточно средств.', 'type' => 'error']);
         \DB::table('users')->where('steamid64', $user->steamid64)->update(['money' => ($user->money + $sum)]);
         \DB::table('perevod')->insert([
             'money_amount' => $sum,

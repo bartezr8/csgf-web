@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DB;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -56,5 +57,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function itemsCountByGame($game)
     {
         return $this->bets()->where('game_id', $game->id)->sum('itemsCount');
+    }
+    
+    public static function mchange($id, $sum){
+        DB::beginTransaction();
+        $user = User::where('id', $id)->lockForUpdate()->first();
+        if (is_null($user)) return false;
+        $newsum = $user->money + $sum;
+        if ($newsum < 0) return false;
+        $user->money = $newsum;
+        $user->save();
+        DB::commit();
+        return true;
     }
 }
