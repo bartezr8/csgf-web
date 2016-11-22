@@ -148,22 +148,22 @@ class ShopController extends Controller {
         foreach ($items as $item) {
             $value = $item['classid'];
             if ($item['appid'] == config('mod_game.appid')) {
-                $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($dbItemInfo)) {
-                    if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
-                    if ($itemInfo[$value]->price) $dbItemInfo = Item::create((array)$itemInfo[$value]);
+                if (!isset($itemInfo[$value])){
+                    $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                    $itemInfo[$value] = $info;
                 }
-				$itemInfo[$value] = $dbItemInfo;
-				if ($itemInfo[$value]->price <= config('mod_shop.dep_comission_from')) {
-					if ($itemInfo[$value]->price <= config('mod_shop.garbadge_from')) {
-						$itemInfo[$value]->price = $itemInfo[$value]->price/100*config('mod_shop.garbadge_%');
-					}
-					$itemInfo[$value]->price = $itemInfo[$value]->price * (1 - config('mod_shop.dep_comission_%')/100);
-				}
-				$total_price += $itemInfo[$value]->price;
-				$items[$i]['price'] = $itemInfo[$value]->price;
-				unset($items[$i]['appid']);
-				$i++;
+                if(Item::pchk($itemInfo[$value])){
+                    if ($itemInfo[$value]->price <= config('mod_shop.dep_comission_from')) {
+                        if ($itemInfo[$value]->price <= config('mod_shop.garbadge_from')) {
+                            $itemInfo[$value]->price = $itemInfo[$value]->price/100*config('mod_shop.garbadge_%');
+                        }
+                        $itemInfo[$value]->price = $itemInfo[$value]->price * (1 - config('mod_shop.dep_comission_%')/100);
+                    }
+                    $total_price += $itemInfo[$value]->price;
+                    $items[$i]['price'] = $itemInfo[$value]->price;
+                    unset($items[$i]['appid']);
+                    $i++;
+                }
 			}
         }
         return $total_price;
@@ -179,13 +179,12 @@ class ShopController extends Controller {
             foreach($items as $item) {
 				$userid = $item['depositorid'];
                 $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
-                if($info->price){
+                if(Item::pchk($info)){
                     $item['steam_price'] = $info->price;
                     $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
                     Shop::create($item);
+			`   	$returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                 }
-				$returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
 			}
 			$returnValue = ['list' => $returnValue, 'off' => false];
 			$this->redis->publish('addShop', json_encode($returnValue));
@@ -212,21 +211,13 @@ class ShopController extends Controller {
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem(self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
 			foreach($itemsToAdd as $item) {
-				$dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
-				if (is_null($dbItemInfo)) {
-					$itemInfo = new SteamItem($item);
-					$item['steam_price'] = $itemInfo->price;
+				$info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+				if (Item::pchk($info)) {
+					$item['steam_price'] = $info->price;
 					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-					Shop::create($item);
-				}else{
-					$item['steam_price'] = $dbItemInfo->price;
-					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-					Shop::create($item);
-				}
-				$item = Shop::where('inventoryId', $item['inventoryId'])->first();
-                $returnValue = [];
-				$returnValue[] = [ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ];
-				$returnValue = ['list' => $returnValue, 'off' => false]; $this->redis->publish('addShop', json_encode($returnValue));
+					$item = Shop::create($item);
+                    $returnValue = ['list' => [[ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ]], 'off' => false]; $this->redis->publish('addShop', json_encode($returnValue));
+                }
 			}
 		}
         return response()->json(['success' => true]);
@@ -330,13 +321,12 @@ class ShopController extends Controller {
                         $total_price = $this->_parseItems($items);
                         foreach($items as $item) {
                             $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                            if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
-                            if($info->price){
+                            if(Item::pchk($info)){
                                 $item['steam_price'] = $info->price;
                                 $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
                                 Shop::create($item);
+                                $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                             }
-                            $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                         }
                         $returnValue = ['list' => $returnValue, 'off' => false];
                         $this->redis->publish('addShop', json_encode($returnValue));
@@ -440,13 +430,7 @@ class ShopController extends Controller {
                 $class_instance = $value['classid'].'_'.$value['instanceid'];
                 $item = $items['rgDescriptions'][$class_instance];
                 $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($info)){
-                    $info = new SteamItem($item);
-                    if ($info->price){
-                        $info = Item::create((array)$info);
-                    }
-                }
-				if($info->price){
+				if(Item::pchk($info)){
 					$item['price'] = $info->price;
 					if ($item['price'] <= config('mod_shop.dep_comission_from')) {
 						if ($item['price'] <= config('mod_shop.garbadge_from')) {
