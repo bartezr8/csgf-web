@@ -41,7 +41,7 @@ class SendController extends Controller {
         if(is_null($user)) return response()->json(['text' => 'Пользователь не найден.', 'type' => 'error']);
         $sum = ceil($sum * 100)/100;
         if(!User::mchange($this->user->id, -$sum)) return response()->json(['text' => 'У вас недостаточно средств.', 'type' => 'error']);
-        User::mchange($user->id, $sum)
+        User::mchange($user->id, $sum);
         \DB::table('perevod')->insert([
             'money_amount' => $sum,
             'money_to' =>  $user->username,

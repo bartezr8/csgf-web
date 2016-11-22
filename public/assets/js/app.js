@@ -706,7 +706,7 @@ if(START) {
                                 'z-index': '107'
                             });
                             $('#winnerInfo .winner-info-holder').slideDown();
-                            $('#roundFinishBlock').slideDown();
+                            $('#roundFinishBlock').show();
                             if(data.winner.steamid64 == USER_ID) {
                                 $.notify('Поздравляем с победой', {
                                     clickToHide: 'true',
@@ -736,7 +736,7 @@ if(START) {
                                 'z-index': '107'
                             });
                             $('#winnerInfo .winner-info-holder').slideDown();
-                            $('#roundFinishBlock').slideDown();
+                            $('#roundFinishBlock').show();
                             $('#usersCarousel').animate({
                                 marginLeft: -this_scrol
                             }, 1000, easetype, function() {});
@@ -775,9 +775,9 @@ if(START) {
             $('.item-bar-text').html('<span>0</span> предметов');
             $('.item-bar').css('width', '0%');
             $('#roundFinishBlock').hide();
-            $('#barContainer').slideDown();
-            $('#usersCarouselConatiner').slideUp();
-            $('#depositButtonsBlock').slideDown();
+            $('#barContainer').show();
+            $('#usersCarouselConatiner').hide();
+            $('#depositButtonsBlock').show();
             $('#winnerInfo').hide();
             $('#winnerInfo .winner-info-holder').hide();
             $('#gameTimer .countMinutes').text('02');

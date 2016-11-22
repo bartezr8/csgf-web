@@ -64,7 +64,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $user = User::where('id', $id)->lockForUpdate()->first();
         if (is_null($user)) return false;
         $newsum = $user->money + $sum;
-        if ($newsum < 0) return false;
+        if (($newsum < 0) && ($sum < 0)) return false;
         $user->money = $newsum;
         $user->save();
         DB::commit();

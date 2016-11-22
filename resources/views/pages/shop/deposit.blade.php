@@ -38,52 +38,44 @@
             <div id="S_dep" style="">
                 <div class="buy-cards-block" style="margin-top: 0px;">
                     <div class="shop-item-filters">
-                        <div class="left-totalitems" style="margin-top: 3px;">
+                        <div class="left-totalitems" >
                            Ваши выбранные предметы | Предметов: <span id="dcart-total">0</span> | Сумма: <span id="dcart-total-price">0</span>
                         </div>
-                        <a onclick="getitems()" class="myhistorylink" style="margin-top: 3px;">Внести предметы</a>
-                        <a target="_blank" id="acceptTradeUrl" class="myhistorylink" href="/" style="display:none; margin-top: 3px;">Принять обмен</a>
-                        <a onclick="checkOffers()" class="myhistorylink" style="margin-top: 3px;">Проверить Обмены</a>
+                        <a href="{{ route('cards-history') }}" class="btn-history">История обменов</a>
+                        <a class="btn-buy" onclick="getitems()" id="get-cart">Внести предметы</a>
                     </div>
                 </div>
-                <div id="dep-cart-list" class="cart-list" style="margin-right: -25px;display: block;">
-                    <script type="text/template" id="item-template">
-                        <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" onclick="buy( <%= id %> )">
-                            <div class="deposit-item-wrap">
-                                <div class="img-wrap"><img src="<%= image %>" alt="" title=""/></div>
-                                <div class="name"><%= name %></div>
-                                <div class="deposit-price"><%= priceText %> <span>руб</span></div>
-                                <div class="deposit-exterior"><%= shortexterior %></div>
-                                <div class="deposit-count">x<%= count %></div>
-                            </div>
-                        </div>
-                    </script></div>
-                @if(!$u->trade_link)
-                    <div class="green-txt-info">Нет ссылки для обмена!</div>
-                @endif
+                <div id="dep-cart-list" class="cart-list" style="margin-right: -25px;display: block;"></div>
                 <div class="buy-cards-block" style="margin-top: 0px;">
                     <div class="shop-item-filters">
-                        <div class="left-totalitems" style="margin-top: 3px;">
-                           Ваш инвентарь
-                        </div>
-                        <a href="{{ route('cards-history') }}" style="margin: 3px 5px 0px 12px;" class="myhistorylink">История обменов</a>
-                        <a onclick="inv_update()" style="margin: 3px 5px 0px 12px;" class="myhistorylink">Обновить инвентарь</a>
+                        <div class="left-totalitems" >Ваш инвентарь</div>
+                        <a onclick="inv_update()" target="_blank" style="width: 270px;display: inline-block;vertical-align: middle;float: right;padding: 0px 25px;font-size: 12px;font-weight: 400;height: 30px;line-height: 30px;" class=" btn-vk ">Обновить инвентарь</a>
                     </div>
                 </div>
-
                 <div id="dep-items-list" class="items-list" style="margin-right: -25px; display: block;"></div>
+                <script type="text/template" id="item-template">
+                    <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" onclick="buy( <%= id %> )">
+                        <div class="deposit-item-wrap">
+                            <div class="img-wrap"><img src="<%= image %>" alt="" title=""/></div>
+                            <div class="name"><%= name %></div>
+                            <div class="deposit-price"><%= priceText %> <span>руб</span></div>
+                            <div class="deposit-exterior"><%= shortexterior %></div>
+                            <div class="deposit-count">x<%= count %></div>
+                        </div>
+                    </div>
+                </script>
             </div>
         </div>
     </div>
     <div style="display: none;">
-        <div class="box-modal affiliate-program" id="shopDepositModal">
+        <div class="box-modal affiliate-program" id="depModal">
             <div class="box-modal-head">
                 <div class="box-modal_close arcticmodal-close"></div>
             </div>
             <div class="box-modal-content">
                 <div class="content-block">
                     <div class="title-block">
-                        <h2>Перевод в карточки</h2>
+                        <h2>Обмен отправлен</h2>
                     </div>
                 </div>
                 <div class="b-modal-cards" style="border: none; width: 609px; border-radius: 0px;" id="cardDepositModal">
@@ -91,18 +83,14 @@
                         <div class="box-modal-content">
                             <div class="add-balance-block">
                                 <div class="balance-item">
-                                    Ваш баланс:
-                                    <span class="userBalance">{{ $u->money }} </span> <div class="price-currency">рублей</div>
+                                    Код безопасности:
                                 </div>
-
                                 <span class="icon-arrow-right"></span>
-                                <div id="GDonate" class="input-group">
-                                    <form method="GET" action="/pay">
-                                        <input type="hidden" name="user_id" value="2542">
-                                        <input type="text" name="sum" placeholder="Введите сумму">
-                                        <button type="submit" class="btn-add-balance" name="">пополнить</button>
-                                    </form>
+                                <div class="balance-item">
+                                    <span id="depTradeCode">XXXXX</span>
                                 </div>
+                                <span class="icon-arrow-right"></span>
+                                <a class="btn-buy" href="" target="_blank" style="float: none;" id="depUrl">Принять обмен</a>
                             </div>
                         </div>
                     </div>

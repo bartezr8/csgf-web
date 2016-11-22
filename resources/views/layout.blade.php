@@ -22,6 +22,7 @@
 	<link href="{{ $asset('assets/css/fonts.css') }}" rel="stylesheet">
     <!--link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=latin,cyrillic' rel='stylesheet' type='text/css' /-->
     <script src="{{ $asset('assets/js/main.js') }}" ></script>
+    <script src="{{ $asset('assets/js/snowstorm.js') }}" ></script>
     <script src="{{ $asset('assets/js/vendor.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery-ui.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
@@ -71,9 +72,8 @@
 		<a style="" title="Отключить звук" class="sound_off wobble-horizontal"><div class="sound"></div></a>
 		<a style="display: none;" title="Включить звук" class="sound_on wobble-horizontal"><div class="sound-off"></div></a>
 	</div>
-	<div class="main-container" style="box-shadow: 0 0 10px #1E2127;">
-		<div class="dad-container">
-		<header>
+	<div class="main-container">
+    <header id="header">
 		<div class="header-container">
 			<div class="header-top">
 				<div class="logotype active">
@@ -114,7 +114,7 @@
 					</div>
 				</div>
 
-				<div class="right-block">
+				<div class="right-block" style="height: 65px;">
                     @if(Auth::guest())
 					<div class="profile">
 						<a href="{{ route('login') }}" class="authorization">войти через steam</a>
@@ -157,11 +157,7 @@
                 </div>
 			</div>
 		</div>
-	</header>
-	<main>
-	<div class="content-block">
         <div class="msg-wrap">
-     
             <a href="/">
                 <div class="black-txt-info " style="width: 24%;float: left;margin: 5px 0px 5px;height:30px;">
                     <img src="/assets/img/stav.png" style="margin-right: 5px" alt=""><b>Рулетка</b>
@@ -183,6 +179,11 @@
                 </div>
             </a>
         </div>
+	</header>
+    <div class="dad-container">
+	<main>
+	<div class="content-block">
+        <div id="marg" style="padding-top: 183px;"></div>
 		<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none">
 			<li><a tabindex="-1" data-act="0">Узнать SteamID</a></li>
 			<li><a tabindex="-1" data-act="1">Узнать НИК</a></li>

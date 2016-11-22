@@ -52,7 +52,7 @@ class CoinFlipController extends Controller {
             $looser = $this->user;
             $winner = $creator;
         }
-        DB::table('users')->where('id', $winner->id)->update(['money' => ($winner->money + $game->money * 2)]);
+        User::mchange($winner->id, $game->money*2);
         DB::table('coin')->where('id', $game->id)->update(['money' => ($game->money + $game->money), 'status' => 1, 'player' => $this->user->id, 'winner'=> $winner->id]);
         $returnValue = [
             'ava' => $this->user->avatar,

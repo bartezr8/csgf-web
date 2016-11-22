@@ -182,8 +182,9 @@ html:before {
     background: radial-gradient(ellipse at top,rgb(0, 168, 255) -160%,#000000 90%);
 }
 .main-container {
+    box-shadow: 0 0 10px #1E2127;
 	width: 1050px;
-	padding: 0 20px;
+	padding: 0;
 	height: 100%;
 	position: relative;
 	margin-left: auto;
@@ -192,14 +193,18 @@ html:before {
 }
 .main-container.with-chat {
 	width: 1345px;
-	padding: 0;
 }
 .dad-container {
+    padding: 0 20px;
+    width: 1050px;
 }
-.dad-container.with-chat {
-	width: 1050px;
-	padding: 0 20px;
-
+#header {
+    z-index: 1000;
+    background: #223340;
+    width: 1050px;
+    padding: 0 20px;
+    border-bottom: 1px solid #2F5463;
+    position: fixed;
 }
 .header-container {
 	padding: 5px 25px 0px;

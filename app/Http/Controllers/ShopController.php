@@ -323,37 +323,37 @@ class ShopController extends Controller {
             $tradeCheck = json_decode($newTradeCheck, true);
             $trade = \DB::table('shop_offers')->where('tradeid', $tradeCheck['id'])->first();
             if(!is_null($trade)){
-                $user = User::find($trade->user_id);
-                if($tradeCheck['status'] == 1){
-                    $items = $tradeCheck['items'];
-                    $returnValue = [];
-                    $total_price = $this->_parseItems($items);
-                    foreach($items as $item) {
-                        $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                        if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
-                        if($info->price){
-                            $item['steam_price'] = $info->price;
-                            $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-                            Shop::create($item);
+                if($trade->status == 0){
+                    $user = User::find($trade->user_id);
+                    if($tradeCheck['status'] == 1){
+                        $items = $tradeCheck['items'];
+                        $returnValue = [];
+                        $total_price = $this->_parseItems($items);
+                        foreach($items as $item) {
+                            $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                            if (is_null($info)) { $info = new SteamItem($item); if ($info->price) $info = Item::create((array)$info); } 
+                            if($info->price){
+                                $item['steam_price'] = $info->price;
+                                $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
+                                Shop::create($item);
+                            }
+                            $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                         }
-                        $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
-                    }
-                    $returnValue = ['list' => $returnValue, 'off' => false];
-                    $this->redis->publish('addShop', json_encode($returnValue));
-                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
-                    if(!is_null($user)){
+                        $returnValue = ['list' => $returnValue, 'off' => false];
+                        $this->redis->publish('addShop', json_encode($returnValue));
+                        $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                        \DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
                         $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price);
                         \DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
                     }
-                    \DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
-                }
-                if($tradeCheck['status'] == 2){
-                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
-                }
-                if($tradeCheck['status'] == 0){
-                    $this->_responseMessageToSite('Обмен #' + $trade->tradeid + ' не действителен', $user->steamid64);
-                    \DB::table('shop_offers')->where('id', $trade->id)->delete();
-                    $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                    if($tradeCheck['status'] == 2){
+                        $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                    }
+                    if($tradeCheck['status'] == 0){
+                        $this->_responseMessageToSite('Обмен #' + $trade->tradeid + ' не действителен', $user->steamid64);
+                        \DB::table('shop_offers')->where('id', $trade->id)->delete();
+                        $this->redis->lrem(self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                    }
                 }
             }
         }
@@ -390,7 +390,7 @@ class ShopController extends Controller {
 							'tradeid' => $out['tradeid'],
 							'status' => 0
 						]);
-						return response()->json(['success' => true, 'msg' => 'Обмен отправлен. Код: ' . $out['code'], 'tradeid' => $out['tradeid']]);
+						return response()->json(['success' => true, 'msg' => $out['code'], 'tradeid' => $out['tradeid']]);
 					} else {
 						$msg = 'Ошибка';
 						if(isset($out['error'])) $msg = $out['error'];
