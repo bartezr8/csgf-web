@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Bet;
 use App\Game;
-use App\Item;
 use App\Services\SteamItem;
 use App\User;
 use Illuminate\Http\Request;

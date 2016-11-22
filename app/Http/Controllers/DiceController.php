@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Item;
 use App\Services\SteamItem;
 use App\User;
 use Carbon\Carbon;
