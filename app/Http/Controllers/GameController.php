@@ -96,24 +96,19 @@ class GameController extends Controller
                 $missing = true;
                 break;
             }
-            if(isset($itemInfo[$value])){
-                $dbItemInfo = $itemInfo[$value];
-            } else {
-                $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                if (is_null($dbItemInfo)) {
-                    if (!isset($itemInfo[$value])) $itemInfo[$value] = new SteamItem($item);
-                    if (!$itemInfo[$value]->price){
-                        $price = true;
-                        break;
-                    }
-                    $dbItemInfo = Item::create((array)$itemInfo[$value]);
-                }
+            if (!isset($itemInfo[$value])){
+                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                $itemInfo[$value] = $info;
             }
-            $itemInfo[$value] = $dbItemInfo;
-            $total_price = $total_price + $itemInfo[$value]->price;
-            $items[$i]['price'] = $itemInfo[$value]->price;
-            unset($items[$i]['appid']);
-            $i++;
+            if(Item::pchk($itemInfo[$value])){
+                $total_price = $total_price + $itemInfo[$value]->price;
+                $items[$i]['price'] = $itemInfo[$value]->price;
+                unset($items[$i]['appid']);
+                $i++;
+            } else {
+                $price = true;
+                break;
+            }
         }
         return $total_price;
     }

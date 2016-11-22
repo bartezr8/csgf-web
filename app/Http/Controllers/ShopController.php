@@ -183,7 +183,7 @@ class ShopController extends Controller {
                     $item['steam_price'] = $info->price;
                     $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
                     Shop::create($item);
-			`   	$returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
+                    $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                 }
 			}
 			$returnValue = ['list' => $returnValue, 'off' => false];
