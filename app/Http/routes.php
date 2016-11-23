@@ -69,6 +69,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/clearOnline', 'GameController@clearOnline');
     post('/updateOnline', 'GameController@updateOnline');
     post('/userinfo', 'GameController@userinfo');
+    post('/parseSteam', 'GameController@parseMarket');
 });
 
 /* SHOP ROUTES */

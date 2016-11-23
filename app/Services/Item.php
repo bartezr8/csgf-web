@@ -3,11 +3,11 @@
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\SteamController;
 
-use App\Prices\items_backpack.php;
-use App\Prices\items_fast.php;
-use App\Prices\items_steam.php;
+use App\Item_BP;
+use App\Item_Fast;
+use App\Item_Steam;
 
-use Exception
+use Exception;
 use Storage;
 use Cache;
 
@@ -68,6 +68,7 @@ class Item {
         if(is_null($item)) return false;
         if(!isset($item->price)) return false;
         if(!$item->price) return false;
+        if($item->price <= 0) return false;
         return true;
     }
 }

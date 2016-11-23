@@ -8,6 +8,7 @@ use App\Services\Item;
 use App\Ticket;
 use App\User;
 use App\Shop;
+use App\Item_Steam;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\WinnerTicket;
@@ -53,19 +54,14 @@ class GameController extends Controller
     }
     public function curl($url) {
 		$ch = curl_init();
-
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
-		curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-
 		$data = curl_exec($ch);
 		curl_close($ch);
-
 		return $data;
 	}
 
@@ -141,6 +137,32 @@ class GameController extends Controller
 		$echo = 'Разыграно сегодня: ' . $sumtd . ' | Комиссия: ~' . ($sumtd * 0.09) . '<br> Разыграно за неделю: ' . $sumfw . ' | Комиссия: ~' . ($sumfw * 0.09) . '<br> Разыграно всего: ' . $sumfr . ' | Комиссия: ~' . ($sumfr * 0.09);
         return $echo;
     }
+    
+    public function parseMarket() {
+        $data = $this->redis->lrange('parserSteam', 0, -1);
+        foreach ($data as $strpage) {
+            $json = json_decode($strpage);
+            $this->redis->lrem('parserSteam', 0, $strpage);
+            $sdata = $json->results_html;
+            preg_match_all('%<a class="market_listing_row_link" href="(.+?)" id="resultlink.*?<span class="normal_price">(.+?) .+?</span>.+?<span class="sale_price">(.+?) .+?</span>.*?class="market_listing_item_name" style=".*?">(.+?)</span>%s', $sdata, $result, PREG_PATTERN_ORDER);
+            for ($i = 0; $i < count($result[0]); $i++) {
+                $steam_price_sale = substr($result[3][$i],1);
+                $steam_market_name = $result[4][$i];
+                $steam_price_sale = str_replace(",", ".", $steam_price_sale);
+                $nitem = [ 'market_hash_name' => $steam_market_name, 'price' => $steam_price_sale ];
+                $dbitem = Item_Steam::where('market_hash_name', $nitem['market_hash_name'])->first();
+                if(is_null($dbitem)){
+                    Item_Steam::create($nitem);
+                } else {
+                    $dbitem->price = $nitem['price'];
+                    $dbitem->save();
+                }
+            }
+            sleep(1);
+        }
+    }    
+    
+    
 	public static function _fixGame($id)
 	{
         $game = Game::where('id', $id)->first();
