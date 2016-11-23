@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 use App\Bet;
 use App\Game;
-use App\Item;
-use App\Services\SteamItem;
+use App\Services\Item;
 use App\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -291,22 +290,12 @@ class PagesController extends Controller
                         foreach ($items['rgInventory'] as $id => $value) {
                             $class_instance = $value['classid'].'_'.$value['instanceid'];
                             $item = $items['rgDescriptions'][$class_instance];
-                            $dbItemInfo = Item::where('market_hash_name', $item['market_hash_name'])->first();
-                            
-                            if (is_null($dbItemInfo)) {
-                                $dbitem = new SteamItem($item);
-                                if ($dbitem->price){ 
-                                    $dbItemInfo = Item::create((array)$dbitem);
-                                } else {
-                                    $dbitem->price = 0;
-                                }
+                            $info = new Item($item);
+                            if(!Item::pchk($info)){
+                                $info->price = 0;
                             }
-                            
-                            if(!$dbItemInfo->price){
-                                $dbItemInfo->price = 0;
-                            }
-                            $items['rgDescriptions'][$class_instance]['price'] = $dbItemInfo->price;
-                            $items['rgInventory'][$id]['price'] = $dbItemInfo->price;
+                            $items['rgDescriptions'][$class_instance]['price'] = $info->price;
+                            $items['rgInventory'][$id]['price'] = $info->price;
                         }
                     }
                     $arr = (array)$items['rgDescriptions'];

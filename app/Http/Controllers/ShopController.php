@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Item;
+use App\Services\Item;
 use Auth;
-use App\Services\SteamItem;
 use App\Shop;
 use App\User;
 use Carbon\Carbon;
@@ -149,7 +148,7 @@ class ShopController extends Controller {
             $value = $item['classid'];
             if ($item['appid'] == config('mod_game.appid')) {
                 if (!isset($itemInfo[$value])){
-                    $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                    $info = new Item($item);
                     $itemInfo[$value] = $info;
                 }
                 if(Item::pchk($itemInfo[$value])){
@@ -178,7 +177,7 @@ class ShopController extends Controller {
 			$total_price = $this->_parseItems($items);
             foreach($items as $item) {
 				$userid = $item['depositorid'];
-                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                $info = new Item($item);
                 if(Item::pchk($info)){
                     $item['steam_price'] = $info->price;
                     $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
@@ -211,7 +210,7 @@ class ShopController extends Controller {
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem(self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
 			foreach($itemsToAdd as $item) {
-				$info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+				$info = new Item($item);
 				if (Item::pchk($info)) {
 					$item['steam_price'] = $info->price;
 					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
@@ -320,7 +319,7 @@ class ShopController extends Controller {
                         $returnValue = [];
                         $total_price = $this->_parseItems($items);
                         foreach($items as $item) {
-                            $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                            $info = new Item($item);
                             if(Item::pchk($info)){
                                 $item['steam_price'] = $info->price;
                                 $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
@@ -429,7 +428,7 @@ class ShopController extends Controller {
 			foreach ($items['rgInventory'] as $id => $value) {
                 $class_instance = $value['classid'].'_'.$value['instanceid'];
                 $item = $items['rgDescriptions'][$class_instance];
-                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                $info = new Item($item);
 				if(Item::pchk($info)){
 					$item['price'] = $info->price;
 					if ($item['price'] <= config('mod_shop.dep_comission_from')) {

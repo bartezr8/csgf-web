@@ -1,7 +1,10 @@
 <?php
 
-get('/login', ['as' => 'login', 'uses' => 'SteamController@login']);
 get('/', ['as' => 'index', 'uses' => 'GameController@currentGame']);
+
+get('/login', ['as' => 'login', 'uses' => 'SteamController@login']);
+get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
+
 get('/support', ['as' => 'support', 'uses' => 'PagesController@support']);
 get('/fairplay/{game}', ['as' => 'fairplay', 'uses' => 'PagesController@fairplay']);
 get('/fairplay', ['as' => 'fairplay_no', 'uses' => 'PagesController@fairplay_no']);
@@ -17,21 +20,17 @@ get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
 get('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
-get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
+
 
 Route::group(['middleware' => 'auth'], function () {
-    get('/havegame', 'GameController@havegame');
     get('/logout', ['as' => 'logout', 'uses' => 'SteamController@logout']);
-    get('/dec', ['as' => 'dec', 'uses' => 'GameController@dec', 'middleware' => 'access:admin']);
     get('/ref', ['as' => 'ref', 'uses' => 'RefController@ref']);    
     get('/getcoupon', ['as' => 'getcoupon', 'uses' => 'RefController@getcoupon']);
     get('/setcoupon', ['as' => 'setcoupon', 'uses' => 'RefController@setcoupon']);
     get('/pay', ['as' => 'pay', 'uses' => 'PagesController@pay']);
-    //get('/deposit', ['as' => 'deposit', 'uses' => 'GameController@deposit']);
     get('/dep', ['as' => 'deposit', 'uses' => 'GameController@deposit']);
     get('/my-inventory', ['as' => 'my-inventory', 'uses' => 'PagesController@myinventory']);
     post('/myinventory', ['as' => 'myinventory', 'uses' => 'PagesController@myinventory']);
-    post('/inv', ['as' => 'getitemsF', 'uses' => 'GameController@getitemsF']);
     post('/getcoupon', ['as' => 'getcoupon', 'uses' => 'RefController@getcoupon']);
     post('/setcoupon', ['as' => 'setcoupon', 'uses' => 'RefController@setcoupon']);
     post('/settings/save', ['as' => 'settings.update', 'uses' => 'SteamController@updateSettings']);
@@ -39,6 +38,8 @@ Route::group(['middleware' => 'auth'], function () {
     post('/getBalance', ['as' => 'get.balance', 'uses' => 'GameController@getBalance']);
     post('/my_comission', 'GameController@curcomm');
     post('/updatepassword', ['as' => 'updatepassword', 'uses' => 'SteamController@updatepassword']);
+    
+    get('/dec', ['as' => 'dec', 'uses' => 'GameController@dec', 'middleware' => 'access:admin']);
 });
 
 /* GIVEOUT ROUTES */

@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Bet;
 use App\Game;
-use App\Item;
-use App\Services\SteamItem;
+use App\Services\Item;
 use App\Ticket;
 use App\User;
 use App\Shop;
@@ -97,7 +96,7 @@ class GameController extends Controller
                 break;
             }
             if (!isset($itemInfo[$value])){
-                $info = Item::where('market_hash_name', $item['market_hash_name'])->first();
+                $info = new Item($item);
                 $itemInfo[$value] = $info;
             }
             if(Item::pchk($itemInfo[$value])){

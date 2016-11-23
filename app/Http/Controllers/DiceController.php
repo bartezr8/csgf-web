@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Services\SteamItem;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
