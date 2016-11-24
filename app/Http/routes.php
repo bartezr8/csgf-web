@@ -21,7 +21,6 @@ get('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
 
-
 Route::group(['middleware' => 'auth'], function () {
     get('/logout', ['as' => 'logout', 'uses' => 'SteamController@logout']);
     get('/ref', ['as' => 'ref', 'uses' => 'RefController@ref']);    

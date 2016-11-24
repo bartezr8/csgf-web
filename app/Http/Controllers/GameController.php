@@ -146,9 +146,10 @@ class GameController extends Controller
             $sdata = $json->results_html;
             preg_match_all('%<a class="market_listing_row_link" href="(.+?)" id="resultlink.*?<span class="normal_price">(.+?) .+?</span>.+?<span class="sale_price">(.+?) .+?</span>.*?class="market_listing_item_name" style=".*?">(.+?)</span>%s', $sdata, $result, PREG_PATTERN_ORDER);
             for ($i = 0; $i < count($result[0]); $i++) {
-                $steam_price_sale = substr($result[3][$i],1);
+                $steam_price_sale = trim($result[3][$i]);
                 $steam_market_name = $result[4][$i];
                 $steam_price_sale = str_replace(",", ".", $steam_price_sale);
+                if($steam_price_sale == 0) $steam_price_sale = $this->getStemItemPrice($steam_market_name);
                 $nitem = [ 'market_hash_name' => $steam_market_name, 'price' => $steam_price_sale ];
                 $dbitem = Item_Steam::where('market_hash_name', $nitem['market_hash_name'])->first();
                 if(is_null($dbitem)){
@@ -160,9 +161,22 @@ class GameController extends Controller
             }
             sleep(1);
         }
-    }    
-    
-    
+    } 
+    private function getStemItemPrice($mhn){
+        $lowest = 0; $median=0;
+        $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
+        $tprice = json_decode($tprice);
+        if (isset($tprice->success)){
+            if (isset($tprice->lowest_price))$lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
+            if (isset($tprice->median_price))$median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
+            if($lowest<$median){ 
+                return $lowest;
+            }else{
+                return $median;
+            }
+        }
+        return false;
+    }
 	public static function _fixGame($id)
 	{
         $game = Game::where('id', $id)->first();

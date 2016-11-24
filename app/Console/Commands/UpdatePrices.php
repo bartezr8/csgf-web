@@ -19,7 +19,7 @@ class UpdatePrices extends Command
     const BP_URL = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
     const FAST_URL = 'https://api.csgofast.com/price/all';
     
-    protected $signature = 'prices:update {--bp} {--fast}';
+    protected $signature = 'prices:update {--bp} {--fast} {--steam}';
 
     protected $description = 'Updates Prices from steam, bp and fast';
 
@@ -41,17 +41,19 @@ class UpdatePrices extends Command
                 foreach($BPitems as $key => $item){
                     $nitem = [ 'market_hash_name' => $key, 'price' => $item->value / 100 * $usd ];
                     $dbitem = Item_BP::where('market_hash_name', $nitem['market_hash_name'])->first();
-                    if(is_null($dbitem)){
-                        Item_BP::create($nitem);
-                    } else {
-                        $dbitem->price = $nitem['price'];
-                        $dbitem->save();
-                    }
-                    $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
-                    $count++;
-                    if($count>20){
-                        $count = 0;
-                        sleep(1);
+                    if(Item::pchk($nitem)){
+                        if(is_null($dbitem)){
+                            Item_BP::create($nitem);
+                        } else {
+                            $dbitem->price = $nitem['price'];
+                            $dbitem->save();
+                        }
+                        $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
+                        $count++;
+                        if($count>20){
+                            $count = 0;
+                            sleep(1);
+                        }
                     }
                 }
                 $this->log('BP prices parsed');
@@ -66,22 +68,49 @@ class UpdatePrices extends Command
                 foreach($FastItems as $key => $item){
                     $nitem = [ 'market_hash_name' => $key, 'price' => $item * $usd ];
                     $dbitem = Item_Fast::where('market_hash_name', $nitem['market_hash_name'])->first();
-                    if(is_null($dbitem)){
-                        Item_Fast::create($nitem);
-                    } else {
-                        $dbitem->price = $nitem['price'];
-                        $dbitem->save();
-                    }
-                    $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
-                    $count++;
-                    if($count>20){
-                        $count = 0;
-                        sleep(1);
+                    if(Item::pchk($nitem)){
+                        if(is_null($dbitem)){
+                            Item_Fast::create($nitem);
+                        } else {
+                            $dbitem->price = $nitem['price'];
+                            $dbitem->save();
+                        }
+                        $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
+                        $count++;
+                        if($count>20){
+                            $count = 0;
+                            sleep(1);
+                        }
                     }
                 }
                 $this->log('FAST prices parsed');
             }
         }
+        if($this->option('steam')){
+            $items = Item_Steam::where('price', '<', 0.5)->get();
+            foreach($items as $item){
+                sleep(15);
+                $nitem = Item_Steam::where('market_hash_name', $item->market_hash_name)->first();
+                $nitem->price = $this->getStemItemPrice($item->market_hash_name);
+                $nitem->save();
+                $this->log($nitem->market_hash_name.' : '.$nitem->price);
+            }
+        }
+    } 
+    private function getStemItemPrice($mhn){
+        $lowest = 0; $median=0;
+        $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
+        $tprice = json_decode($tprice);
+        if (isset($tprice->success)){
+            if (isset($tprice->lowest_price))$lowest = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->lowest_price)));
+            if (isset($tprice->median_price))$median = floatval(str_ireplace(array(','),'.',str_ireplace(array('pуб.'),'',$tprice->median_price)));
+            if($lowest<$median){ 
+                return $lowest;
+            }else{
+                return $median;
+            }
+        }
+        return false;
     }
     private function curl($url) {
 		$ch = curl_init();

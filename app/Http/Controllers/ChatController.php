@@ -127,7 +127,7 @@ class ChatController extends Controller
         $a = str_replace(":/b:", "</b>", $a);
         $a = str_replace(":br:", "<br>", $a);
         $a = str_replace("skoniks", " :sm104:<a href='http://natribu.org/'><b>SKONIKS</b></a>:sm104: ", $a);
-        $a = str_replace(":csgf:", "<img style=\"background:none;\" id=smile src=\"/assets/img/logo-ru.png\">", $a);
+        $a = str_replace(":csgf:", "<img style=\"background:none;\" id=smile src=\"/assets/img/". config('app.logo') ."\">", $a);
         $a = str_replace(":sm1:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (1).png\">", $a);
         $a = str_replace(":sm2:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (2).png\">", $a);
         $a = str_replace(":sm3:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (3).png\">", $a);
@@ -633,16 +633,6 @@ class ChatController extends Controller
         $a = str_replace(":sm503:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (503).png\">", $a);
         $a = str_replace(":sm504:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (504).png\">", $a);
         $a = str_replace(":sm505:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (505).png\">", $a);
-        $a = str_replace(":sm506:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (506).png\">", $a);
-        $a = str_replace(":sm507:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (507).png\">", $a);
-        $a = str_replace(":sm508:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (508).png\">", $a);
-        $a = str_replace(":sm509:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (509).png\">", $a);
-        $a = str_replace(":sm510:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (510).png\">", $a);
-        $a = str_replace(":sm511:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (511).png\">", $a);
-        $a = str_replace(":sm512:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (512).png\">", $a);
-        $a = str_replace(":sm513:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (513).png\">", $a);
-        $a = str_replace(":sm514:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (514).png\">", $a);
-        $a = str_replace(":sm515:", "<img style=\"background:none;\" id=smile src=\"/assets/img/smiles/smile (515).png\">", $a);
         return $a;
     }
     public function chat(Request $request){

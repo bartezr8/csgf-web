@@ -104,9 +104,10 @@ $(function() {
     }
 });
 function checkPage() {
-    var ThisPage = window.location.pathname;
+    /*var ThisPage = window.location.pathname;
     if(ThisPage === "/" || ThisPage === "/double" || ThisPage === "/shop" || ThisPage === "/shop/deposit" || ThisPage === "/coin" || ThisPage === "/dice") return true;
-    return false;
+    return false;*/
+    return true;
 }
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp(

@@ -18,8 +18,6 @@ class DiceController extends Controller {
             'message' => $message
         ]));
     }
-	
-    
 	public function index(){
         parent::setTitle('КОСТИ | ');
         $gamestats = \DB::table('dice')->orderBy('id', 'desc')->limit(13)->get();

@@ -18,7 +18,7 @@ class PagesController extends Controller
 
         return view('pages.support');
     }
-
+    
     public function fairplay($gameID)
     {
         parent::setTitle('Честная игра | ');

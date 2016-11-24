@@ -60,11 +60,12 @@ class Item {
             $price_item += $bi->price;
             $count++;
         }
-        if($count > 0) $price_item = $price_item / $count;
+        if($count > 0) $price_item = round($price_item / $count, 2);
         return $price_item;
     }
 
     public static function pchk($item){
+        $item = (object)$item;
         if(is_null($item)) return false;
         if(!isset($item->price)) return false;
         if(!$item->price) return false;
