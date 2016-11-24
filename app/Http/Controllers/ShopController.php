@@ -421,45 +421,54 @@ class ShopController extends Controller {
     {
 		$success = true;
 		$returnValue = [];
-
+        $myItems = [];
 		$jsonInventory = self::curl('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
 		$items = json_decode($jsonInventory, true);
 		if ($items['success']) {
 			foreach ($items['rgInventory'] as $id => $value) {
                 $class_instance = $value['classid'].'_'.$value['instanceid'];
                 $item = $items['rgDescriptions'][$class_instance];
-                $info = new Item($item);
-				if(Item::pchk($info)){
-					$item['price'] = $info->price;
-					if ($item['price'] <= config('mod_shop.dep_comission_from')) {
-						if ($item['price'] <= config('mod_shop.garbadge_from')) {
-							$item['price'] = $item['price']/100*config('mod_shop.garbadge_%');
-						}
-						$item['price'] = round($item['price'] * (1 - config('mod_shop.dep_comission_%')/100) * 100)/100;
-					}
-					if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
-						$name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
-						$quality = $nameval[1][0];
-					} else {
-						$name = $item['market_name'];
-						$quality = NULL;
-					}
-					$rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
-					$rarity = trim($rarity[count($rarity) - 1]);
-					$returnValue[] = [
-						$value['id'], 
-						$name, 
-						$item['price'], 
-						$value['classid'], 
-						$quality, 
-						Shop::getClassRarity($rarity), 
-						$rarity
-					];
-				}
+                
+                if(!isset($myItems[$value['classid']])){
+                    $info = new Item($item);
+                    if(Item::pchk($info)){
+                        $item['price'] = $info->price;
+                        if ($item['price'] <= config('mod_shop.dep_comission_from')) {
+                            if ($item['price'] <= config('mod_shop.garbadge_from')) {
+                                $item['price'] = $item['price']/100*config('mod_shop.garbadge_%');
+                            }
+                            $item['price'] = round($item['price'] * (1 - config('mod_shop.dep_comission_%')/100) * 100)/100;
+                        }
+                        if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
+                            $name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
+                            $quality = $nameval[1][0];
+                        } else {
+                            $name = $item['market_name'];
+                            $quality = NULL;
+                        }
+                        $rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
+                        $rarity = trim($rarity[count($rarity) - 1]);
+                        $myItems[$value['classid']] = [
+                            $value['id'], 
+                            1,
+                            $name, 
+                            $item['price'], 
+                            $value['classid'], 
+                            $quality, 
+                            Shop::getClassRarity($rarity), 
+                            $rarity
+                        ];                        
+                    }
+                } else {
+                    $myItems[$value['classid']][1] += 1;
+                }
 			}
 		} else {
 			$success = false;
 		}
+        foreach($myItems as $key => $mi){
+            $returnValue[] = $mi;
+        }
 
 		return ['list' => $returnValue, 'success' => $success];
     }

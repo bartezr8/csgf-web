@@ -17,7 +17,7 @@
                     <li>Предметы стоимостью <b>менее 10р</b> оцениваются в <b>2 раза</b> дешевле.</li>
                     <li>Предметы стоимостью <b>менее {{ config("comission_on_<") }}р</b> оцениваются дешевле на <b>{{ config('comission_on_%') }}%</b>.</li>
                     <li>Цену предмета вы видите сразу при выборе.</li>
-                    <li>После пополнения ваш лимит на сутки будет увеличен на сумму пополнения.</li>
+                    <li>Ваш лимит на сутки будет увеличен на сумму пополнения.</li>
                 </ul>
             </div>
         </div>
@@ -27,45 +27,64 @@
                 <ul>
                     <li>Вы нажимаете "Обновить инвентарь".</li>
                     <li>Выбираете предметы для депозита.</li>
-                    <li>"Внести предметы" и принимаете.</li>
-                    <li>Нажимаете "проверить обмены".</li>
+                    <li>Нажимаете "Внести предметы".</li>
+                    <li>Принимаете обмен в стиме".</li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="buy-cards-container" style="padding-top: 10px;">
+    <div class="buy-cards-container" style="padding-top: 10px;">        
         <div style="overflow: hidden;">
-            <div id="S_dep" style="">
-                <div class="buy-cards-block" style="margin-top: 0px;">
-                    <div class="shop-item-filters">
-                        <div class="left-totalitems" >
-                           Ваши выбранные предметы | Предметов: <span id="dcart-total">0</span> | Сумма: <span id="dcart-total-price">0</span>
-                        </div>
-                        <a href="{{ route('cards-history') }}" class="btn-history">История обменов</a>
-                        <a class="btn-buy" onclick="getitems()" id="get-cart">Внести предметы</a>
+            <div class="buy-cards-block" style="margin-top: 0px;">
+                <div class="shop-item-filters">
+                    <div class="left-totalitems">
+                       Ваши выбранные предметы | Предметов: <span id="cart-total">0</span> | Сумма: <span id="cart-total-price">0</span>
                     </div>
+                    <a href="{{ route('cards-history') }}" class="btn-history">История обменов</a>
+                    <a class="btn-buy" id="get-cart">Внести предметы</a>
                 </div>
-                <div id="dep-cart-list" class="cart-list" style="margin-right: -25px;display: block;"></div>
-                <div class="buy-cards-block" style="margin-top: 0px;">
-                    <div class="shop-item-filters">
-                        <div class="left-totalitems" >Ваш инвентарь</div>
-                        <a onclick="inv_update()" target="_blank" style="width: 270px;display: inline-block;vertical-align: middle;float: right;padding: 0px 25px;font-size: 12px;font-weight: 400;height: 30px;line-height: 30px;" class=" btn-vk ">Обновить инвентарь</a>
-                    </div>
-                </div>
-                <div id="dep-items-list" class="items-list" style="margin-right: -25px; display: block;"></div>
-                <script type="text/template" id="item-template">
-                    <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" onclick="buy( <%= id %> )">
-                        <div class="deposit-item-wrap">
-                            <div class="img-wrap"><img src="<%= image %>" alt="" title=""/></div>
-                            <div class="name"><%= name %></div>
-                            <div class="deposit-price"><%= priceText %> <span>руб</span></div>
-                            <div class="deposit-exterior"><%= shortexterior %></div>
-                            <div class="deposit-count">x<%= count %></div>
-                        </div>
-                    </div>
-                </script>
             </div>
+            <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;overflow: auto;max-height: 464px;"></div>
+            <div class="buy-cards-block" style="margin-top: 0px;">
+                <div class="shop-item-filters">
+                    <div class="left-totalitems">
+                        Найдено предметов: <span id="filter-total">0</span> / <span id="items-total">0</span>
+                    </div>
+                    <a class="btn-inv" target="_blank">&#8634;</a>
+                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="exterior_all">
+                        <option id="select_opt" value="">Любое качество</option>
+                        <option id="select_opt" value="Прямо с завода">Прямо с завода</option>
+                        <option id="select_opt" value="Немного поношенное">Немного поношенное</option>
+                        <option id="select_opt" value="После полевых">После полевых</option>
+                        <option id="select_opt" value="Поношенное">Поношенное</option>
+                        <option id="select_opt" value="Закаленное в боях">Закаленное в боях</option>
+                        <option id="select_opt" value="Не покрашено">Не покрашено</option>
+                    </select>
+                    <div class="search-form">
+                        <span class="search-btn"></span>
+                        <input id="searchInput" type="text" placeholder="Поиск по названию">
+                    </div>
+                    <div class="price-form">
+                        Цена:
+                        от <input id="priceFrom" type="text" placeholder="0">
+                        до <input id="priceTo" type="text" placeholder="0">
+                    </div>
+                </div>
+            </div>
+            <div id="items-list" class="items-list" style="display: block;overflow: auto;max-height: 464px;"></div>
         </div>
+        <script type="text/template" id="item-template">
+            <div class="deposit-item <%= className %> up-<%= className %>" id="deposit-item_<%= id %>" data-id="<%= id %>">
+                <div class="deposit-item-wrap">
+                    <div class="img-wrap"><img src="<%= image %>" alt="" title=""/></div>
+                    <div class="name"><%= name %></div>
+                    <div class="deposit-price"><%= price %> <span>руб</span></div>
+                    <div class="deposit-exterior"><%= shortexterior %></div>
+                    <div class="deposit-count">x<%= count %></div>
+                </div>
+            </div>
+        </script>
+        
     </div>
     <div style="display: none;">
         <div class="box-modal affiliate-program" id="depModal">
@@ -120,7 +139,7 @@
                 
                 <div class="smiles">
                     <div class="sub">
-                        <?php for($i = 1; $i< 514; $i++)echo "<img src=\"/assets/img/smiles/smile (".$i.").png\" id=\"smile\" style=\"background:none;\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
+                        <?php for($i = 1; $i < 505; $i++)echo "<img src=\"/assets/img/smiles/smile (".$i.").png\" id=\"smile\" style=\"background:none;\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
                     </div>
                     <span></span>
                 </div>

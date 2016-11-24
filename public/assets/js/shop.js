@@ -3,7 +3,6 @@ $(function() {
     window.shop = ({
         shop_loader: '<div id="inventory_load" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div style="text-align: center;margin-top: 5px;">Обновляем список предметов!</div>',
         user_money: 0,
-        items_per_page: 40,
         item_tpl: _.template($('#item-template').html()),
         shop_items: {},
         shop_items_Holder: $('#items-list'),
