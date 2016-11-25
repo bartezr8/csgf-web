@@ -230,12 +230,9 @@ class AdminController extends Controller
 		}
 		return;
 	}
-	public function clearsupport(Request $request) {
-		\DB::table('support')
-		->truncate();
-		\DB::table('supmessages')
-		->truncate();
-		return redirect('/admin');
+	public function clearchat(Request $request) {
+        $this->redis->del(ChatController::CHAT_CHANNEL);
+        return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
 	}
 	public function updateNick(Request $request) {
 		$str = '';

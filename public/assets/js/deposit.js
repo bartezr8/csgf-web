@@ -175,6 +175,7 @@ $(function() {
                         var item = shop.parce_item(zipItem);
                         shop.shop_items[item.id] = item;
                     });
+                    console.log(shop.shop_items);
                     shop.draw_items();
                 },
                 error: function () {

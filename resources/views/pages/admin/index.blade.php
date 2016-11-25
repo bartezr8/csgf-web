@@ -13,8 +13,6 @@
 					<li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
 					<li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
 					<li class="faq"><a href="/admin/am/"><img src="/assets/img/user.png" alt=""> Антимат</a></li>
-                    <li class="faq"><a href="/admin/bot/"><img src="/assets/img/tp.png" alt=""> Управление Ботом</a></li>		
-					<li class="faq"><a href="/pma/" target="_blank"><img src="/assets/img/php.png" alt=""> PhpMyAdmin</a></li>
                 </ul>
             </div>
         </div>
@@ -27,25 +25,27 @@
 	</div>
 	@if($u->is_admin==1)
 	<div class="support" >
-		<form action="/updatePrices" method="POST">
-			<div style="width: 333px" class="nSend">
-				<input type="submit" style="width: 333px" name="mute" value="Обновить цены">
-			</div>
-			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
-		</form>
-		<form action="/updateShop" method="POST">
-			<div style="width: 333px" class="nSend">
-				<input type="submit" style="width: 333px" name="mute" value="Обновить магазин">
-			</div>
-			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
-		</form>
 		<form action="/fixgame" method="POST">
 			<div style="width: 333px" class="nSend">
 				<input type="text" name="game_id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
-				<input type="submit" style="width: 218px" value="Починить Игру">
+				<input type="submit" style="width: 218px" value="Переотправить Игру">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
-		</form>	
+		</form>
+        <form action="/fixtic" method="POST">
+			<div style="width: 333px" class="nSend">
+				<input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
+				<input type="submit" style="width: 218px" value="Починить билеты">
+			</div>
+			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
+		</form>
+        <form action="/ctime" method="POST">
+			<div style="width: 333px" class="nSend">
+				<input type="text" name="time" cols="50" style="width: 115px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
+				<input type="submit" style="width: 218px" value="Назначить время">
+			</div>
+			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
+		</form>
 	</div>
 	<div class="support" >
 		<form action="/updateNick" method="POST">
@@ -54,20 +54,18 @@
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-		<form action="/ctime" method="POST">
+        <form action="/clearchat" method="POST">
 			<div style="width: 333px" class="nSend">
-				<input type="text" name="time" cols="50" style="width: 115px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
-				<input type="submit" style="width: 218px" value="Назначить время">
+				<input type="submit" style="width: 333px" name="mute" value="Очистить чат ">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-		<form action="/fixtic" method="POST">
+        <form action="/updateShop" method="POST">
 			<div style="width: 333px" class="nSend">
-				<input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
-				<input type="submit" style="width: 218px" value="Починить билеты">
+				<input type="submit" style="width: 333px" name="mute" value="Обновить магазин">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
-		</form>	
+		</form>
 	</div>
 	<div class="support" >
 		<form action="/winner" method="POST">
@@ -77,7 +75,6 @@
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-		
 		<form action="/winnerr" method="POST">
 			<div style="width: 666px" class="nSend">
 				<input type="text" name="id" cols="50" style="width: 333px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
@@ -94,13 +91,13 @@
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-		<form action="/clearsupport" method="POST">
+        <form action="/clearchat" method="POST">
 			<div style="width: 333px" class="nSend">
-				<input type="submit" style="width: 333px" name="mute" value="Очистить поддержку">
+				<input type="submit" style="width: 333px" name="mute" value="Очистить чат ">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-		<form action="/updateShop" method="POST">
+        <form action="/updateShop" method="POST">
 			<div style="width: 333px" class="nSend">
 				<input type="submit" style="width: 333px" name="mute" value="Обновить магазин">
 			</div>

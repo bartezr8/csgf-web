@@ -52,11 +52,14 @@ class ShopController extends Controller {
 	{
         parent::setTitle('История покупок | ');
 		$items = Shop::where('buyer_id', $this->user->id)->orderBy('buy_at', 'desc')->get();
-		if($this->user->is_admin == 1){
-			$deposits = \DB::table('deposits')->orderBy('date', 'desc')->get();
-		} else {
-			$deposits = \DB::table('deposits')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
-		}
+        $deposits = \DB::table('deposits')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
+        return view('pages.shop.history', compact('items', 'deposits'));
+    }
+    public function admin()
+	{
+        parent::setTitle('История покупок | ');
+		$items = [];
+        $deposits = \DB::table('deposits')->orderBy('date', 'desc')->get();
         return view('pages.shop.history', compact('items', 'deposits'));
     }
 	public function itemlist(Request $request)
@@ -354,21 +357,12 @@ class ShopController extends Controller {
 			$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
 			if(is_null($aoffer)){
 				$classids = $request->get('classids');
-				if($classids != ""){
-					$str = '';
-					foreach($classids as $classid){
-						if($str == ''){
-							$str = $classid;
-						} else {
-							$str += ',' . $classid;
-						}
-					}
+				if(count($classids)){
 					$value = [
 						'items' => $classids,
 						'steamid' => $this->user->steamid64,
-						'accessToken' => $this->user->accessToken,
+						'accessToken' => $this->user->accessToken
 					];
-
 					$out = self::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
 					$out = json_decode($out, true);
 					if($out['success'] == true) {

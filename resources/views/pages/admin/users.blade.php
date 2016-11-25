@@ -13,8 +13,6 @@
 					<li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
 					<li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
 					<li class="faq"><a href="/admin/am/"><img src="/assets/img/user.png" alt=""> Антимат</a></li>
-                    <li class="faq"><a href="/admin/bot/"><img src="/assets/img/tp.png" alt=""> Управление Ботом</a></li>		
-					<li class="faq"><a href="/pma/" target="_blank"><img src="/assets/img/php.png" alt=""> PhpMyAdmin</a></li>
                 </ul>
                 </ul>
             </div>

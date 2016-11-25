@@ -6,16 +6,66 @@
         <div class="user-history-block bid-history" style="padding-top: 10px;">
 
             <div class="title-block">
+                <h2>История ваших обменов</h2>
+            </div>
+
+            <div class="user-history-content" id="showMoreContainer">
+                <div class="body-content">
+                    <div class="purchase-history-table">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User ID</th>
+                                <th>Дата</th>
+                                <th>Тип</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($deposits as $deposit)
+                                <tr>
+                                    <td>{{ $deposit->id }}</td>
+                                    <td>{{ $deposit->user_id }}</td>
+                                    <td>{{ $deposit->date }}</td>
+                                    <td>@if($deposit->type == 0)
+                                            Депозит скинами
+                                        @elseif($deposit->type == 3)
+                                            Пополнение баланса
+                                        @else
+                                            Вывод средств
+                                        @endif
+                                    </td>
+                                    <td>@if($deposit->type == 1)- @endif{{ $deposit->price }} руб</td>
+                                    <td>Принят</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">Вы не делали обменов с магазином</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+
+                        <div class="pagination-history">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="user-history-block bid-history" style="padding-top: 10px;">
+
+            <div class="title-block">
                 <h2>История ваших покупок</h2>
             </div>
 
             <div class="user-history-content" id="showMoreContainer">
                 <div class="body-content">
                     <div class="memoMsg">
-                        Если после покупки у вас в статусе написано "Ошибка" не переживайте - деньги будут возвращены на
-                        баланс. Возврат средств происходит автоматически каждый час.<br>
-                        Если у вас была введена не рабочая ссылка на обмен, исправьте ссылку на рабочую, дождитесь
-                        возврата средств и повторите покупку.<br>
+                        Если после покупки у вас в статусе написано "Ошибка" - деньги за предмет уже возвращены.<br>
+                        Если у вас была введена не рабочая ссылка на обмен, исправьте ссылку на рабочую и повторите покупку.<br>
                         Если в статусе написано, что у вас бан трейда, тогда не пробуйте покупать снова, а подождите
                         пока у вас закончится ограничение на обмен и только тогда продолжайте покупки.
                     </div>
@@ -57,63 +107,6 @@
                             @empty
                                 <tr>
                                     <td colspan="6">Вы не делали покупок</td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-
-                        <div class="pagination-history">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="user-history-block bid-history" style="padding-top: 10px;">
-
-            <div class="title-block">
-                <h2>История ваших обменов</h2>
-            </div>
-
-            <div class="user-history-content" id="showMoreContainer">
-                <div class="body-content">
-                    <div class="purchase-history-table">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                @if($u->is_admin==1)
-                                <th>Пользователь</th>
-                                @endif
-                                <th>Дата</th>
-                                <th>Тип</th>
-                                <th>Цена</th>
-                                <th>Статус</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @forelse($deposits as $deposit)
-                                <tr>
-                                    <td>{{ $deposit->id }}</td>
-                                    @if($u->is_admin==1)
-                                    <td>{{ $deposit->user_id }}</td>
-                                    @endif
-                                    <td>{{ $deposit->date }}</td>
-                                    <td>@if($deposit->type == 0)
-                                            Депозит скинами
-                                        @elseif($deposit->type == 3)
-                                            Пополнение баланса
-                                        @else
-                                            Вывод средств
-                                        @endif
-                                    </td>
-                                    <td>@if($deposit->type == 1)- @endif{{ $deposit->price }} руб</td>
-                                    <td>Принят</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6">Вы не делали обменов с магазином</td>
                                 </tr>
                             @endforelse
                             </tbody>

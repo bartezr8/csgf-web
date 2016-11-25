@@ -94,6 +94,9 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/shop/deposit/toCheck', 'ShopController@depositToCheck');
     post('/shop/deposit/check', 'ShopController@depositCheck');
 });
+Route::group(['middleware' => 'auth'], function () {
+    get('/shop/admin', ['as' => 'shop_admin', 'uses' => 'ShopController@admin', 'middleware' => 'access:moderator']);
+});
 
 /* CHAT ROUTES */
 Route::group(['middleware' => 'auth'], function () {
@@ -105,15 +108,15 @@ Route::group(['middleware' => 'auth'], function () {
 
 /* ADMIN ROUTES */
 Route::group(['middleware' => 'auth'], function () {
-    /* ADMIN BOT */
-    get('/admin/bot', ['as' => 'give', 'uses' => 'BotController@index', 'middleware' => 'access:moderator']);
-    get('/admin/bot/log', ['as' => 'give', 'uses' => 'BotController@log', 'middleware' => 'access:moderator']);
-    post('/admin/bot/start', ['as' => 'give', 'uses' => 'BotController@start', 'middleware' => 'access:admin']);
-    post('/admin/bot/stop', ['as' => 'give', 'uses' => 'BotController@stop', 'middleware' => 'access:admin']);
-    post('/admin/bot/restart', ['as' => 'give', 'uses' => 'BotController@restart', 'middleware' => 'access:admin']);
-    post('/admin/bot/reload', ['as' => 'give', 'uses' => 'BotController@reload', 'middleware' => 'access:admin']);
-    post('/admin/bot/mysql', ['as' => 'give', 'uses' => 'BotController@mysql', 'middleware' => 'access:admin']);
-    post('/admin/bot/status', ['as' => 'give', 'uses' => 'BotController@status', 'middleware' => 'access:moderator']);
+    get('/admin', ['as' => 'give', 'uses' => 'AdminController@admin', 'middleware' => 'access:moderator']);    
+    post('/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);    
+    post('/ctime', ['as' => 'give', 'uses' => 'AdminController@ctime', 'middleware' => 'access:admin']);
+    post('/updateNick', ['as' => 'give', 'uses' => 'AdminController@updateNick', 'middleware' => 'access:moderator']);
+    post('/updateShop', ['as' => 'give', 'uses' => 'AdminController@updateShop', 'middleware' => 'access:moderator']);
+    post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
+    post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
+    post('/fixgame', ['as' => 'give', 'uses' => 'AdminController@fixgame', 'middleware' => 'access:admin']);
+    post('/clearchat', ['as' => 'give', 'uses' => 'AdminController@clearchat', 'middleware' => 'access:moderator']);
     /* ADMIN AM */
     get('/admin/am', ['as' => 'give', 'uses' => 'AdminController@am', 'middleware' => 'access:moderator']);    
     post('/admin/am/getwords', ['as' => 'give', 'uses' => 'AdminController@getwords', 'middleware' => 'access:moderator']);
@@ -131,16 +134,6 @@ Route::group(['middleware' => 'auth'], function () {
     /* ADMIN FUSER*/
     post('/admin/fuser_add', ['as' => 'give', 'uses' => 'AdminController@fuser_add', 'middleware' => 'access:admin']);
     post('/admin/fuser_del', ['as' => 'give', 'uses' => 'AdminController@fuser_del', 'middleware' => 'access:admin']);
-    /* ADMIN */
-    get('/admin', ['as' => 'give', 'uses' => 'AdminController@admin', 'middleware' => 'access:moderator']);    
-    post('/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);    
-    post('/ctime', ['as' => 'give', 'uses' => 'AdminController@ctime', 'middleware' => 'access:admin']);
-    post('/updateNick', ['as' => 'give', 'uses' => 'AdminController@updateNick', 'middleware' => 'access:moderator']);
-    get('/updatePrices', ['as' => 'give', 'uses' => 'GameController@updatePrices', 'middleware' => 'access:admin']);
-    post('/updateShop', ['as' => 'give', 'uses' => 'AdminController@updateShop', 'middleware' => 'access:moderator']);
-    post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
-    post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
-    post('/fixgame', ['as' => 'give', 'uses' => 'AdminController@fixgame', 'middleware' => 'access:admin']);
 });
 
 /* SEND ROUTES */
