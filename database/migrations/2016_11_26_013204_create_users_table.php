@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use App\User;
 
 class CreateUsersTable extends Migration {
 
@@ -36,6 +37,8 @@ class CreateUsersTable extends Migration {
 			$table->integer('ban');
 			$table->text('password', 65535)->nullable();
 		});
+		
+        $bonus = User::create(['username' => 'БОНУС БОТ', 'avatar' => 'http://csgf.ru/assets/img/bonus.png', 'steamid' => 'STEAM_0:1:00000000', 'steamid64' => '76561197960265728']);
 	}
 
 

@@ -30,7 +30,6 @@ class CreateGamesTable extends Migration {
 			$table->text('comission', 65535);
 			$table->text('msg', 65535);
 		});
-        
         $rand_number = "0.";
         $firstrand = mt_rand(20, 80);
         if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
