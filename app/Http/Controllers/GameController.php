@@ -363,7 +363,7 @@ class GameController extends Controller
                     if (isset($item['classid'])) {
                         $returnItems[] = $item['classid'];
                     } else {
-                        $user->money = $user->money + $item['price'];
+                        User::mchange($user->id, $item['price']);
                     }
                 } else {
                     $items[] = $item;

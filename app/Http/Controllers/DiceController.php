@@ -37,8 +37,7 @@ class DiceController extends Controller {
         if ($request->get('sum') == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
         if (!User::mchange($this->user->id, -$request->get('sum'))) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
         $roll = rand(1, 6);
-        //$am = \DB::table('dice')->sum('am');
-        if (rand(0, (ceil($request->get('sum')/10) - 1))!= 0){
+        if (rand(0, floor($request->get('sum')/25))!= 0){
             if($request->get('value') == 'low'){
                 $roll = rand(4, 6);
             } elseif($request->get('value') == 'high'){
