@@ -14,7 +14,7 @@
     <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
     <meta name="viewport" content="width=1100" />
     <meta name="csrf-token" content="{!!  csrf_token()   !!}">
-    <link rel="icon" type="image/png" href="{{ $asset('assets/img/icon.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
     <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
     <link href="{{ $asset('assets/css/perfect-scrollbar.css') }}" rel="stylesheet">

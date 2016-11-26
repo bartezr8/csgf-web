@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+Host: csgf.ru
+Sitemap: http://csgf.ru/sitemap.xml

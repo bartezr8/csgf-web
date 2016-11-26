@@ -33,11 +33,13 @@ class DiceController extends Controller {
 		return view('pages.dice', compact('games'));
 	}
     public function bet(Request $request){
+        $bet_sum = $request->get('sum');
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
-        if ($request->get('sum') == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
-        if (!User::mchange($this->user->id, -$request->get('sum'))) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
+        if ($bet_sum == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
+        if (!User::mchange($this->user->id, -$bet_sum)) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
         $roll = rand(1, 6);
-        if (rand(0, floor($request->get('sum')/25))!= 0){
+        $am = \DB::table('dice')->sum('am') + $bet_sum;
+        if ((rand(0, floor($bet_sum/25))!= 0) || ($am > 0) ){
             if($request->get('value') == 'low'){
                 $roll = rand(4, 6);
             } elseif($request->get('value') == 'high'){
@@ -49,24 +51,24 @@ class DiceController extends Controller {
             }
         }
         //$roll = 6;
-        $am = -$request->get('sum');
-        $win = -$request->get('sum');
+        $am = -$bet_sum;
+        $win = -$bet_sum;
         if($request->get('value') == 'low') {
             if ($roll < 4){
-                User::mchange($this->user->id, $request->get('sum')*2);
-                $am += $request->get('sum')*2;
-                $win = $request->get('sum')*2;
+                User::mchange($this->user->id, $bet_sum*2);
+                $am += $bet_sum*2;
+                $win = $bet_sum*2;
             }
         } else if($request->get('value') == 'high') {
             if ($roll > 3){
-                User::mchange($this->user->id, $request->get('sum')*2);
-                $am += $request->get('sum')*2;
-                $win = $request->get('sum')*2;
+                User::mchange($this->user->id, $bet_sum*2);
+                $am += $bet_sum*2;
+                $win = $bet_sum*2;
             }
         } else if ($roll == $request->get('value')){
-            User::mchange($this->user->id, $request->get('sum')*5);
-            $am += $request->get('sum')*6;
-            $win = $request->get('sum')*6;
+            User::mchange($this->user->id, $bet_sum*5);
+            $am += $bet_sum*6;
+            $win = $bet_sum*6;
         }
         $returnValue = [
             'avatar' => $this->user->avatar,
@@ -74,7 +76,7 @@ class DiceController extends Controller {
             'win' => $win
         ];
         $this->redis->publish('dice', json_encode($returnValue));
-        \DB::table('dice')->insert(['user_id' => $this->user->id, 'money' => $request->get('sum'), 'bet_v' => $request->get('value'), 'value' => $roll, 'am' => $am, 'win' => $win ]);
+        \DB::table('dice')->insert(['user_id' => $this->user->id, 'money' => $bet_sum, 'bet_v' => $request->get('value'), 'value' => $roll, 'am' => $am, 'win' => $win ]);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success','value' => $roll]);
     }
 }
