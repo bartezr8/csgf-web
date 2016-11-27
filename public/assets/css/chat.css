@@ -37,23 +37,6 @@
     *overflow-y: scroll;
     position: relative;
 }
-/*#chatInput {
-    outline: none;
-    border: none;
-    border-top: 1px solid #1F262E;
-    width: 300px;
-    padding: 3px 6px;
-    font-size: 13px;
-    height: 42px;
-    line-height: 16px;
-    background: #1B2934;
-    color: #999;
-    overflow: hidden;
-    word-wrap: break-word;
-    resize: none;
-    position: absolute;
-    bottom: 0;
-}*/
 
 #chatInput {
     min-height: 50px;
@@ -253,7 +236,7 @@
 .chat-form .smiles span {
 	display: block;
     float: left;
-    background: url('/assets/images/smiles.png') no-repeat;
+    background: url('/assets/img/smiles.png') no-repeat;
     width: 16px;
     height: 16px;
     margin: 7px 0px 0px 30px;

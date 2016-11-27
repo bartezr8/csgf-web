@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use File;
 use Storage;
+use LRedis;
 
 class AdminController extends Controller
 {
@@ -230,10 +231,22 @@ class AdminController extends Controller
 		}
 		return;
 	}
-	public function clearchat(Request $request) {
-        $this->redis->del(ChatController::CHAT_CHANNEL);
-        return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
-	}
+	public function clearredis(Request $request) {
+        $data = $this->redis->lrange('check.list', 0, -1);
+        foreach ($data as $newBetJson) {
+            $this->redis->lrem('check.list', 0, $newBetJson);
+        }
+        $data = $this->redis->lrange('checked.list', 0, -1);
+        foreach ($data as $newBetJson) {
+            $this->redis->lrem('checked.list', 0, $newBetJson);
+        }
+        $data = $this->redis->lrange('usersQueue.list', 0, -1);
+        foreach ($data as $newBetJson) {
+            $this->redis->lrem('usersQueue.list', 0, $newBetJson);
+        }
+        
+        return redirect('/admin');
+	} 
 	public function updateNick(Request $request) {
 		$str = '';
 		$i = 0;

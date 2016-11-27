@@ -723,7 +723,6 @@ class GameController extends Controller
 				$this->game->save();
                 $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$newBet['price'].' р. | '.$user->username));
 				$bettemp = $bet;
-				$html = '';
 				$cc = '';
 				$lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
 				foreach ($lastbets as $lastbet) {
@@ -732,7 +731,6 @@ class GameController extends Controller
 					$bet->user = $lastuser;
 					$bet->game = $this->game;
 					$cc = view('includes.cc', compact('bet'))->render().$cc;
-					$html = view('includes.bet', compact('bet'))->render().$html;
 				}
 				$bet = $bettemp;
 				$chances = $this->_getChancesOfGame($this->game);
@@ -740,7 +738,7 @@ class GameController extends Controller
 					'betId' => $bet->id,
 					'userId' => $user->steam64,
 					'cc' => $cc,
-					'html' => $html,//view('includes.bet', compact('bet'))->render(),
+					'html' => view('includes.bet', compact('bet'))->render(),
 					'itemsCount' => $this->game->items,
 					'gamePrice' => $this->game->price,
 					'gameStatus' => $this->game->status,
@@ -845,7 +843,7 @@ class GameController extends Controller
             
             $bettemp = $bet;
             $cc = '';
-            $html = '';
+            //$html = '';
             $lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
             foreach ($lastbets as $lastbet) {
                 $lastuser =  \DB::table('users')->where('id', $lastbet->user_id)->first();
@@ -853,7 +851,7 @@ class GameController extends Controller
                 $bet->user = $lastuser;
                 $bet->game = $this->game;
                 $cc = view('includes.cc', compact('bet'))->render().$cc;
-                $html = view('includes.bet', compact('bet'))->render().$html;
+                //$html = view('includes.bet', compact('bet'))->render().$html;
             }
             $bet = $bettemp;
             
@@ -861,7 +859,7 @@ class GameController extends Controller
                 'betId' => $bet->id,
                 'userId' => $this->user->steamid64,
                 'cc' => $cc,
-                'html' => $html,
+                'html' => view('includes.bet', compact('bet'))->render(), //$html,
                 'itemsCount' => $this->game->items,
                 'gamePrice' => $this->game->price,
                 'gameStatus' => $this->game->status,

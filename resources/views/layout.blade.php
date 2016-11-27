@@ -71,6 +71,9 @@
 	<div class="language_switcher">
 		<a style="" title="Отключить звук" class="sound_off wobble-horizontal"><div class="sound"></div></a>
 		<a style="display: none;" title="Включить звук" class="sound_on wobble-horizontal"><div class="sound-off"></div></a>
+        
+        <a style="" title="Отключить снег" class="snow_off wobble-horizontal"><div class="snow"></div></a>
+		<a style="display: none;" title="Включить снег" class="snow_on wobble-horizontal"><div class="snow-off"></div></a>
 	</div>
 	<div class="main-container">
     <header id="header">
@@ -242,8 +245,6 @@
     <div class="box-modal b-modal-cards" id="msend">
         <div class="box-modal-container">
             <div class="box-modal_close arcticmodal-close"></div>
-
-
             <div class="box-modal-content">
                 <div class="add-balance-block">
                     <div class="balance-item">
@@ -372,6 +373,7 @@
 		</div>
 	</div>
 </div>
+
 <script src="{{ $asset('assets/js/app.js') }}" ></script>
 <script src="{{ $asset('assets/js/chat.js') }}" ></script>
 

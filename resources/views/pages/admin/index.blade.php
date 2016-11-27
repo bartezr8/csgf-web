@@ -55,9 +55,9 @@
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
-        <form action="/clearchat" method="POST">
+        <form action="/clearredis" method="GET">
 			<div style="width: 333px" class="nSend">
-				<input type="submit" style="width: 333px" name="mute" value="Очистить чат ">
+				<input type="submit" style="width: 333px" name="mute" value="Очистить редис ">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>

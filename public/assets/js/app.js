@@ -1,3 +1,4 @@
+var onpage = true;
 $(function() {
     $(window).scroll(function() {
         var scrollHeight = Math.max(
@@ -17,6 +18,13 @@ $(function() {
             $('#toDown').fadeOut();
         }
     });
+    $(window).blur(function() {
+        onpage = false;
+    });
+    $(window).focus(function() {
+        onpage = true;
+    });
+
     $('#toTop').click(function() {
         $('body,html').animate({
             scrollTop: 0
@@ -33,8 +41,86 @@ $(function() {
             scrollTop: scrollHeight
         }, 800);
     });
+    if($.cookie('averagebettime') !== null) {
+        var averagebettime = $.cookie('averagebettime');
+        $('#speed_trades').html(averagebettime);
+    } else {
+        var averagebettime = 5.5;
+        $('#speed_trades').html(averagebettime);
+    }
 });
 $(document).ready(function() {
+    sound_status = true;
+    if($.cookie('sound_status') == 'false') {
+        $('.sound_off').hide();
+        $('.sound_on').show();
+        sound_status = false;
+    }
+    $('.sound_on').click(function() {
+        $(this).hide();
+        $('.sound_off').show();
+        $.cookie('sound_status', 'true', {
+            expires: 5,
+            path: '/',
+        });
+        sound_status = true;
+        $.notify('Звук включен', {
+            clickToHide: 'true',
+            autoHide: "false",
+            className: "success"
+        });
+    });
+    $('.sound_off').click(function() {
+        $(this).hide();
+        $('.sound_on').show();
+        $.cookie('sound_status', 'false', {
+            expires: 5,
+            path: '/',
+        });
+        sound_status = false;
+        $.notify('Звук выключен', {
+            clickToHide: 'true',
+            autoHide: "false",
+            className: "success"
+        });
+    });
+    snowStorm.start();
+    if($.cookie('snow_status') == 'false') {
+        $('.snow_off').hide();
+        $('.snow_on').show();
+        snowStorm.stop();
+        snowStorm.freeze();
+    }
+    $('.snow_on').click(function() {
+        $(this).hide();
+        $('.snow_off').show();
+        $.cookie('snow_status', 'true', {
+            expires: 5,
+            path: '/',
+        });
+        $.notify('Снег включен', {
+            clickToHide: 'true',
+            autoHide: "false",
+            className: "success"
+        });
+        snowStorm.show();
+        snowStorm.resume();
+    });
+    $('.snow_off').click(function() {
+        $(this).hide();
+        $('.snow_on').show();
+        $.cookie('snow_status', 'false', {
+            expires: 5,
+            path: '/',
+        });
+        $.notify('Снег выключен', {
+            clickToHide: 'true',
+            autoHide: "false",
+            className: "success"
+        });
+        snowStorm.stop();
+        snowStorm.freeze();
+    });
     load_page();
     if($.cookie('vk_post') != 'true') {
         $('#vk-post').arcticmodal();
@@ -45,9 +131,6 @@ $(document).ready(function() {
     }
     
     $('a[href="' + document.location.pathname + '"]').parent().addClass('active');
-    $('.history-block-item .user .username').each(function() {
-        $(this).text(replaceLogin($(this).text()));
-    });
     $('.deposit-item:not(.card)').tooltip({
         container: 'body'
     });
@@ -55,17 +138,7 @@ $(document).ready(function() {
         "container": "body"
     });
     EZYSKINS.init();
-    $('.close-eto-delo').click(function(e) {
-        $(this).parent('.msg-wrap').slideUp();
-    });
     $(document).on('click', '.no-link', function() {
-        $('#linkBlock').slideDown();
-        return false;
-    });
-    $(document).on('click', '#cardDepModal', function() {
-        $('#cardDepositModal').arcticmodal();
-    });
-    $(document).on('click', '.deposit-no-link', function() {
         $('#linkBlock').slideDown();
         return false;
     });
@@ -114,7 +187,7 @@ $(document).ready(function() {
             trigger: 'hover',
             delay: {
                 show: 50,
-                hide: 3000
+                hide: 200
             },
             title: function() {
                 var text = $(this).data('old-title');
@@ -227,42 +300,6 @@ function num(val) {
     return Math.round(parseFloat(val) * 100) / 100;
 }
 updateScrollbar();
-updateBackground();
-
-function getRarity(type) {
-    var rarity = '';
-    var arr = type.split(',');
-    if(arr.length == 2) type = arr[1].trim();
-    if(arr.length == 3) type = arr[2].trim();
-    if(arr.length && arr[0] == 'Нож') type = '★';
-    switch(type) {
-        case 'Армейское качество':
-            rarity = 'milspec';
-            break;
-        case 'Запрещенное':
-            rarity = 'restricted';
-            break;
-        case 'Засекреченное':
-            rarity = 'classified';
-            break;
-        case 'Тайное':
-            rarity = 'covert';
-            break;
-        case 'Ширпотреб':
-            rarity = 'common';
-            break;
-        case 'Промышленное качество':
-            rarity = 'common';
-            break;
-        case '★':
-            rarity = 'rare';
-            break;
-        case 'card':
-            rarity = 'card';
-            break;
-    }
-    return rarity;
-}
 
 function n2w(n, w) {
     n %= 100;
@@ -276,16 +313,6 @@ function n2w(n, w) {
             return w[1];
         default:
             return w[2];
-    }
-}
-
-function updateBackground() {
-    var mainHeight = $('.dad-container').height();
-    var windowHeight = $(window).height();
-    if(mainHeight > windowHeight) {
-        $('.main-container').height('auto');
-    } else {
-        $('.main-container').height('auto');
     }
 }
 
@@ -318,7 +345,6 @@ $('.arrowscroll').click(function() {
             scrollLeft: direction + "=250"
         });
 });
-var CONNECT = false;
 setInterval(function(){ConntectSocketIO();},10);
 function updateUsers(){
     r = Math.floor(Math.sqrt(57660 / $('#win-block').children().length)) - 1;
@@ -338,49 +364,7 @@ function updateSocketIO(){
         CONNECT = true;
     }
 }
-if(START) {
-    if($.cookie('averagebettime') !== null) {
-        var averagebettime = $.cookie('averagebettime');
-        $('#speed_trades').html(averagebettime);
-    } else {
-        var averagebettime = 5.5;
-        $('#speed_trades').html(averagebettime);
-    }
-    sound_status = true;
-    if($.cookie('sound_status') == 'false') {
-        $('.sound_off').hide();
-        $('.sound_on').show();
-        sound_status = false;
-    }
-    $('.sound_on').click(function() {
-        $(this).hide();
-        $('.sound_off').show();
-        $.cookie('sound_status', 'true', {
-            expires: 5,
-            path: '/',
-        });
-        sound_status = true;
-        $.notify('Звук включен', {
-            clickToHide: 'true',
-            autoHide: "false",
-            className: "success"
-        });
-    });
-    $('.sound_off').click(function() {
-        $(this).hide();
-        $('.sound_on').show();
-        $.cookie('sound_status', 'false', {
-            expires: 5,
-            path: '/',
-        });
-        sound_status = false;
-        $.notify('Звук выключен', {
-            clickToHide: 'true',
-            autoHide: "false",
-            className: "success"
-        });
-    });
-    updateBackground();
+if(START && onpage) {
     var declineTimeout,
         r = 0,
         timerStatus = true,
@@ -388,65 +372,52 @@ if(START) {
         onlineList = [];
     updateSocketIO();
     socket.on('update', function(data) {
-        updateSocketIO();
-        $('#lw').addClass("flip");
-        $('#mltd').addClass("flip");
-        $('#mlf').addClass("flip");
-        setTimeout(function() {
-            $('#lw-name').html('<a href="/user/' + data.lw.user.steamid64 + '" class="color-yellow">' + data.lw.user.username + '</a>');
-            $('#lw-avatar').html('<a href="/user/' + data.lw.user.steamid64 + '"><img src="' + data.lw.user.avatar + '" alt="" title="" /></a>');
-            $('#lw-chance').html('Шанс: <span class="down-text">' + data.lw.chance + '%</span>');
-            $('#lw-money').html('Сумма выигрыша: <span class="down-text">' + data.lw.price + ' Р</span>');
-            $('#mltd-name').html('<a href="/user/' + data.mltd.user.steamid64 + '" class="color-yellow">' + data.mltd.user.username + '</a>');
-            $('#mltd-avatar').html('<a href="/user/' + data.mltd.user.steamid64 + '"><img src="' + data.mltd.user.avatar + '" alt="" title="" /></a>');
-            $('#mltd-chance').html('Шанс: <span class="down-text">' + data.mltd.chance + '%</span>');
-            $('#mltd-money').html('Сумма выигрыша: <span class="down-text">' + data.mltd.price + ' Р</span>');
-            $('#mlf-name').html('<a href="/user/' + data.mlfv.user.steamid64 + '" class="color-yellow">' + data.mlfv.user.username + '</a>');
-            $('#mlf-avatar').html('<a href="/user/' + data.mlfv.user.steamid64 + '"><img src="' + data.mlfv.user.avatar + '" alt="" title="" /></a>');
-            $('#mlf-chance').html('Шанс: <span class="down-text">' + data.mlfv.chance + '%</span>');
-            $('#mlf-money').html('Сумма выигрыша: <span class="down-text">' + data.mlfv.price + ' Р</span>');
+        if(data){
+            updateSocketIO();
+            $('#lw').addClass("flip");
+            $('#mltd').addClass("flip");
+            $('#mlf').addClass("flip");
             setTimeout(function() {
-                $('#lw').removeClass("flip");
-                $('#mltd').removeClass("flip");
-                $('#mlf').removeClass("flip");
+                $('#lw-name').html('<a href="/user/' + data.lw.user.steamid64 + '" class="color-yellow">' + data.lw.user.username + '</a>');
+                $('#lw-avatar').html('<a href="/user/' + data.lw.user.steamid64 + '"><img src="' + data.lw.user.avatar + '" alt="" title="" /></a>');
+                $('#lw-chance').html('Шанс: <span class="down-text">' + data.lw.chance + '%</span>');
+                $('#lw-money').html('Сумма выигрыша: <span class="down-text">' + data.lw.price + ' Р</span>');
+                $('#mltd-name').html('<a href="/user/' + data.mltd.user.steamid64 + '" class="color-yellow">' + data.mltd.user.username + '</a>');
+                $('#mltd-avatar').html('<a href="/user/' + data.mltd.user.steamid64 + '"><img src="' + data.mltd.user.avatar + '" alt="" title="" /></a>');
+                $('#mltd-chance').html('Шанс: <span class="down-text">' + data.mltd.chance + '%</span>');
+                $('#mltd-money').html('Сумма выигрыша: <span class="down-text">' + data.mltd.price + ' Р</span>');
+                $('#mlf-name').html('<a href="/user/' + data.mlfv.user.steamid64 + '" class="color-yellow">' + data.mlfv.user.username + '</a>');
+                $('#mlf-avatar').html('<a href="/user/' + data.mlfv.user.steamid64 + '"><img src="' + data.mlfv.user.avatar + '" alt="" title="" /></a>');
+                $('#mlf-chance').html('Шанс: <span class="down-text">' + data.mlfv.chance + '%</span>');
+                $('#mlf-money').html('Сумма выигрыша: <span class="down-text">' + data.mlfv.price + ' Р</span>');
+                setTimeout(function() {
+                    $('#lw').removeClass("flip");
+                    $('#mltd').removeClass("flip");
+                    $('#mlf').removeClass("flip");
+                }, 300);
+            }, 800);
+            setTimeout(function() {
+                var last = Math.abs(data.last);
+                $(".stats-last-href").attr("href", "/game/" + last);
+                
+                $(".stats-last").addClass("num_anim");
+                $(".stats-total").addClass("num_anim");
+                $(".stats-max").addClass("num_anim");
+                $(".stats-uToday").addClass("num_anim");
+                setTimeout(function() {
+                    $(".stats-last").text(last);
+                    $(".stats-total").text(data.total);
+                    $(".stats-max").text(data.max);
+                    $(".stats-uToday").text(data.today);
+                    setTimeout(function() {
+                        $(".stats-last").removeClass("num_anim");
+                        $(".stats-total").removeClass("num_anim");
+                        $(".stats-max").removeClass("num_anim");
+                        $(".stats-uToday").removeClass("num_anim");
+                    }, 250);
+                }, 750);
             }, 300);
-        }, 700);
-        setTimeout(function() {
-            var last = Math.abs(data.last);
-            $(".stats-last-href").attr("href", "/game/" + last);
-            $(".stats-last").spincrement({
-                from: num($('.stats-last').text()),
-                to: last,
-                decimalPlaces: 0,
-                decimalPoint: ".",
-                thousandSeparator: "",
-                duration: 1000
-            });
-            $(".stats-total").spincrement({
-                from: num($('.stats-total').text()),
-                to: data.total,
-                decimalPlaces: 0,
-                decimalPoint: ".",
-                thousandSeparator: "",
-                duration: 1000
-            });
-            $(".stats-max").spincrement({
-                from: num($('.stats-max').text()),
-                to: data.max,
-                decimalPlaces: 0,
-                decimalPoint: ".",
-                thousandSeparator: "",
-                duration: 5000
-            });
-            $(".stats-uToday").spincrement({
-                from: num($('.stats-uToday').text()),
-                to: data.today,
-                decimalPlaces: 0,
-                decimalPoint: ".",
-                thousandSeparator: "",
-                duration: 1000
-            });
-        }, 300);
+        }
     })
     .on('status', function(data) {
         updateSocketIO();
@@ -504,7 +475,7 @@ if(START) {
         updateSocketIO();
         socket.on('newDeposit', function(data) {
             updateChatScroll();
-            if(USER_ID != 76561197960265728) updateBalance();
+            //if(USER_ID != 76561197960265728) updateBalance();
             data = JSON.parse(data);
             if(data) {
                 if(data.betprice < 10) {
@@ -516,9 +487,12 @@ if(START) {
                 }
                 if(sound_status) audio.play();
             }
-            updateBackground();
-            $('#deposits').html('');
-            $('#deposits').prepend(data.html);
+            if($('#deposits').children(".deposits-container").first().attr('id') != ('bet_' + data.betId)){
+                $('#deposits').prepend(data.html);
+            } else {
+                $('#bet_' + data.betId).remove();
+                $('#deposits').prepend(data.html);
+            }
             if(data.cc) {
                 $('.current-chance-wrap').html('');
                 $('.current-chance-wrap').prepend(data.cc);
@@ -532,7 +506,6 @@ if(START) {
                 placement: 'top'
             });
             html_chances = '';
-            //data.chances = sortByChance(data.chances);
             data.chances.forEach(function(info) {
                 if(USER_ID == info.steamid64) {
                     $('#myItemsCount').html(info.items + '<span style="font-size: 12px;">' + n2w(info.items, [' предмет', ' предмета', ' предметов']) + '</span>');
@@ -761,7 +734,6 @@ if(START) {
             });
             var audio = new Audio('/assets/sounds/newgamestartm.mp3');
             if(sound_status) audio.play();
-            updateBackground();
             $('#usersChances .users .current-chance-wrap').html('');
             $('#usersChances .items .current-chance-wrap').html('');
             $('#usersChances').hide();
@@ -784,7 +756,6 @@ if(START) {
             $('#gameTimer .countSeconds').text('00');
             $('title').text('0 р. | CSGF.RU');
             $('#roundStartBlock #date').html(data.created_at);
-            setTimeout(updateBackground, 1000);
             ngtimerStatus = true;
         })
         .on('depositDecline', function(data) {
@@ -842,7 +813,6 @@ function loadMyInventory() {
                 $('thead').show();
             }
             $('tbody').html(text);
-            updateBackground();
         },
         error: function() {
             var text = isEn() ? 'An error has occurred. Try again' : 'РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°. РџРѕРїСЂРѕР±СѓР№С‚Рµ РµС‰Рµ СЂР°Р·';

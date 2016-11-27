@@ -5957,25 +5957,35 @@ a.button31:focus:before {
 }
 
 .sound {
-	background: url('/assets/images/sound-on.png') no-repeat left;
+	background: url('/assets/img/sound-on.png') no-repeat left;
     margin: 4px;
-    /*margin-top: 10px;
-    /* padding-left: 40px; */
-    /* float: right; */
     cursor: pointer;
     height: 14px;
-    /* background-position: -0px -0px; */
 }
 
 .sound-off {
-    background: url('/assets/images/sound-off.png') no-repeat left;	
+    background: url('/assets/img/sound-off.png') no-repeat left;	
     margin: 4px;
-    /*margin-top: 10px;
-    /* padding-left: 40px; */
-    /* float: right; */
     cursor: pointer;
     height: 14px;
-    /* background-position: -0px -0px; */
+}
+
+.snow {
+	background: url('/assets/img/snow.png') no-repeat left;
+    margin: 4px;
+    cursor: pointer;
+    height: 16px;
+    width: 16px;
+    background-size: 16px;
+}
+
+.snow-off {
+    background: url('/assets/img/snow-off.png') no-repeat left;	
+    margin: 4px;
+    cursor: pointer;
+    height: 16px;
+    width: 16px;
+    background-size: 16px;
 }
 
 
@@ -7242,4 +7252,41 @@ div#lw-avatar img {
 	text-decoration: none;
 	background-color: #223340;
 	outline: 0;
+}
+
+.num_anim {
+    -webkit-animation: num-anim 1s;
+            animation: num-anim 1s;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+}
+@keyframes num-anim
+{
+    0%
+    {
+        transform: rotateX(0deg);
+    }
+    50%
+    {
+        transform: rotateX(180deg);
+    }
+    100%
+    {
+        transform: rotateX(360deg);
+    }
+}
+@-webkit-keyframes num-anim
+{
+    0%
+    {
+        transform: rotateX(0deg);
+    }
+    50%
+    {
+        transform: rotateX(180deg);
+    }
+    100%
+    {
+        transform: rotateX(360deg);
+    }
 }

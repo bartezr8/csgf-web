@@ -1,4 +1,4 @@
-<div title="{{ $bet->msg }}" class="deposits-container @if($bet->id == \App\Http\Controllers\GameController::getLastBet()) fade-in-up @endif" id="bet_{{ $bet->id }}">
+<div title="{{ $bet->msg }}" class="deposits-container @if($bet->id == \App\Http\Controllers\GameController::getLastBet()) vibro @endif" id="bet_{{ $bet->id }}">
     <div class="deposit-head">
         <div class="left-block">
             <div class="profile-img"><img @if($bet->vip) style="border: 1px dashed #F9FF2F;" @endif src="{{ $bet->user->avatar }}"></div>
