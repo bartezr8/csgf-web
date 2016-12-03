@@ -1,5 +1,21 @@
 var onpage = true;
+var averagebettime = 5.5;
+function updateBackground() {
+    var mainHeight = $('.dad-container').height();
+    var windowHeight = $(window).height();
+    if(mainHeight > windowHeight) {
+        $('.main-container').height('auto');
+    } else {
+        $('.main-container').height('auto');
+    }
+}
 $(function() {
+    if($.cookie('averagebettime') !== null) {
+        averagebettime = $.cookie('averagebettime');
+        $('#speed_trades').html(averagebettime);
+    } else {
+        $('#speed_trades').html(averagebettime);
+    }
     $(window).scroll(function() {
         var scrollHeight = Math.max(
             document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -41,13 +57,6 @@ $(function() {
             scrollTop: scrollHeight
         }, 800);
     });
-    if($.cookie('averagebettime') !== null) {
-        var averagebettime = $.cookie('averagebettime');
-        $('#speed_trades').html(averagebettime);
-    } else {
-        var averagebettime = 5.5;
-        $('#speed_trades').html(averagebettime);
-    }
 });
 $(document).ready(function() {
     sound_status = true;
@@ -300,7 +309,7 @@ function num(val) {
     return Math.round(parseFloat(val) * 100) / 100;
 }
 updateScrollbar();
-
+updateBackground();
 function n2w(n, w) {
     n %= 100;
     if(n > 19) n %= 10;
@@ -497,6 +506,7 @@ if(START && onpage) {
                 $('.current-chance-wrap').html('');
                 $('.current-chance-wrap').prepend(data.cc);
             }
+            updateBackground();
             $('#roundBank').html(Math.round(data.gamePrice) + ' <span class="money" style="color: #b3e5ff;">руб</span>');
             $('title').text(Math.round(data.gamePrice) + ' р. | CSGF.RU');
             $('.item-bar-text').html('<span>' + data.itemsCount + '<span style="font-weight: 100;"> / </span>100</span>' + n2w(data.itemsCount, [' предмет', ' предмета', ' предметов']));
@@ -739,6 +749,7 @@ if(START && onpage) {
             $('#usersChances').hide();
             /*$('#div_winner_112').hide();*/
             $('#deposits').html('');
+            updateBackground();
             $('#myItemsCount').html('0 <span style="font-size: 12px;"> предметов</span>');
             $('#myChance').text('0%');
             $('#roundId').text(data.id);

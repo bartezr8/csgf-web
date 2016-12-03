@@ -56,7 +56,8 @@ class CoinFlipController extends Controller {
             'id' => $game->id,
             'name' => $this->user->username,
             'wava' => $winner->avatar,
-            'lava' => $looser->avatar
+            'lava' => $looser->avatar,
+            'user_id' => $winner->steamid64
         ];
         $this->redis->publish('coin_scroll', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);

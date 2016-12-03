@@ -276,13 +276,26 @@ class GameController extends Controller
 				];
 			} else {
 				$lastgame = \DB::table('games')->where('id', (\DB::table('games')->max('id')) - 1)->first();
-				$user = User::where('id', $lastgame->winner_id)->first();
-                unset($user->password);
-				$lw = [
-					'user' => $user,
-					'price' => $lastgame->price,
-					'chance' => self::_getUserChanceOfGame($user, $lastgame)
-				];
+                if (!is_null($lastgame)){
+                    $user = User::where('id', $lastgame->winner_id)->first();
+                    unset($user->password);
+                    $lw = [
+                        'user' => $user,
+                        'price' => $lastgame->price,
+                        'chance' => self::_getUserChanceOfGame($user, $lastgame)
+                    ];
+                } else {
+                    $u = [
+                        'avatar' => '/assets/img/blank.jpg',
+                        'username' => 'Пока не выбран',
+                        'steamid64' => ''
+                    ];
+                    $lw = [
+                        'user' => $u,
+                        'price' => '???',
+                        'chance' => '???'
+                    ];
+                }
 			}	
 		} else {
 			$u = [

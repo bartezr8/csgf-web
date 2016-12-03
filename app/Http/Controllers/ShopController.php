@@ -357,7 +357,7 @@ class ShopController extends Controller {
 			$aoffer = \DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
 			if(is_null($aoffer)){
 				$classids = $request->get('classids');
-				if(count($classids)){
+				if($classids!=''){
 					$value = [
 						'items' => $classids,
 						'steamid' => $this->user->steamid64,

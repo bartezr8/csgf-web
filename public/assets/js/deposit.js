@@ -251,22 +251,17 @@ $(function() {
             });
         },
         get_cart: function(){
-            var senditems = [];
             var items_list = makeArray(this.shop_cart);
+            var ids = '';
             items_list.forEach(function (item) {
-                if(item.count > 0) {
-                    for (var i = 0; i < item.count; i++) {
-                        senditems.push(item.id);
-                    }
-                }
+                ids += item.id;
             });
-            console.log(senditems);
             $.ajax({
                 url: '/shop/sellitems',
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    classids: senditems
+                    classids: ids
                 },
                 success: function (data) {
                     if (data.success) {

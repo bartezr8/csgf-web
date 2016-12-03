@@ -362,11 +362,11 @@
 				<div class="title-block"><h2>Внимание!</h2></div>
 			</div>
 			<div class="text-block-wrap">
-                <div id="vk_post_-35255262_2504"></div>
+                <div id="vk_post_-35255262_2593"></div>
                 <script type="text/javascript">
-                  (function(d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//vk.com/js/api/openapi.js?135"; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'vk_openapi_js'));
+                  (function(d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "//vk.com/js/api/openapi.js?136"; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'vk_openapi_js'));
                   (function() {
-                    if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_-35255262_2504', -35255262, 2504, '-b9k4QYOqF4giE7Fsz_gKkY44oE', {width: 608})) setTimeout(arguments.callee, 50);
+                    if (!window.VK || !VK.Widgets || !VK.Widgets.Post || !VK.Widgets.Post('vk_post_-35255262_2593', -35255262, 2593, 'fceMrYJ7o-iW2ulzPw9MhX5lmaY', {width: 608})) setTimeout(arguments.callee, 50);
                   }());
                 </script>
 			</div>

@@ -55,7 +55,7 @@ $(function() {
                 value: value
             }, function(data) {
                 if(data.type == 'success') {
-                    $('.userBalance').text(num($('.userBalance').text()) - sum);
+                    $('.userBalance').text(num(num($('.userBalance').text()) - sum));
                     dice.roll(data.value);
                 }
                 return $.notify(data.text, data.type);
@@ -99,12 +99,12 @@ $(function() {
                 input.val(num(input.val()) + 100);
                 break;
             case '1/2':
-                if (isNaN(num(input.val()))) input.val(0);
-                input.val(Math.floor(parseInt(parseInt(input.val())) / 2));
+                if (isNaN(input.val())) input.val(0);
+                input.val(num(num(input.val()) / 2));
                 break;
             case 'x2':
-                if (isNaN(num(input.val()))) input.val(0);
-                input.val(num(parseInt(input.val()) * 2));
+                if (isNaN(input.val())) input.val(0);
+                input.val(num(num(input.val()) * 2));
                 break;
         }
     });
@@ -115,3 +115,6 @@ $(function() {
         }, 1500);
     });
 });
+function num(val) {
+    return Math.round(parseFloat(val)*100)/100;
+}

@@ -21,7 +21,7 @@ class UpdatePrices extends Command
     
     protected $signature = 'prices:update {--bp} {--fast} {--steam}';
 
-    protected $description = 'Updates Prices from steam, bp and fast';
+    protected $description = ' {--bp} {--fast} {--steam} Updates Prices from steam, bp and fast';
 
     public function __construct()
     {
