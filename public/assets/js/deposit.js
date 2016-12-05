@@ -65,7 +65,7 @@ $(function() {
             return item_obj;
         },
         draw_items: function(){
-            this.clear_items;
+            this.shop_items_Holder.children().replaceWith('');
             var items_list = makeArray(this.shop_items);
             $('#items-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
@@ -76,7 +76,6 @@ $(function() {
             items_list.sort(function (a, b) {
                 return b.price - a.price
             });
-            this.shop_items_Holder.children().replaceWith('');
             items_list.forEach(function (item) {
                 item.el = $(shop.item_tpl(item));
                 shop.shop_items_Holder.append(item.el);
@@ -169,13 +168,14 @@ $(function() {
                 type: 'POST',
                 dataType: 'json',
                 success: function (data) {
-                    console.log(data);
-                    if (!data.list.length) return;
+                    if (!data.list.length){
+                        shop.shop_items_Holder.html('<div style="text-align: center">Инвентарь пуст!</div>');
+                        return;
+                    }
                     data.list.forEach(function (zipItem) {
                         var item = shop.parce_item(zipItem);
                         shop.shop_items[item.id] = item;
                     });
-                    console.log(shop.shop_items);
                     shop.draw_items();
                 },
                 error: function () {
@@ -245,16 +245,14 @@ $(function() {
         sell_cart_all: function(){
             var items_list = makeArray(this.shop_cart);
             items_list.forEach(function (item) {
-                if(item.count > 0) {
-                    shop.sell_cart(item.id);
-                }
+                for (var i = 0; i < item.count; i++) shop.sell_cart(item.id);
             });
         },
         get_cart: function(){
             var items_list = makeArray(this.shop_cart);
             var ids = '';
             items_list.forEach(function (item) {
-                ids += item.id;
+                ids += item.id + ',';
             });
             $.ajax({
                 url: '/shop/sellitems',

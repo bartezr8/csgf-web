@@ -2,7 +2,6 @@ $(function() {
     EZYSKINS.init();
     window.shop = ({
         shop_loader: '<div id="inventory_load" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div style="text-align: center;margin-top: 5px;">Обновляем список предметов!</div>',
-        user_money: 0,
         item_tpl: _.template($('#item-template').html()),
         shop_items: {},
         shop_items_Holder: $('#items-list'),
@@ -66,7 +65,7 @@ $(function() {
             return item_obj;
         },
         draw_items: function(){
-            this.clear_items;
+            this.shop_items_Holder.children().replaceWith('');
             var items_list = makeArray(this.shop_items);
             $('#items-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
@@ -77,7 +76,6 @@ $(function() {
             items_list.sort(function (a, b) {
                 return b.price - a.price
             });
-            this.shop_items_Holder.children().replaceWith('');
             items_list.forEach(function (item) {
                 item.el = $(shop.item_tpl(item));
                 shop.shop_items_Holder.append(item.el);
@@ -118,7 +116,6 @@ $(function() {
                     args.push(p);
                 }
             });
-            
             var from = parseFloat($('#priceFrom').val()) || 0;
             var to = parseFloat($('#priceTo').val()) || 10e10;
             if (to < from) to = 10e10;
@@ -164,14 +161,17 @@ $(function() {
             $('#cart-total-price').text(0);
         },
         load_items: function(){
-            this.update_shop_balance();
             this.shop_items_Holder.html(shop.shop_loader);
             $.ajax({
                 url: '/shop/items',
                 type: 'POST',
                 dataType: 'json',
                 success: function (data) {
-                    if (!data.list.length) return;
+                    if (!data.list.length){
+                        shop.clear_items();
+                        shop.shop_items_Holder.html('<div style="text-align: center">Магазин пуст! Попробуйте позже!</div>');
+                        return;
+                    }
                     data.list.forEach(function (zipItem) {
                         var item = shop.parce_item(zipItem);
                         shop.shop_items[item.id] = item;
@@ -182,12 +182,6 @@ $(function() {
                     shop.clear_items();
                     shop.shop_items_Holder.html('<div style="text-align: center">Магазин пуст! Попробуйте позже!</div>');
                 }
-            });
-        },
-        update_shop_balance: function(){
-            $.post('/getBalance', function (data) {
-                $('.userBalance').text(data);
-                shop.user_money = data;
             });
         },
         add_new_items: function(data){
@@ -227,7 +221,7 @@ $(function() {
             } else {
                 price = shop.shop_items[id].price;
             }
-            if((price + shop.shop_cart_price) > shop.user_money) return $.notify("У вас недостаточно средств", { className: "error" });
+            if((price + shop.shop_cart_price) > USER_BALANCE) return $.notify("У вас недостаточно средств", { className: "error" });
             
             if(is_null(shop.shop_cart[id])){
                 var item = shop.new_item(shop.shop_items[id]);
@@ -283,12 +277,12 @@ $(function() {
         sell_cart_all: function(){
             var items_list = makeArray(this.shop_cart);
             items_list.forEach(function (item) {
-                if(item.count > 0) {
-                    shop.sell_cart(item.id);
-                }
+                console.log(item);
+                for (var i = 0; i < item.count; i++) shop.sell_cart(item.id);
             });
         },
         get_cart: function(){
+            $.notify('Проверяем ваш запрос', {className: "success"});
             var senditems = [];
             var items_list = makeArray(this.shop_cart);
             items_list.forEach(function (item) {
@@ -372,5 +366,4 @@ $(function() {
     }
     
     shop.load_items();
-    setInterval(shop.update_shop_balance,30000);
 });

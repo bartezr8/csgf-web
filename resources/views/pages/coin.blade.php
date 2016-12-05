@@ -32,7 +32,7 @@
         <script type="text/template" id="coin-template">
             <tr id="coin_<%= id %>">
                 <td class="participations">
-                    <div class="count-block" ><%= sum %></div>
+                    <div class="count-block" id="sum"><%= sum %></div>
                 </td>
                 <td id="first" class="winner-name" >
                     <div class="user-ava"><img id="user-ava" src="<%= ava %>"></div>
@@ -97,7 +97,7 @@
                     @forelse($coingames as $game)
                         <tr id="coin_{{ $game['id'] }}">
                             <td class="participations">
-                                <div class="count-block" >{{ $game['sum'] }}</div>
+                                <div class="count-block" id="sum">{{ $game['sum'] }}</div>
                             </td>
                             <td id="first" class="winner-name" >
                                 <div class="user-ava"><img id="user-ava" src="{{ $game['ava'] }}"></div>

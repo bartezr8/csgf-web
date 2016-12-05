@@ -32,7 +32,10 @@ if(START) {
                             } else {
                                 $("#cointable #coin_" + data.id + " #first #user-name").css('color', '#d1ff78');
                             }
-                            if(USER_ID == data.user_id) $('.userBalance').text(num(num($('.userBalance').text()) + num($("#cointable #coin_" + data.id + " .participations .count-block").text()) * 2));
+                            if(USER_ID == data.user_id){
+                                USER_BALANCE = num(num(USER_BALANCE) + num(num($("#cointable #coin_" + data.id + " #sum").text()) * 2));
+                                $('.userBalance').text(USER_BALANCE);
+                            }
                         }, 5000);
                     }, 500);
                     setTimeout(function() {
@@ -49,10 +52,7 @@ $(function () {
     window.coin_tpl = _.template($('#coin-template').html());
 });
 function num(val) {
-    var n = parseFloat(val);
-    var result = Math.round((n - Math.floor(n)) * 100 ); 
-    while(result.toString().length < 2) result = '0' + result;
-    return parseFloat(Math.floor(n).toString() + '.' + result.toString());
+    return Math.round(parseFloat(val)*100)/100;
 }
 $(document).ready(function () {});
 
@@ -61,10 +61,8 @@ $(document).on('click', '#coin_bet', function () {
         sum: $('#coin_sum').val()
     }, function(data) {
         if(data.type == 'success'){
-            console.log(num($('.userBalance').text()));
-            console.log(num($('#coin_sum').val()));
-            var new_b = num($('.userBalance').text()) - num($('#coin_sum').val());
-            $('.userBalance').text(new_b);
+            USER_BALANCE = num(num(USER_BALANCE) - num($('#coin_sum').val()));
+            $('.userBalance').text(USER_BALANCE);
         }
         return $.notify(data.text, data.type);
     });
@@ -76,7 +74,8 @@ function coin_bet( id ) {
     },
     function(data) {
         if(data.type == 'success'){
-            $('.userBalance').text(num(num($('.userBalance').text()) - num($("#cointable #coin_" + id + " .participations .count-block").text())));
+            USER_BALANCE = num(num(USER_BALANCE) - num($("#cointable #coin_" + id + " #sum").text()));
+            $('.userBalance').text(USER_BALANCE);
         }
         return $.notify(data.text, data.type);
     });
