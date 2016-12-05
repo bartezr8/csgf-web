@@ -5,6 +5,7 @@ use App\Bet;
 use App\Game;
 use App\Services\Item;
 use App\User;
+use App\Item_BP;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Http\Requests;
@@ -340,5 +341,14 @@ class PagesController extends Controller
 		$url = 'https://yandex.ru/search/?text='.urlencode($urls[$rand]);
         header('Location: '.$url);
 		exit();
+    }
+    public function prices(Request $request){
+        if(!$request->get('key')) return 'Wrong key';
+        $result = \DB::table('parser_keys')->where('key', $request->get('key'))->first();
+        if(is_null($result)) return 'Wrong key';
+        if(\Cache::has('prices')) {
+            $items = \Cache::get('prices');
+            echo json_encode($items);
+        }
     }
 }

@@ -15,13 +15,11 @@ class Item {
     
     public  $price;
     public  $mhn;
-
     public function __construct($info)
     {
         $this->market_hash_name = $info['market_hash_name'];
-        $this->price = $this->getItemPrice();
+        $this->price = $this->getItemPrice($this->market_hash_name);
     }
-
     private function curl($url) {
 		$ch = curl_init();
 
@@ -37,14 +35,12 @@ class Item {
 
 		return $data;
 	}
-    
-    public function getItemPrice() {
+    public static function getItemPrice($item_name) {
         $price_item = false; $count = 0;
-        $item_name = $this->market_hash_name;
         $si = Item_Steam::where('market_hash_name', $item_name)->first();
         $fi = Item_Fast::where('market_hash_name', $item_name)->first();
         $bi = Item_BP::where('market_hash_name', $item_name)->first();
-        if($this->pchk($si)){
+        if(self::pchk($si)){
             $price_item += $si->price;
             if($si->price < 20){
                 return $price_item;
@@ -52,18 +48,17 @@ class Item {
                 $count++;
             }
         }
-        if($this->pchk($fi)){
+        if(self::pchk($fi)){
             $price_item += $fi->price;
             $count++;
         }
-        if($this->pchk($bi)){
+        if(self::pchk($bi)){
             $price_item += $bi->price;
             $count++;
         }
         if($count > 0) $price_item = round($price_item / $count, 2);
         return $price_item;
     }
-
     public static function pchk($item){
         $item = (object)$item;
         if(is_null($item)) return false;

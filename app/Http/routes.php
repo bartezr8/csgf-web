@@ -20,6 +20,7 @@ get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
 get('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
+get('/prices', 'PagesController@prices');
 
 Route::group(['middleware' => 'auth'], function () {
     get('/logout', ['as' => 'logout', 'uses' => 'SteamController@logout']);

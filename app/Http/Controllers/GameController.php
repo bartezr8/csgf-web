@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Bet;
+use App\Bot_bet;
 use App\Game;
 use App\Services\Item;
 use App\Ticket;
@@ -25,8 +26,8 @@ use Storage;
 
 class GameController extends Controller
 {
-	const URL_REQUEST = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
-	
+    const URL_REQUEST = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
+    
     const SEND_OFFERS_LIST = 'send.offers.list';
     const NEW_BET_CHANNEL = 'newDeposit';
     const BET_DECLINE_CHANNEL = 'depositDecline';
@@ -40,7 +41,7 @@ class GameController extends Controller
 
     private static $chances_cache = [];
     
-	public function __construct()
+    public function __construct()
     {
         $this->redis = LRedis::connection();
         parent::__construct();
@@ -53,17 +54,17 @@ class GameController extends Controller
         $this->redis->disconnect();
     }
     public function curl($url) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-		$data = curl_exec($ch);
-		curl_close($ch);
-		return $data;
-	}
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
 
     public function userinfo(Request $request)
     {
@@ -115,7 +116,7 @@ class GameController extends Controller
         if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
         $chances = json_encode($this->_getChancesOfGame($game));
         if (!is_null($this->user)) $user_items = $this->user->itemsCountByGame($game);
-		parent::setTitle(round($game->price) . ' р. | ');
+        parent::setTitle(round($game->price) . ' р. | ');
         return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items'));
     }
     public function getLastGame()
@@ -132,9 +133,9 @@ class GameController extends Controller
     public function dec()
     {
         $sumtd = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->sum('price');
-		$sumfw = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->sum('price');
-		$sumfr = \DB::table('games')->where('status', Game::STATUS_FINISHED)->sum('price');
-		$echo = 'Разыграно сегодня: ' . $sumtd . ' | Комиссия: ~' . ($sumtd * 0.09) . '<br> Разыграно за неделю: ' . $sumfw . ' | Комиссия: ~' . ($sumfw * 0.09) . '<br> Разыграно всего: ' . $sumfr . ' | Комиссия: ~' . ($sumfr * 0.09);
+        $sumfw = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->sum('price');
+        $sumfr = \DB::table('games')->where('status', Game::STATUS_FINISHED)->sum('price');
+        $echo = 'Разыграно сегодня: ' . $sumtd . ' | Комиссия: ~' . ($sumtd * 0.09) . '<br> Разыграно за неделю: ' . $sumfw . ' | Комиссия: ~' . ($sumfw * 0.09) . '<br> Разыграно всего: ' . $sumfr . ' | Комиссия: ~' . ($sumfr * 0.09);
         return $echo;
     }
     
@@ -177,41 +178,41 @@ class GameController extends Controller
         }
         return false;
     }
-	public static function _fixGame($id)
-	{
+    public static function _fixGame($id)
+    {
         $game = Game::where('id', $id)->first();
-		$bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
-		$bets = Bet::where('game_id', $id)->where('user_id', '!=', $bonus->id)->orderBy('id')->get();
-		$lastTicket = 0;
-		foreach ($bets as $bet){
-			$B = Bet::where('id', $bet->id)->first();
-			$B->from = $lastTicket + 1;
-			$B->to = $B->from + ($B->price * 100) - 1;
-			$B->save();
-			$lastTicket = $B->to;
-		}
+        $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
+        $bets = Bet::where('game_id', $id)->where('user_id', '!=', $bonus->id)->orderBy('id')->get();
+        $lastTicket = 0;
+        foreach ($bets as $bet){
+            $B = Bet::where('id', $bet->id)->first();
+            $B->from = $lastTicket + 1;
+            $B->to = $B->from + ($B->price * 100) - 1;
+            $B->save();
+            $lastTicket = $B->to;
+        }
         $game = Game::where('id', $id)->first();
         $game->price = $lastTicket/100;
         $chance = 0;
         if (!is_null($game->winner)) {
-			if ($game->winner->steamid64 != config('mod_game.bonus_bot_steamid64')) {
-				$bet = Bet::where('game_id', $game->id)
-					->where('user_id', $game->winner->id)
-					->sum('price');
-				if ($game->price > 0 && $bet) $chance = round($bet / $game->price, 3) * 100; 
-			} else {
-				$chance = 0;
-			}
+            if ($game->winner->steamid64 != config('mod_game.bonus_bot_steamid64')) {
+                $bet = Bet::where('game_id', $game->id)
+                    ->where('user_id', $game->winner->id)
+                    ->sum('price');
+                if ($game->price > 0 && $bet) $chance = round($bet / $game->price, 3) * 100; 
+            } else {
+                $chance = 0;
+            }
         }
         
-		$game->chance = $chance;
+        $game->chance = $chance;
         $game->save();
         return;
-	}
+    }
     public function getWinners()
     {
         $us = $this->game->users();
-		self::_fixGame($this->game->id);
+        self::_fixGame($this->game->id);
         $lastBet = Bet::where('game_id', $this->game->id)->orderBy('to', 'desc')->first();
         $winTicket = WinnerTicket::where('game_id', $this->game->id)->first();
         if($winTicket == null) {
@@ -219,7 +220,7 @@ class GameController extends Controller
         } else {
             $winTicket = $winTicket->winnerticket;
             $this->game->rand_number = ($winTicket - 1)/$lastBet->to;
-			
+            
             if(strlen($this->game->rand_number)<19) {
                 $diff = 19 - strlen($this->game->rand_number);
                 $min = "1";
@@ -230,26 +231,26 @@ class GameController extends Controller
                 }
                 $this->game->rand_number = $this->game->rand_number."".  rand($min, $max);
             }
-			\DB::table('winner_tickets')->truncate();
+            \DB::table('winner_tickets')->truncate();
         }
-		$winningBet = Bet::where('game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
+        $winningBet = Bet::where('game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
         $this->game->winner_id      = $winningBet->user_id;
-		$this->game->price 			= $lastBet->to/100;
+        $this->game->price             = $lastBet->to/100;
         $this->game->status         = Game::STATUS_FINISHED;
         $this->game->finished_at    = Carbon::now();
-		$chance = $this->_getUserChanceOfGame($this->game->winner, $this->game);
-		$items = $this->sendItems($this->game->bets, $this->game->winner, $chance);
+        $chance = $this->_getUserChanceOfGame($this->game->winner, $this->game);
+        $items = $this->sendItems($this->game->bets, $this->game->winner, $chance);
         $this->game->won_items      = json_encode($items['itemsInfo']);
-		$this->game->comission      = json_encode($items['commissionItems']);
-		$this->game->chance         = $chance;
+        $this->game->comission      = json_encode($items['commissionItems']);
+        $this->game->chance         = $chance;
         $this->game->save();
-		
-		$users = [];
-		foreach ($us as $usr) {
-			for($i = 1; $i < round($this->_getUserChanceOfGame($usr, $this->game)); $i++) {
-				$users[] = $usr;
-			}
-		}
+        
+        $users = [];
+        foreach ($us as $usr) {
+            for($i = 1; $i < round($this->_getUserChanceOfGame($usr, $this->game)); $i++) {
+                $users[] = $usr;
+            }
+        }
         $returnValue = [
             'game'   => $this->game,
             'winner' => $this->game->winner,
@@ -257,25 +258,25 @@ class GameController extends Controller
             'ticket' => $winTicket,
             'tickets' => $lastBet->to,
             'users' => $us,
-			'userchanses' => $users,
+            'userchanses' => $users,
             'chance' => $chance
         ];
 
         return response()->json($returnValue);
     }
-	public function lw(){
-		$lastgame = \DB::table('games')->where('id', \DB::table('games')->max('id'))->first();
-		if (!is_null($lastgame)){
-			if ($lastgame->status == Game::STATUS_FINISHED) {
-				$user = User::where('id', $lastgame->winner_id)->first();
+    public function lw(){
+        $lastgame = \DB::table('games')->where('id', \DB::table('games')->max('id'))->first();
+        if (!is_null($lastgame)){
+            if ($lastgame->status == Game::STATUS_FINISHED) {
+                $user = User::where('id', $lastgame->winner_id)->first();
                 unset($user->password);
-				$lw = [
-					'user' => $user,
-					'price' => $lastgame->price,
-					'chance' => self::_getUserChanceOfGame($user, $lastgame)
-				];
-			} else {
-				$lastgame = \DB::table('games')->where('id', (\DB::table('games')->max('id')) - 1)->first();
+                $lw = [
+                    'user' => $user,
+                    'price' => $lastgame->price,
+                    'chance' => self::_getUserChanceOfGame($user, $lastgame)
+                ];
+            } else {
+                $lastgame = \DB::table('games')->where('id', (\DB::table('games')->max('id')) - 1)->first();
                 if (!is_null($lastgame)){
                     $user = User::where('id', $lastgame->winner_id)->first();
                     unset($user->password);
@@ -296,77 +297,77 @@ class GameController extends Controller
                         'chance' => '???'
                     ];
                 }
-			}	
-		} else {
-			$u = [
-				'avatar' => '/assets/img/blank.jpg',
-				'username' => 'Пока не выбран',
-				'steamid64' => ''
-			];
-			$lw = [
-				'user' => $u,
-				'price' => '???',
-				'chance' => '???'
-			];
-		}
-		return $lw;
-	}	
-	public function mlfv(){
-		$u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
-		$mlfv = ['user' => $u,'price' => '???','chance' => '???'];
-		$mlfgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->min('chance');
-		$mlfgame = \DB::table('games')->where('chance', $mlfgame)->orderBy('price', 'desc')->first();
-		if (!is_null($mlfgame)){
-			$u = User::where('id', $mlfgame->winner_id)->first();
+            }    
+        } else {
+            $u = [
+                'avatar' => '/assets/img/blank.jpg',
+                'username' => 'Пока не выбран',
+                'steamid64' => ''
+            ];
+            $lw = [
+                'user' => $u,
+                'price' => '???',
+                'chance' => '???'
+            ];
+        }
+        return $lw;
+    }    
+    public function mlfv(){
+        $u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
+        $mlfv = ['user' => $u,'price' => '???','chance' => '???'];
+        $mlfgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->min('chance');
+        $mlfgame = \DB::table('games')->where('chance', $mlfgame)->orderBy('price', 'desc')->first();
+        if (!is_null($mlfgame)){
+            $u = User::where('id', $mlfgame->winner_id)->first();
             unset($u->password);
-			$mlfv = ['user' => $u,'price' => $mlfgame->price,'chance' => self::_getUserChanceOfGame($u, $mlfgame)];
-		}
-		return $mlfv;
-	}
-	public function mltd(){
-		$u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
-		$mltd = ['user' => $u,'price' => '???','chance' => '???'];
-		$mltdgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->min('chance');
-		$mltdgame = \DB::table('games')->where('chance', $mltdgame)->orderBy('price', 'desc')->first();
-		if (!is_null($mltdgame)){
-			$u = User::where('id', $mltdgame->winner_id)->first();
+            $mlfv = ['user' => $u,'price' => $mlfgame->price,'chance' => self::_getUserChanceOfGame($u, $mlfgame)];
+        }
+        return $mlfv;
+    }
+    public function mltd(){
+        $u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
+        $mltd = ['user' => $u,'price' => '???','chance' => '???'];
+        $mltdgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->min('chance');
+        $mltdgame = \DB::table('games')->where('chance', $mltdgame)->orderBy('price', 'desc')->first();
+        if (!is_null($mltdgame)){
+            $u = User::where('id', $mltdgame->winner_id)->first();
             unset($u->password);
-			$mltd = ['user' => $u,'price' => $mltdgame->price,'chance' => self::_getUserChanceOfGame($u, $mltdgame)];
-		}
-		return $mltd;
-	}
+            $mltd = ['user' => $u,'price' => $mltdgame->price,'chance' => self::_getUserChanceOfGame($u, $mltdgame)];
+        }
+        return $mltd;
+    }
     
-	public function update(){
-		$response = [
-			'total' => \App\Game::gamesToday(),
-			'max' => round(\App\Game::sumFAT()),
-			'today' => \App\Game::usersToday(),
-			'last' => \App\Game::lastGame(),
-			'lw' => $this->lw(),
-			'mltd' => $this->mltd(),
-			'mlfv' => $this->mlfv()
-		];
-		
-		$value = (object)$response;
+    public function update(){
+        $response = [
+            'total' => \App\Game::gamesToday(),
+            'max' => round(\App\Game::sumFAT()),
+            'today' => \App\Game::usersToday(),
+            'last' => \App\Game::lastGame(),
+            'lw' => $this->lw(),
+            'mltd' => $this->mltd(),
+            'mlfv' => $this->mlfv()
+        ];
+        
+        $value = (object)$response;
         return response()->json($value);
     }
-	
-    public function sendItems($bets, $user, $chance){						
+    
+    public function sendItems($bets, $user, $chance){                        
         $itemsInfo = [];
-		$itemsInfor = [];
+        $itemsInfor = [];
         $items = [];
         $commission = config('mod_game.comission');
         $commissionItems = [];
-		$nextbetItems = [];
+        $nextbetItems = [];
         $returnItems = [];
         $tempPrice = 0;
-		$bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
-		$firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
-		if(!is_null($firstBet)){
-			if ($firstBet->user == $user) $commission = $commission - config('mod_game.comission_first_bet');
-		}
-		$name = strtolower($user->username);
-		if (strpos(strtolower(' '.$name),  strtolower(config('app.sitename'))) != false) $commission = $commission - config('mod_game.comission_site_nick');
+        $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
+        $firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
+        if(!is_null($firstBet)){
+            if ($firstBet->user == $user) $commission = $commission - config('mod_game.comission_first_bet');
+        }
+        $name = strtolower($user->username);
+        if (strpos(strtolower(' '.$name),  strtolower(config('app.sitename'))) != false) $commission = $commission - config('mod_game.comission_site_nick');
         $commissionPrice = round(($this->game->price / 100) * $commission);
         foreach ($bets as $bet) {
             $betItems = json_decode($bet->items, true);
@@ -384,113 +385,113 @@ class GameController extends Controller
             }
         } 
         foreach ($items as $item) {
-			if (!isset($item['price'])) $item['price'] = 0.1;
+            if (!isset($item['price'])) $item['price'] = 0.1;
         }
-		uasort($items,function($f1,$f2){
-			if($f1['price'] < $f2['price']) return 1;
-			elseif($f1['price'] > $f2['price']) return -1;
-			else return 0;
-		});
+        uasort($items,function($f1,$f2){
+            if($f1['price'] < $f2['price']) return 1;
+            elseif($f1['price'] > $f2['price']) return -1;
+            else return 0;
+        });
         $cardSum = 0;
-		foreach ($items as $item) {
-			if ((($item['price'] + $tempPrice) <= $commissionPrice)) {
-				$commissionItems[] = $item;
-				$tempPrice = $tempPrice + $item['price'];
-			} else {
-				$itemsInfo[] = $item;
-				if (isset($item['classid'])) {
-					$returnItems[] = $item['classid'];
-				} else {
-					$cardSum += $item['price'];
-				}
-			}
-		}
+        foreach ($items as $item) {
+            if ((($item['price'] + $tempPrice) <= $commissionPrice)) {
+                $commissionItems[] = $item;
+                $tempPrice = $tempPrice + $item['price'];
+            } else {
+                $itemsInfo[] = $item;
+                if (isset($item['classid'])) {
+                    $returnItems[] = $item['classid'];
+                } else {
+                    $cardSum += $item['price'];
+                }
+            }
+        }
         User::mchange($user->id, $cardSum);
         $this->redis->publish(self::LOG_CHANNEL, json_encode('Победил: '. $user->username . ' | Шанс на победу: '.$chance . ' | Комиссия: '.$tempPrice));
-		$value = [
-			'appId' => config('mod_game.appid'),
-			'steamid' => $user->steamid64,
-			'accessToken' => $user->accessToken,
-			'items' => $returnItems,
-			'game' => $this->game->id
-		];
-		$this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
-		if (config('mod_game.bonus_bot')) {
-			$bonusdrop = \DB::table('bonus_items')->first();
-			if(is_null($bonusdrop)){
-				$bonusItemsPrice =  round(($this->game->price / 100),2);
-				if ($bonusItemsPrice > 5) $bonusItemsPrice = 5.00;
-				if ($bonusItemsPrice < 0.01) $bonusItemsPrice = 0.01;
-				$bonusitems = [];
-				$bonusitem = [
-					'id' => $bonusItemsPrice,
-					'img' => '/assets/img/card.png',
-					'price' => $bonusItemsPrice,
-					'name' => 'Карточка на ' . $bonusItemsPrice . ' руб.',
-					'style' => '-webkit-filter: hue-rotate(' . $bonusItemsPrice * 10 . 'deg)'
-				];
-			} else {
-				$bonusitem = json_decode($bonusdrop->item, true);
-				$bonusItemsPrice = $bonusdrop->price;
-				\DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
-			}
-			$bonusitems[] = $bonusitem;
-			$bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
-			$returnValue = [
-				'offerid' => 0,
-				'userid' => $bonus->id,
-				'message' => '',
-				'steamid64' => $bonus->steamid64,
-				'gameid' => $this->game->id,
-				'items' => $bonusitems,
-				'price' => $bonusItemsPrice,
-				'success' => true
-			];
-			$this->redis->lpush('bets.list', json_encode($returnValue)); 
-		}
-		if (config('mod_game.comission_to_shop')) {
-			$shopItems = [];
-			foreach ($commissionItems as $item) {
-				if (isset($item['classid'])) {
-					$shopItems[] = $item['classid'];
-				}
-			}
-			$shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
-			if ($shop != NULL) {
-				$valueShop = [
-					'appId' => config('mod_game.appid'),
-					'steamid' => $shop->steamid64,
-					'accessToken' => $shop->accessToken,
-					'items' => $shopItems,
-					'game' => $this->game->id
-				];
-				$this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($valueShop));
-			}
-		}
-		$response = [
-			'itemsInfo' => $itemsInfo,
-			'commissionItems' => $commissionItems
-		];
+        $value = [
+            'appId' => config('mod_game.appid'),
+            'steamid' => $user->steamid64,
+            'accessToken' => $user->accessToken,
+            'items' => $returnItems,
+            'game' => $this->game->id
+        ];
+        $this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
+        if (config('mod_game.bonus_bot')) {
+            $bonusdrop = \DB::table('bonus_items')->first();
+            if(is_null($bonusdrop)){
+                $bonusItemsPrice =  round(($this->game->price / 100),2);
+                if ($bonusItemsPrice > 5) $bonusItemsPrice = 5.00;
+                if ($bonusItemsPrice < 0.01) $bonusItemsPrice = 0.01;
+                $bonusitems = [];
+                $bonusitem = [
+                    'id' => $bonusItemsPrice,
+                    'img' => '/assets/img/card.png',
+                    'price' => $bonusItemsPrice,
+                    'name' => 'Карточка на ' . $bonusItemsPrice . ' руб.',
+                    'style' => '-webkit-filter: hue-rotate(' . $bonusItemsPrice * 10 . 'deg)'
+                ];
+            } else {
+                $bonusitem = json_decode($bonusdrop->item, true);
+                $bonusItemsPrice = $bonusdrop->price;
+                \DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
+            }
+            $bonusitems[] = $bonusitem;
+            $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
+            $returnValue = [
+                'offerid' => 0,
+                'userid' => $bonus->id,
+                'message' => '',
+                'steamid64' => $bonus->steamid64,
+                'gameid' => $this->game->id,
+                'items' => $bonusitems,
+                'price' => $bonusItemsPrice,
+                'success' => true
+            ];
+            $this->redis->lpush('bets.list', json_encode($returnValue)); 
+        }
+        if (config('mod_game.comission_to_shop')) {
+            $shopItems = [];
+            foreach ($commissionItems as $item) {
+                if (isset($item['classid'])) {
+                    $shopItems[] = $item['classid'];
+                }
+            }
+            $shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
+            if ($shop != NULL) {
+                $valueShop = [
+                    'appId' => config('mod_game.appid'),
+                    'steamid' => $shop->steamid64,
+                    'accessToken' => $shop->accessToken,
+                    'items' => $shopItems,
+                    'game' => $this->game->id
+                ];
+                $this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($valueShop));
+            }
+        }
+        $response = [
+            'itemsInfo' => $itemsInfo,
+            'commissionItems' => $commissionItems
+        ];
         return $response;
     }
-	
+    
     public function newGame(){
-		\Cache::put('new_game', 'new_game', 5);
+        \Cache::put('new_game', 'new_game', 5);
         
         $rand = \DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
         if(is_null($rand)) {
-			$rand_number = "0.";
-			$firstrand = mt_rand(20, 80);
-			if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
-			if (mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
-			if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
-			$rand_number .= $firstrand;
-			for($i = 1; $i < 15; $i++) {
-				$rand_number .= mt_rand(0, 9);
-			}
-			$rand_number .= mt_rand(1, 9);
+            $rand_number = "0.";
+            $firstrand = mt_rand(20, 80);
+            if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
+            if (mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
+            if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
+            $rand_number .= $firstrand;
+            for($i = 1; $i < 15; $i++) {
+                $rand_number .= mt_rand(0, 9);
+            }
+            $rand_number .= mt_rand(1, 9);
         } else {
-			$rand = $rand->randn;
+            $rand = $rand->randn;
             if(strlen($rand)<19) {
                 $diff = 19 - strlen($rand);
                 $min = "1";
@@ -501,15 +502,15 @@ class GameController extends Controller
                 }
                 $rand = $rand . "" . rand($min, $max);
             }
-			$rand_number = $rand;
-			\DB::table('winner_rands')->truncate();
+            $rand_number = $rand;
+            \DB::table('winner_rands')->truncate();
         }
-		
+        
         $game = Game::create(['rand_number' => $rand_number]);
         $game->hash = md5($game->rand_number);
         $game->rand_number = 0;
         $this->redis->set('current.game', $game->id);
-		$this->redis->set('last.ticket.' . $this->game->id, 0);
+        $this->redis->set('last.ticket.' . $this->game->id, 0);
         return $game;
     }
     public static function object_to_array($data){
@@ -522,8 +523,9 @@ class GameController extends Controller
         }
         return $data;
     }
-    public function checkOffer(){
-        $data = $this->redis->lrange('check.list', 0, -1);
+    public function checkOffer(Request $request){
+        $botid = $request->get('botid');
+        $data = $this->redis->lrange('b'.$botid.'_check.list', 0, -1);
         foreach ($data as $offerJson) {
             $offer = json_decode($offerJson);
             $accountID = $offer->accountid;
@@ -533,115 +535,115 @@ class GameController extends Controller
             $user = User::where('steamid64', $accountID)->first();
             if (is_null($user)) {
                 $this->redis->lrem('usersQueue.list', 1, $accountID);
-                $this->redis->lrem('check.list', 0, $offerJson);
-                $this->redis->rpush('decline.list', $offer->offerid);
+                $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
                 continue;
             } else {
                 if (empty($user->accessToken)) {
                     $this->redis->lrem('usersQueue.list', 1, $accountID);
-                    $this->redis->lrem('check.list', 0, $offerJson);
-                    $this->redis->rpush('decline.list', $offer->offerid);
+                    $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                    $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
                     $this->_responseErrorToSite('Введите трейд ссылку!', $accountID, self::BET_DECLINE_CHANNEL);
                     continue;
                 }
             }
-			$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-			$words = self::object_to_array(json_decode($words));
-			if (!isset($offer->message)){
-				$offer->message = '';
-			} else {
-				$message = mb_strtolower($offer->message);
-				foreach ($words as $key => $value) {
-					$message = str_ireplace($key, $value, $message);
-				}
-				$offer->message = $message;
-			}
-			if($offer->message != 'bonus'){
-				$totalItems = $user->itemsCountByGame($this->game);
-				if (($itemsCount + $totalItems) > config('mod_game.max_items')) {
-					$this->_responseErrorToSite('Максимальное кол-во предметов для - ' . config('mod_game.max_items') . '; ' . ($itemsCount + $totalItems - config('mod_game.max_items')) . ' предметов уйдет на следущую игру', $accountID, self::BET_DECLINE_CHANNEL);
-				}
-			}
-			$total_price = $this->_parseItems($items, $missing, $price);
-			if($offer->message != 'bonus'){
-				if ($missing) {
-					$this->_responseErrorToSite('Принимаются только предметы из CS:GO', $accountID, self::BET_DECLINE_CHANNEL);
-					$this->redis->lrem('usersQueue.list', 1, $accountID);
-					$this->redis->lrem('check.list', 0, $offerJson);
-					$this->redis->rpush('decline.list', $offer->offerid);
-					continue;
-				}
+            $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
+            $words = self::object_to_array(json_decode($words));
+            if (!isset($offer->message)){
+                $offer->message = '';
+            } else {
+                $message = mb_strtolower($offer->message);
+                foreach ($words as $key => $value) {
+                    $message = str_ireplace($key, $value, $message);
+                }
+                $offer->message = $message;
+            }
+            if($offer->message != 'bonus'){
+                $totalItems = $user->itemsCountByGame($this->game);
+                if (($itemsCount + $totalItems) > config('mod_game.max_items')) {
+                    $this->_responseErrorToSite('Максимальное кол-во предметов для - ' . config('mod_game.max_items') . '; ' . ($itemsCount + $totalItems - config('mod_game.max_items')) . ' предметов уйдет на следущую игру', $accountID, self::BET_DECLINE_CHANNEL);
+                }
+            }
+            $total_price = $this->_parseItems($items, $missing, $price);
+            if($offer->message != 'bonus'){
+                if ($missing) {
+                    $this->_responseErrorToSite('Принимаются только предметы из CS:GO', $accountID, self::BET_DECLINE_CHANNEL);
+                    $this->redis->lrem('usersQueue.list', 1, $accountID);
+                    $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                    $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
+                    continue;
+                }
 
-				if ($price) {
-					$this->_responseErrorToSite('В вашем трейде есть предметы, цены которых мы не смогли определить', $accountID, self::BET_DECLINE_CHANNEL);
-					$this->redis->lrem('usersQueue.list', 1, $accountID);
-					$this->redis->lrem('check.list', 0, $offerJson);
-					$this->redis->rpush('decline.list', $offer->offerid);
-					continue;
-				}
-				if ($total_price < config('mod_game.min_price')) {
-					$this->_responseErrorToSite('Минимальная сумма депозита ' . config('mod_game.min_price') . 'р.', $accountID, self::BET_DECLINE_CHANNEL);
-					$this->redis->lrem('usersQueue.list', 1, $accountID);
-					$this->redis->lrem('check.list', 0, $offerJson);
-					$this->redis->rpush('decline.list', $offer->offerid);
-					continue;
-				}
-			}
+                if ($price) {
+                    $this->_responseErrorToSite('В вашем трейде есть предметы, цены которых мы не смогли определить', $accountID, self::BET_DECLINE_CHANNEL);
+                    $this->redis->lrem('usersQueue.list', 1, $accountID);
+                    $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                    $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
+                    continue;
+                }
+                if ($total_price < config('mod_game.min_price')) {
+                    $this->_responseErrorToSite('Минимальная сумма депозита ' . config('mod_game.min_price') . 'р.', $accountID, self::BET_DECLINE_CHANNEL);
+                    $this->redis->lrem('usersQueue.list', 1, $accountID);
+                    $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                    $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
+                    continue;
+                }
+            }
             $returnValue = [
                 'offerid' => $offer->offerid,
-				'message' => $offer->message,
+                'message' => $offer->message,
                 'userid' => $user->id,
                 'steamid64' => $user->steamid64,
                 'gameid' => $this->game->id,
                 'items' => $items,
                 'price' => $total_price,
+                'botid' => $botid,
                 'success' => true
             ];
-			$this->_responseMessageToSite('Обмен обработан - принимаем.', $user->steamid64);
-            $this->redis->rpush('checked.list', json_encode($returnValue));
-            $this->redis->lrem('check.list', 0, $offerJson);
+            $this->_responseMessageToSite('Обмен обработан - принимаем.', $user->steamid64);
+            $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
+            $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
         }
-		
+        
         return response()->json(['success' => true]);
     }
     public function newBet(){
-		if (\Cache::has('new_game')) return $this->_responseSuccess();
+        if (\Cache::has('new_game')) return $this->_responseSuccess();
         $data = $this->redis->lrange('bets.list', 0, -1);
-		$bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
-		if ($bonus == NULL) \DB::table('users')->insertGetId([
-			'username' => 'BONUS',
-			'avatar' => 'http://www.csgofear.ru/assets/img/gift.png',
-			'steamid' => 'STEAM_0:1:00000000',
-			'steamid64' => '76561197960265728',
-			'trade_link' =>  'https://steamcommunity.com/tradeoffer/new/?partner=112797909&token=R06NjbU6',
-			'accessToken' => 'R06NjbU6'
-		]); 
+        $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
+        if ($bonus == NULL) \DB::table('users')->insertGetId([
+            'username' => 'BONUS',
+            'avatar' => 'http://www.csgofear.ru/assets/img/gift.png',
+            'steamid' => 'STEAM_0:1:00000000',
+            'steamid64' => '76561197960265728',
+            'trade_link' => 'https://steamcommunity.com/tradeoffer/new/?partner=112797909&token=R06NjbU6',
+            'accessToken' => 'R06NjbU6'
+        ]);
         foreach ($data as $newBetJson) {
             $newBet = json_decode($newBetJson, true);
             $user = User::find($newBet['userid']);
-			$this->game = $this->getLastGame();
-			if (is_null($user)) continue;
-			if ($user->ban == 0){
-				if ($this->game->id < $newBet['gameid']) continue;
-				if ($this->game->id >= $newBet['gameid']) $newBet['gameid'] = $this->game->id;
-
-				if ($this->game->status == Game::STATUS_PRE_FINISH || $this->game->status == Game::STATUS_FINISHED) {
-					$this->_responseMessageToSite('Ваша ставка пойдёт на следующую игру.', $user->steamid64);
-					$this->redis->lrem('bets.list', 0, $newBetJson);
-					$newBet['gameid'] = $newBet['gameid'] + 1;
-					$this->redis->rpush('bets.list', json_encode($newBet));
-					continue;
-				}
-				if($newBet['message'] == 'bonus'){
-					foreach ($newBet['items'] as $item){
-						$id = \DB::table('bonus_items')->insertGetId(['item' => json_encode($item),'price' => $item['price']]);
-					}
-					$this->redis->lrem('bets.list', 0, $newBetJson);
-					continue;
-				}
-				$this->redis->lrem('bets.list', 0, $newBetJson);
-				$totalItems = $user->itemsCountByGame($this->game);
-				if (($totalItems + count($newBet['items'])) > config('mod_game.max_items')) {
+            $this->game = $this->getLastGame();
+            if (is_null($user)) continue;
+            if ($user->ban == 0){
+                if ($this->game->id < $newBet['gameid']) continue;
+                if ($this->game->id >= $newBet['gameid']) $newBet['gameid'] = $this->game->id;
+                if ($this->game->status == Game::STATUS_PRE_FINISH || $this->game->status == Game::STATUS_FINISHED) {
+                    $this->_responseMessageToSite('Ваша ставка пойдёт на следующую игру.', $user->steamid64);
+                    $this->redis->lrem('bets.list', 0, $newBetJson);
+                    $newBet['gameid'] = $newBet['gameid'] + 1;
+                    $this->redis->rpush('bets.list', json_encode($newBet));
+                    continue;
+                }
+                if($newBet['message'] == 'bonus'){
+                    foreach ($newBet['items'] as $item){
+                        $id = \DB::table('bonus_items')->insertGetId(['item' => json_encode($item),'price' => $item['price']]);
+                    }
+                    $this->redis->lrem('bets.list', 0, $newBetJson);
+                    continue;
+                }
+                $this->redis->lrem('bets.list', 0, $newBetJson);
+                $totalItems = $user->itemsCountByGame($this->game);
+                if (($totalItems + count($newBet['items'])) > config('mod_game.max_items')) {
                     $thisitems = [];
                     $thisitemsprice = 0;
                     $nextitems = [];
@@ -663,114 +665,121 @@ class GameController extends Controller
                     $newBet['items'] = $thisitems;
                     $newBet['price'] = $thisitemsprice;
                     $this->redis->rpush('bets.list', json_encode($nextBet));
-				}
-				if(count($newBet['items']) == 0) continue;
-				$this->lastTicket = $this->redis->get('last.ticket.' . $this->game->id);
-				$ticketFrom = $this->lastTicket + 1;
-				$ticketTo = $ticketFrom + ($newBet['price'] * 100) - 1;
-				if ($user->steamid64 == config('mod_game.bonus_bot_steamid64')){
-					$ticketFrom = 0;
-					$ticketTo = 0;
-				}
-				if ($user->steamid64 != config('mod_game.bonus_bot_steamid64')){
-					$this->redis->set('last.ticket.' . $this->game->id, $ticketTo);
-				}
-				$vip = 0;
-				if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
-				$lastBet = Bet::find(\DB::table('bets')->max('id'));
-				if(is_null($lastBet)){
-					$bet = new Bet();
-					$bet->user()->associate($user);
-					$bet->items = json_encode($newBet['items']);
-					$bet->itemsCount = count($newBet['items']);
-					$bet->price = $newBet['price'];
-					$bet->from = $ticketFrom;
-					$bet->to = $ticketTo;
-					$bet->game()->associate($this->game);
-					$bet->msg = $newBet['message'];
-					$bet->vip = $vip;
-					$bet->save();
-				} else {
-					if ($lastBet->user_id != $newBet['userid'] || $lastBet->game_id != $this->game->id) {
-						$bet = new Bet();
-						$bet->user()->associate($user);
-						$bet->items = json_encode($newBet['items']);
-						$bet->itemsCount = count($newBet['items']);
-						$bet->price = $newBet['price'];
-						$bet->from = $ticketFrom;
-						$bet->to = $ticketTo;
-						$bet->game()->associate($this->game);
-						$bet->msg = $newBet['message'];
-						$bet->vip = $vip;
-						$bet->save();
-					} else {
-						$items = [];
-						$lastBetItems = json_decode($lastBet->items);
-						foreach ($lastBetItems as $i){
-							$items[] = $i;
-						}
-						foreach ($newBet['items'] as $i){
-							$items[] = $i;
-						}
+                }
+                if(count($newBet['items']) == 0) continue;
+                $this->lastTicket = $this->redis->get('last.ticket.' . $this->game->id);
+                $ticketFrom = $this->lastTicket + 1;
+                $ticketTo = $ticketFrom + ($newBet['price'] * 100) - 1;
+                if ($user->steamid64 == config('mod_game.bonus_bot_steamid64')){
+                    $ticketFrom = 0;
+                    $ticketTo = 0;
+                }
+                if ($user->steamid64 != config('mod_game.bonus_bot_steamid64')){
+                    $this->redis->set('last.ticket.' . $this->game->id, $ticketTo);
+                }
+                $vip = 0;
+                if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
+                $lastBet = Bet::find(\DB::table('bets')->max('id'));
+                if(is_null($lastBet)){
+                    $bet = new Bet();
+                    $bet->user()->associate($user);
+                    $bet->items = json_encode($newBet['items']);
+                    $bet->itemsCount = count($newBet['items']);
+                    $bet->price = $newBet['price'];
+                    $bet->from = $ticketFrom;
+                    $bet->to = $ticketTo;
+                    $bet->game()->associate($this->game);
+                    $bet->msg = $newBet['message'];
+                    $bet->vip = $vip;
+                    $bet->save();
+                } else {
+                    if ($lastBet->user_id != $newBet['userid'] || $lastBet->game_id != $this->game->id) {
+                        $bet = new Bet();
+                        $bet->user()->associate($user);
+                        $bet->items = json_encode($newBet['items']);
+                        $bet->itemsCount = count($newBet['items']);
+                        $bet->price = $newBet['price'];
+                        $bet->from = $ticketFrom;
+                        $bet->to = $ticketTo;
+                        $bet->game()->associate($this->game);
+                        $bet->msg = $newBet['message'];
+                        $bet->vip = $vip;
+                        $bet->save();
+                    } else {
+                        $items = [];
+                        $lastBetItems = json_decode($lastBet->items);
+                        foreach ($lastBetItems as $i){
+                            $items[] = $i;
+                        }
+                        foreach ($newBet['items'] as $i){
+                            $items[] = $i;
+                        }
                         $lastBet->items = json_encode($items);
                         $lastBet->itemsCount = count($items);
                         $lastBet->price = $lastBet->price + $newBet['price'];
                         $lastBet->to = $ticketTo;
                         $lastBet->save();
-						$bet = $lastBet;
-					}
-				}
-				$bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
-				$this->game->items = $bets->sum('itemsCount');
-				$this->game->price = $bets->sum('price');
+                        $bet = $lastBet;
+                    }
+                }
+                if(isset($newBet['botid'])){
+                    $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
+                    if(is_null($bot_bet)){
+                        Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
+                    } else {
+                        $bot_bet->items = json_encode(json_decode($bot_bet->items) + $newBet['items']);
+                        $bot_bet->save();
+                    }
+                }
+                $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
+                $this->game->items = $bets->sum('itemsCount');
+                $this->game->price = $bets->sum('price');
 
-				if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= 100) {
-					$this->game->status = Game::STATUS_PLAYING;
-					$this->game->started_at = Carbon::now();
-				}
+                if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= 100) {
+                    $this->game->status = Game::STATUS_PLAYING;
+                    $this->game->started_at = Carbon::now();
+                }
 
-				if ($this->game->items >= 100) {
-					$this->game->status = Game::STATUS_FINISHED;
-					$this->redis->publish(self::SHOW_WINNERS, true);
-				}
-				$this->game->save();
+                if ($this->game->items >= 100) {
+                    $this->game->status = Game::STATUS_FINISHED;
+                    $this->redis->publish(self::SHOW_WINNERS, true);
+                }
+                $this->game->save();
                 $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$newBet['price'].' р. | '.$user->username));
-				$bettemp = $bet;
-				$cc = '';
-				$lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
-				foreach ($lastbets as $lastbet) {
-					$lastuser =  \DB::table('users')->where('id', $lastbet->user_id)->first();
-					$bet = $lastbet;
-					$bet->user = $lastuser;
-					$bet->game = $this->game;
-					$cc = view('includes.cc', compact('bet'))->render().$cc;
-				}
-				$bet = $bettemp;
-				$chances = $this->_getChancesOfGame($this->game);
-				$returnValue = [
-					'betId' => $bet->id,
-					'userId' => $user->steam64,
-					'cc' => $cc,
-					'html' => view('includes.bet', compact('bet'))->render(),
-					'itemsCount' => $this->game->items,
-					'gamePrice' => $this->game->price,
-					'gameStatus' => $this->game->status,
-					'betprice' => $newBet['price'],
-					'chances' => $chances
-				];
-				$this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
-			} else {
-				$this->redis->lrem('bets.list', 0, $newBetJson);
-				$this->_responseMessageToSite('Вы забанены на сайте.', $user->steamid64);
-			}
+                $bettemp = $bet;
+                $cc = '';
+                $lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
+                foreach ($lastbets as $lastbet) {
+                    $lastuser =  \DB::table('users')->where('id', $lastbet->user_id)->first();
+                    $bet = $lastbet;
+                    $bet->user = $lastuser;
+                    $bet->game = $this->game;
+                    $cc = view('includes.cc', compact('bet'))->render().$cc;
+                }
+                $bet = $bettemp;
+                $chances = $this->_getChancesOfGame($this->game);
+                $returnValue = [
+                    'betId' => $bet->id,
+                    'userId' => $user->steam64,
+                    'cc' => $cc,
+                    'html' => view('includes.bet', compact('bet'))->render(),
+                    'itemsCount' => $this->game->items,
+                    'gamePrice' => $this->game->price,
+                    'gameStatus' => $this->game->status,
+                    'betprice' => $newBet['price'],
+                    'chances' => $chances
+                ];
+                $this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
+            } else {
+                $this->redis->lrem('bets.list', 0, $newBetJson);
+                $this->_responseMessageToSite('Вы забанены на сайте.', $user->steamid64);
+            }
         }
         return $this->_responseSuccess();
     }
     public function addTicket(Request $request){
-		if (\Cache::has('new_game')) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
-        /*if (\Cache::has('ticket.user.' . $this->user->id)) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
-        \Cache::put('ticket.user.' . $this->user->id, '', 1);*/
-		if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте.', 'type' => 'error']);
+        if (\Cache::has('new_game')) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
+        if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте.', 'type' => 'error']);
         $totalItems = $this->user->itemsCountByGame($this->game);
         if ($totalItems > config('mod_game.max_items') || (1 + $totalItems) > config('mod_game.max_items')) {
             return response()->json(['text' => 'Максимальное кол-во предметов для депозита - ' . config('mod_game.max_items'), 'type' => 'error']);
@@ -923,11 +932,11 @@ class GameController extends Controller
                 'vip' => $vip
             ];
         }
-		uasort($chances,function($f1,$f2){
-			if($f1['chance'] < $f2['chance']) return 1;
-			elseif($f1['chance'] > $f2['chance']) return -1;
-			else return 0;
-		});
+        uasort($chances,function($f1,$f2){
+            if($f1['chance'] < $f2['chance']) return 1;
+            elseif($f1['chance'] > $f2['chance']) return -1;
+            else return 0;
+        });
         $chs = $chances;
         $chances = [];
         foreach ($chs  as $ch) {
@@ -936,21 +945,21 @@ class GameController extends Controller
         }
         return $chances;
     }
-	public static function getLastBet(){
-		return \DB::table('bets')->max('id');
-	}
+    public static function getLastBet(){
+        return \DB::table('bets')->max('id');
+    }
     public static function _getUserChanceOfGame($user, $game)
     {
         $chance = 0;
         if (!is_null($user)) {
-			if ($user->steamid64 != config('mod_game.bonus_bot_steamid64')) {
-				$bet = Bet::where('game_id', $game->id)
-					->where('user_id', $user->id)
-					->sum('price');
-				if ($game->price > 0 && $bet) $chance = round($bet / $game->price, 3) * 100; 
-			} else {
-				$chance = 0;
-			}
+            if ($user->steamid64 != config('mod_game.bonus_bot_steamid64')) {
+                $bet = Bet::where('game_id', $game->id)
+                    ->where('user_id', $user->id)
+                    ->sum('price');
+                if ($game->price > 0 && $bet) $chance = round($bet / $game->price, 3) * 100; 
+            } else {
+                $chance = 0;
+            }
         }
         return $chance;
     }
@@ -974,34 +983,34 @@ class GameController extends Controller
     private function _responseSuccess(){
         return response()->json(['success' => true]);
     }
-	
-	public static function havegame($user){
-		$has = false;
-		$jsonResponse = self::curl('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=' . env('STEAM_APIKEY','') . '&steamid=' . $user->steamid64 . '&format=json');
-		$Response = json_decode($jsonResponse, true);
-		$jsonGames = $Response['response'];
-		if(isset($jsonGames['games'])){
-			$Games = $jsonGames['games'];
-			foreach ($Games as $Game) {
-				if ($Game['appid'] == config('mod_game.appid')) {
-					$has = true;
-					continue;
-				}
-			}
-		}
-		return response()->json($has);
-    }	
+    
+    public static function havegame($user){
+        $has = false;
+        $jsonResponse = self::curl('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=' . env('STEAM_APIKEY','') . '&steamid=' . $user->steamid64 . '&format=json');
+        $Response = json_decode($jsonResponse, true);
+        $jsonGames = $Response['response'];
+        if(isset($jsonGames['games'])){
+            $Games = $jsonGames['games'];
+            foreach ($Games as $Game) {
+                if ($Game['appid'] == config('mod_game.appid')) {
+                    $has = true;
+                    continue;
+                }
+            }
+        }
+        return response()->json($has);
+    }    
 
-	public function curcomm(){
-		$my_comission = config('mod_game.comission');
-		if (!is_null($this->user)){
-			$bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
-			$firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
-			if (!is_null($firstBet)){
-				if ($firstBet->user == $this->user) $my_comission = $my_comission - config('mod_game.comission_first_bet');
-			}
-			if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $my_comission = $my_comission - config('mod_game.comission_site_nick');
-		}
+    public function curcomm(){
+        $my_comission = config('mod_game.comission');
+        if (!is_null($this->user)){
+            $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
+            $firstBet = Bet::where('game_id', $this->game->id)->where('user_id', '!=' , $bonus->id)->orderBy('created_at', 'asc')->first();
+            if (!is_null($firstBet)){
+                if ($firstBet->user == $this->user) $my_comission = $my_comission - config('mod_game.comission_first_bet');
+            }
+            if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $my_comission = $my_comission - config('mod_game.comission_site_nick');
+        }
         return response()->json($my_comission);
     }
 }

@@ -19,7 +19,7 @@ class UpdatePrices extends Command
     const BP_URL = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
     const FAST_URL = 'https://api.csgofast.com/price/all';
     
-    protected $signature = 'prices:update {--bp} {--fast} {--steam}';
+    protected $signature = 'prices:update {--bp} {--fast} {--steam} {--parser}';
 
     protected $description = ' {--bp} {--fast} {--steam} Updates Prices from steam, bp and fast';
 
@@ -96,7 +96,17 @@ class UpdatePrices extends Command
                 $this->log($nitem->market_hash_name.' : '.$nitem->price);
             }
         }
+        if($this->option('parser')){
+            $this->update_parsed();
+        }
     } 
+    private function update_parsed(){
+        $items = []; $item_BP = Item_BP::all();
+        foreach($item_BP as $item){
+            $items[$item->market_hash_name] = Item::getItemPrice($item->market_hash_name);
+        }
+        Cache::forever('prices', $items);
+    }
     private function getStemItemPrice($mhn){
         $lowest = 0; $median=0;
         $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');
