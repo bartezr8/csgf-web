@@ -300,7 +300,7 @@ class AdminController extends Controller
     public function checkBrokenGames(){
 		$games = \DB::table('games')->where('status_prize', 2)->get();
         foreach($games as $game){
-			$this->fixg($game->id);
+			//$this->fixg($game->id);
 		}
 	}	
 	public function ctime(Request $request){

@@ -107,7 +107,7 @@ class SteamController extends Controller
         }
     }
 
-    private function _parseTradeLink($tradeLink)
+    public static function _parseTradeLink($tradeLink)
     {
         $query_str = parse_url($tradeLink, PHP_URL_QUERY);
         parse_str($query_str, $query_params);
