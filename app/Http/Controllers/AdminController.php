@@ -314,7 +314,7 @@ class AdminController extends Controller
 		if ($gameid == '*'){
 			$this->checkBrokenGames();
 		} else {
-			$this->fixg($gameid);
+			//$this->fixg($gameid);
 		}
 		return redirect('/admin');
 	}

@@ -116,8 +116,9 @@ Route::group(['middleware' => 'auth'], function () {
     post('/updateShop', ['as' => 'give', 'uses' => 'AdminController@updateShop', 'middleware' => 'access:moderator']);
     post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
     post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
-    post('/fixgame', ['as' => 'give', 'uses' => 'AdminController@fixgame', 'middleware' => 'access:admin']);
+    post('/fixgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);
     get('/clearredis', ['as' => 'give', 'uses' => 'AdminController@clearredis', 'middleware' => 'access:admin']);
+    
     /* ADMIN AM */
     get('/admin/am', ['as' => 'give', 'uses' => 'AdminController@am', 'middleware' => 'access:moderator']);    
     post('/admin/am/getwords', ['as' => 'give', 'uses' => 'AdminController@getwords', 'middleware' => 'access:moderator']);

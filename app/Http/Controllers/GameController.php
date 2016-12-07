@@ -241,6 +241,7 @@ class GameController extends Controller
         $items = $this->sendItems($this->game->bets, $this->game->winner, $chance);
         $this->game->won_items      = json_encode($items['itemsInfo']);
         $this->game->comission      = json_encode($items['commissionItems']);
+        if($items['countbb'] == 0) $this->game->status_prize = 1;
         $this->game->chance         = $chance;
         $this->game->save();
         $users = [];
@@ -343,42 +344,47 @@ class GameController extends Controller
         $userItems = [];
         $shopItems = [];
         $botbets = Bot_bet::where('game_id', $this->game->id)->where('status', 0)->get();
-        foreach($botbets as $bet){
-            $bitems = array_values(json_decode($bet->items, true));
-            foreach ($bitems as $key => $item ) {
-                if (in_array($item, $ncitems)){
-                    $ckey = array_search($item, $ncitems);
-                    unset($ncitems[$ckey]);
-                    $userItems[] = $item['classid'];
-                } else {
-                    $shopItems[] = $item['classid'];
+        if(count($botbets)){
+            foreach($botbets as $bet){
+                $bitems = array_values(json_decode($bet->items, true));
+                foreach ($bitems as $key => $item ) {
+                    if (in_array($item, $ncitems)){
+                        $ckey = array_search($item, $ncitems);
+                        unset($ncitems[$ckey]);
+                        $userItems[] = $item['classid'];
+                    } else {
+                        $shopItems[] = $item['classid'];
+                    }
                 }
-            }
-            $valueUser = [
-                'appId' => config('mod_game.appid'),
-                'steamid' => $user->steamid64,
-                'accessToken' => $user->accessToken,
-                'items' => $userItems,
-                'game' => $this->game->id
-            ];
-            $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
-            if (config('mod_game.comission_to_shop')) {
-                $shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
-                if ($shop != NULL) {
-                    $valueShop = [
-                        'appId' => config('mod_game.appid'),
-                        'steamid' => $shop->steamid64,
-                        'accessToken' => $shop->accessToken,
-                        'items' => $shopItems,
-                        'game' => 0
-                    ];
-                    $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueShop));
+                $valueUser = [
+                    'appId' => config('mod_game.appid'),
+                    'steamid' => $user->steamid64,
+                    'accessToken' => $user->accessToken,
+                    'items' => $userItems,
+                    'game' => $this->game->id
+                ];
+                $bet->items_won = json_encode($userItems);
+                $bet->save();
+                $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
+                if (config('mod_game.comission_to_shop') && count($shopItems)) {
+                    $shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
+                    if ($shop != NULL) {
+                        $valueShop = [
+                            'appId' => config('mod_game.appid'),
+                            'steamid' => $shop->steamid64,
+                            'accessToken' => $shop->accessToken,
+                            'items' => $shopItems,
+                            'game' => 0
+                        ];
+                        $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueShop));
+                    }
                 }
             }
         }
         $response = [
             'itemsInfo' => $itemsInfo,
-            'commissionItems' => $commissionItems
+            'commissionItems' => $commissionItems,
+            'countbb' => count($botbets)
         ];
         return $response;
     }
@@ -400,40 +406,71 @@ class GameController extends Controller
         $botbet->save();
         $game = Game::find($botbet->game_id);
         $user = User::find($game->winner_id);
-        $bot_bets_w = Bot_bet::where('game_id', $request->get('game'))->where('status', 0)->where('botid', $request->get('botid'))->get();
-        $bot_bets_e = Bot_bet::where('game_id', $request->get('game'))->where('status', 2)->where('botid', $request->get('botid'))->get();
-        if(is_null($bot_bets_w) && is_null($bot_bets_e)){
+        $bot_bets_w = Bot_bet::where('game_id', $request->get('game'))->where('status', 0)->get();
+        $bot_bets_e = Bot_bet::where('game_id', $request->get('game'))->where('status', 2)->get();
+        if(!count($bot_bets_w) && !count($bot_bets_e)){
             $game->status_prize = 1;
             $game->save();
         } else {
-            if(!is_null($bot_bets_e)){
-                foreach($bot_bets_e as $bet){
-                    $bet->status = 0;
-                    $bet->save();
-                    $userItems = [];
-                    $ncitems = array_values(json_decode($game->won_items, true));
-                    $bitems = array_values(json_decode($bet->items, true));
-                    foreach ($bitems as $key => $item ) {
-                        if (in_array($item, $ncitems)){
-                            $ckey = array_search($item, $ncitems);
-                            unset($ncitems[$ckey]);
-                            $userItems[] = $item['classid'];
-                        }
-                    }
-                    $valueUser = [
-                        'appId' => config('mod_game.appid'),
-                        'steamid' => $user->steamid64,
-                        'accessToken' => $user->accessToken,
-                        'items' => $userItems,
-                        'game' => $this->game->id
-                    ];
-                    $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
-                }
+            if(count($bot_bets_e)){
                 $game->status_prize = 2;
+                $game->save();
+            } else {
+                $game->status_prize = 0;
                 $game->save();
             }
         }
         return $game;
+    } 
+    public function fixRequest(Request $request){
+		$gameid = $request->get('game_id');
+		if ($gameid == '*'){
+			$games = \DB::table('games')->where('status_prize', 2)->take(10)->get();
+            foreach($games as $game){
+                self::fixBotBets($game->id);
+            }
+		} else {
+			self::fixBotBets($gameid);
+		}
+		return;
+    }
+    private function fixBotBets($gameid){
+        $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->get();
+        $game = Game::find($gameid);
+        if(count($bot_bets_e)){
+            $user = User::find($game->winner_id);
+            $game->status_prize = 0;
+            $game->save();
+            foreach($bot_bets_e as $bet){
+                $bet->status = 0;
+                $bet->save();
+                if($bet->items_won != ''){
+                    $bitems = array_values(json_decode($bet->items_won, true));
+                } else {
+                    $bitems = [];
+                    /*$baitems = array_values(json_decode($bet->items, true));
+                    foreach ($baitems as $key => $item ) {
+                        $bitems[] = $item['classid'];
+                    }*/
+                    $baitems = array_values(json_decode($game->won_items, true));
+                    foreach ($baitems as $key => $item ) {
+                        if (isset($item['classid']))$bitems[] = $item['classid'];
+                    }
+                }
+                Log::error(json_encode($bitems).' id:'.$gameid);
+                $valueUser = [
+                    'appId' => config('mod_game.appid'),
+                    'steamid' => $user->steamid64,
+                    'accessToken' => $user->accessToken,
+                    'items' => $bitems,
+                    'game' => $gameid
+                ];
+                $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
+            }
+        } else {
+            $game->status_prize = 1;
+            $game->save();
+        }
     }
 
     public function newGame(){
@@ -688,7 +725,15 @@ class GameController extends Controller
                     if(is_null($bot_bet)){
                         Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
                     } else {
-                        $bot_bet->items = json_encode(json_decode($bot_bet->items) + $newBet['items']);
+                        $newitems = [];
+                        $items = json_decode($bot_bet->items);
+                        foreach($items as $item){
+                            $newitems[] = $item;
+                        }
+                        foreach($newBet['items'] as $item){
+                            $newitems[] = $item;
+                        }
+                        $bot_bet->items = json_encode($newitems);
                         $bot_bet->save();
                     }
                 }
