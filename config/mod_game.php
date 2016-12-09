@@ -26,13 +26,8 @@ return [
 	'bot_trade_link' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B',
 	'urls' => ['рулетка кс го для бомжей','csgf','рулетка для бомжей','рулетка кс го','кс го рулетка для бомжей','рулетки кс го для бомжей','рулетки для бомжей','рулетки кс го','рулетка кс го от 1 рубля','рулетки кс го от 1 рубля'],
     'bots' => [
-        '0' => [
-            'stemid64' => '76561198067721846',
-            'tradeurl' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B'
-        ],
-        '1' => [
-            'stemid64' => '76561198251620172',
-            'tradeurl' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B'
-        ]
+        '0' => 'https://steamcommunity.com/tradeoffer/new/?partner=107456118&token=rM1bEl8B',
+        '1' => 'https://steamcommunity.com/tradeoffer/new/?partner=291354444&token=yN0pufjQ',
+        '2' => 'https://steamcommunity.com/tradeoffer/new/?partner=250629935&token=BN3dagO_'
     ]
 ];

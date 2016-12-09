@@ -77,7 +77,16 @@ class GameController extends Controller
     }
     public function deposit()
     {
-        return redirect(config('mod_game.bot_trade_link'));
+        $last = $this->redis->get('last.bot');
+        $trades = config('mod_game.bots');
+        if($last + 1 > (count($trades) - 1)){
+            $last = 0;
+            $this->redis->set('last.bot', $last);
+        } else {
+            $last += 1;
+            $this->redis->set('last.bot', $last);
+        }
+        return redirect($trades[$last]);
     }
     private function _parseItems(&$items, &$missing = false, &$price = false)
     {
@@ -341,11 +350,11 @@ class GameController extends Controller
             $this->redis->lpush('bets.list', json_encode($returnValue)); 
         }
         $ncitems = $itemsInfo;
-        $userItems = [];
-        $shopItems = [];
         $botbets = Bot_bet::where('game_id', $this->game->id)->where('status', 0)->get();
         if(count($botbets)){
             foreach($botbets as $bet){
+                $userItems = [];
+                $shopItems = [];
                 $bitems = array_values(json_decode($bet->items, true));
                 foreach ($bitems as $key => $item ) {
                     if (in_array($item, $ncitems)){
@@ -423,16 +432,24 @@ class GameController extends Controller
         return $game;
     } 
     public function fixRequest(Request $request){
-		$gameid = $request->get('game_id');
+		$gameid = $request->get('game_id'); $count = 0;
 		if ($gameid == '*'){
-			$games = \DB::table('games')->where('status_prize', 2)->take(10)->get();
+			$games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
             foreach($games as $game){
-                self::fixBotBets($game->id);
+                $count = self::fixBotBets($game->id);
             }
 		} else {
-			self::fixBotBets($gameid);
+			$count = self::fixBotBets($gameid);
 		}
-		return;
+		return redirect('/admin');
+    }
+    public function checkBrokenGames(Request $request){
+        $games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
+        $count = 0;
+        foreach($games as $game){
+            $count = self::fixBotBets($game->id);
+        }
+		return response()->json(['success' => true, 'count' => $count]);
     }
     private function fixBotBets($gameid){
         $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->get();
@@ -448,14 +465,14 @@ class GameController extends Controller
                     $bitems = array_values(json_decode($bet->items_won, true));
                 } else {
                     $bitems = [];
-                    /*$baitems = array_values(json_decode($bet->items, true));
+                    $baitems = array_values(json_decode($bet->items, true));
                     foreach ($baitems as $key => $item ) {
                         $bitems[] = $item['classid'];
-                    }*/
-                    $baitems = array_values(json_decode($game->won_items, true));
+                    }
+                    /*$baitems = array_values(json_decode($game->won_items, true));
                     foreach ($baitems as $key => $item ) {
                         if (isset($item['classid']))$bitems[] = $item['classid'];
-                    }
+                    }*/
                 }
                 Log::error(json_encode($bitems).' id:'.$gameid);
                 $valueUser = [
@@ -471,6 +488,7 @@ class GameController extends Controller
             $game->status_prize = 1;
             $game->save();
         }
+        return count($bot_bets_e);
     }
 
     public function newGame(){

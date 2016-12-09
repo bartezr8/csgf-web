@@ -454,7 +454,7 @@ if(START && onpage) {
         }
     })
     if(checkUrl('/')) {
-        bsocket = io.connect( SITE_URL , {path:'/csgf-bot', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
+        /*bsocket = io.connect( SITE_URL , {path:'/csgf-bot', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
         bsocket.on('queue', function(data) {
             updateSocketIO();
             if(data) {
@@ -480,7 +480,7 @@ if(START && onpage) {
                     expires: 5,
                     path: '/',
                 });
-        });
+        });*/
         updateSocketIO();
         socket.on('newDeposit', function(data) {
             updateChatScroll();

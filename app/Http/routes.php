@@ -65,7 +65,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/getWinners', 'GameController@getWinners');
     post('/getPreviousWinner', 'GameController@getPreviousWinner');
     post('/novigra', 'GameController@newGame');
-    post('/checkBrokenGames', 'AdminController@checkBrokenGames');
+    post('/checkBrokenGames', 'GameController@checkBrokenGames');
     post('/clearOnline', 'GameController@clearOnline');
     post('/updateOnline', 'GameController@updateOnline');
     post('/userinfo', 'GameController@userinfo');
@@ -116,7 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
     post('/updateShop', ['as' => 'give', 'uses' => 'AdminController@updateShop', 'middleware' => 'access:moderator']);
     post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
     post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
-    post('/fixgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);
+    get('/fixgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);
     get('/clearredis', ['as' => 'give', 'uses' => 'AdminController@clearredis', 'middleware' => 'access:admin']);
     
     /* ADMIN AM */

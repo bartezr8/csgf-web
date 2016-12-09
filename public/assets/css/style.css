@@ -3437,13 +3437,13 @@ html:before {
 }
 .msg-big.msg-start,
 .msg-big.msg-finish {
-	background-image: url(/assets/img/guns.png);
+	/*background-image: url(/assets/img/guns.png);
     background-position: 0 0;
     background-repeat: repeat;
     animation: animatedBackground 10s linear infinite;
     -ms-animation: animatedBackground 10s linear infinite;
     -moz-animation: animatedBackground 10s linear infinite;
-    -webkit-animation: animatedBackground 10s linear infinite;
+    -webkit-animation: animatedBackground 10s linear infinite;*/
 }
 
 .msg-big.msg-start .msg-wrap,
@@ -6933,7 +6933,9 @@ a.button31:focus:before {
     width: 300px;
 }
 .lw-text {
-	padding-top: 15px;
+    border-bottom: 1px solid #2f5463;
+    margin-bottom: 8px;
+    padding-top: 10px;
     padding-bottom: 10px;
     font-size: 14px;
     color: #fff;
@@ -6979,8 +6981,9 @@ div#lw-avatar img {
     width: 197px;
 }
 .ml-top {
-	margin-bottom: 8px;
+    margin-bottom: 8px;
     text-transform: uppercase;
+    color: #fff;
 }
 .ml-avatar img {
     height: 77px;

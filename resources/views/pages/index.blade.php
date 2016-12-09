@@ -17,9 +17,9 @@
                 <div class="chanse_win" id="lw-money">Сумма выигрыша: <span class="down-text">??? Р</span></div>
             </div>
         </div>
-        <!--     Самые удачливые                                                                       -->
+        <!--     Самые везучие                                                                       -->
         <div class="ml">
-            <div class="lw-text">Самые удачливые</div>
+            <div class="lw-text">Самые везучие</div>
             <div class="mltd" id="mltd">
                 <div class="ml-top">За день</div>
                 <div class="ml-avatar" id="mltd-avatar"><img src="http://csgf.ru/assets/img/blank.jpg" alt="" title=""></div>
