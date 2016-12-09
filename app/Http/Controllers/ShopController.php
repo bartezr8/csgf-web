@@ -404,6 +404,7 @@ class ShopController extends Controller {
     }
 	public function inv_update(Request $request){
 		$returnValue = self::updatemyinventory($this->user->steamid64);
+        $success = false;
 		if($returnValue['success']){
 			$success = $returnValue['success'];
 			$returnValue = $returnValue['list'];

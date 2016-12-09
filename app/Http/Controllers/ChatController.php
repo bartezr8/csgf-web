@@ -18,13 +18,8 @@ class ChatController extends Controller
 
     public function __construct(){
         parent::__construct();
-        $this->redis = LRedis::connection();
     }
-
-    public function  __destruct(){
-        $this->redis->disconnect();
-    }
-
+    
     public function add_message(Request $request){
         if (\Cache::has('addmsg.user.' . $this->user->id)) {
             return response()->json(['message' => 'Вы слишком часто отправляете сообщения!', 'status' => 'error']);

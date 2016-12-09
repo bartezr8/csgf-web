@@ -284,7 +284,7 @@ class PagesController extends Controller
             return view('pages.myinventory', compact('title'));
         } else {
 			if(!\Cache::has('inventory_' . $this->user->steamid64)) {
-                $jsonInventory = file_get_contents('http://steamcommunity.com/profiles/' . $this->user->steamid64 . '/inventory/json/730/2?l=russian');
+                $jsonInventory = GameController::curl('http://steamcommunity.com/profiles/' . $this->user->steamid64 . '/inventory/json/730/2?l=russian');
                 $items = json_decode($jsonInventory, true);
                 if(isset($items['rgDescriptions']) && isset($items['rgInventory'])){
                     if ($items['success']) {
