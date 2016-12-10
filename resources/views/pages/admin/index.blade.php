@@ -26,7 +26,7 @@
 	</div>
 	@if($u->is_admin==1)
 	<div class="support" >
-		<form action="/fixgame" method="POST">
+		<form action="/fixgame" method="GET">
 			<div style="width: 333px" class="nSend">
 				<input type="text" name="game_id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
 				<input type="submit" style="width: 218px" value="Переотправить Игру">

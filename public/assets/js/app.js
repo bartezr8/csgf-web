@@ -797,14 +797,14 @@ function loadMyInventory() {
         type: 'POST',
         dataType: 'json',
         success: function(data) {
+            console.log(data);
             var text = '<tr><td colspan="4" style="text-align: center">Произошла ошибка. Попробуйте еще раз</td></tr>';
             var totalPrice = 0;
-            if(!data.success && data.Error) text = '<tr><td colspan="4" style="text-align: center">' + data.Error + '</td></tr>';
-            if(data.success && data.rgInventory && data.rgDescriptions) {
+            if(data.success && data.items) {
                 text = '';
-                var items = mergeWithDescriptions(data.rgInventory, data.rgDescriptions);
+                var items = data.items;
                 items.sort(function(a, b) {
-                    return parseFloat(b.price) - parseFloat(a.price)
+                    return b.price - a.price
                 });
                 _.each(items, function(item) {
                     item.price = item.price || 0;
@@ -830,20 +830,6 @@ function loadMyInventory() {
             $('tbody').html('<tr><td colspan="4" style="text-align: center">' + text + '<td></tr>');
         }
     });
-}
-
-function mergeWithDescriptions(items, descriptions) {
-    return Object.keys(items).map(function(id) {
-        var item = items[id];
-        var description = descriptions[item.classid + '_' + (item.instanceid || '0')];
-        for(var key in description) {
-            item[key] = description[key];
-            delete item['icon_url'];
-            delete item['icon_drag_url'];
-            delete item['icon_url_large'];
-        }
-        return item;
-    })
 }
 
 function mulAndShuffle(arr, k) {

@@ -283,44 +283,40 @@ class PagesController extends Controller
         if($request->getMethod() == 'GET'){
             return view('pages.myinventory', compact('title'));
         } else {
+            $response = ['success' => false];
 			if(!\Cache::has('inventory_' . $this->user->steamid64)) {
-                $jsonInventory = GameController::curl('http://steamcommunity.com/profiles/' . $this->user->steamid64 . '/inventory/json/730/2?l=russian');
+                $jsonInventory = GameController::curl('http://steamcommunity.com/inventory/' . $this->user->steamid64 . '/730/2?l=russian&count=1000');
                 $items = json_decode($jsonInventory, true);
-                if(isset($items['rgDescriptions']) && isset($items['rgInventory'])){
-                    if ($items['success']) {
-                        foreach ($items['rgInventory'] as $id => $value) {
+                $descriptions = [];$inventory = [];
+                if(isset($items['assets']) && isset($items['descriptions']) && isset($items['success'])){
+                    if ($items['success'] == 1) {
+                        foreach ($items['descriptions'] as $id => $value) {
                             $class_instance = $value['classid'].'_'.$value['instanceid'];
-                            $item = $items['rgDescriptions'][$class_instance];
+                            $descriptions[$class_instance] = $value;
+                        }
+                        foreach ($items['assets'] as $id => $value) {
+                            $class_instance = $value['classid'].'_'.$value['instanceid'];
+                            $item = $descriptions[$class_instance];
+                            
                             $info = new Item($item);
                             if(!Item::pchk($info)){
                                 $info->price = 0;
                             }
-                            $items['rgDescriptions'][$class_instance]['price'] = $info->price;
-                            $items['rgInventory'][$id]['price'] = $info->price;
+                            $item['price'] = $info->price;
+                            $item['assetid'] = $value['assetid'];
+                            if($item['price']>0) $inventory[] = $item;
                         }
+                        $response = [
+                            'success' => true,
+                            'items' => $inventory
+                        ];
+                        \Cache::put('inventory_' . $this->user->steamid64, $response, 60);
                     }
-                    $arr = (array)$items['rgDescriptions'];
-                    uasort($arr,function($f1,$f2){
-                        if($f1['price'] < $f2['price']) return 1;
-                        elseif($f1['price'] > $f2['price']) return -1;
-                        else return 0;
-                    });
-                    $items['rgDescriptions'] = (object)$arr;
-                    $arr = (array)$items['rgInventory'];
-                    uasort($arr,function($f1,$f2){
-                        if($f1['price'] < $f2['price']) return 1;
-                        elseif($f1['price'] > $f2['price']) return -1;
-                        else return 0;
-                    });
-                    $items['rgInventory'] = (object)$arr;
-                    \Cache::put('inventory_' . $this->user->steamid64, $items, 60);
-                } else {
-                    return [];
                 }
 			} else {
-				$items = \Cache::get('inventory_' . $this->user->steamid64);
+				$response = \Cache::get('inventory_' . $this->user->steamid64);
 			}
-			return $items;
+			return response()->json($response);
         }
     }
     public function pay(Request $request)
