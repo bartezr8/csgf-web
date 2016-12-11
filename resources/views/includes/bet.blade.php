@@ -15,9 +15,6 @@
 					@endif
 				@endif
                 <li class="deposit-sum">{{ $bet->price }} <span>руб</span></li>
-                @if($bet->user->steamid64 != 76561197960265728)
-					<li class="deposit-chance">(шанс: <span class="id-{{ $bet->user->steamid64 }}">{{ \App\Http\Controllers\GameController::_getUserChanceOfGame($bet->user, $bet->game) }}%</span>)</li>
-				@endif
             </ul>
         </div>
         <div class="right-block">

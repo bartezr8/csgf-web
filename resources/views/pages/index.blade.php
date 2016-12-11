@@ -119,7 +119,6 @@
                 <div style="margin-top:7px;margin-bottom: 9px;text-align: -webkit-auto;border-bottom: 1px solid #2D4455;">
                     <ul>
                         <li style="list-style: none;"><span class="title">В очереди:</span> <span style="color: #8bb629" id="count_trades">0</span> <span class="title">трейдов</span></li>
-                        <li style="list-style: none; margin-top: 3px"><span class="title">Прием в среднем:</span> <span id="speed_trades" style="color: rgb(139, 182, 41);">5.5</span> <span class="title">секунд</span></li>
                         @if(!Auth::guest())
                         <li style="list-style: none; margin-top: 3px"><span class="title">Ваша комиссия:</span> <span id="my_comission" style="color: rgb(139, 182, 41);">10</span> <span class="title">%</span></li>
                         @endif

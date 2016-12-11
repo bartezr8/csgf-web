@@ -376,6 +376,8 @@ function updateSocketIO(){
 if(START && onpage) {
     var declineTimeout,
         r = 0,
+        lastpos = 0,
+        sliding = false,
         timerStatus = true,
         ngtimerStatus = true,
         onlineList = [];
@@ -452,35 +454,23 @@ if(START && onpage) {
                 }
             }
         }
+    }).on('queue', function(data) {
+        updateSocketIO();
+        if(data) {
+            var n = data.indexOf(USER_ID);
+            if(n !== -1) {
+                $.notify('Ваш депозит обрабатывается. Вы ' + (n + 1) + ' в очереди.', {
+                    clickToHide: 'false',
+                    autoHide: "false",
+                    className: "success"
+                });
+                if(checkUrl('/'))$('#count_trades').html(data.length);
+            } else {
+                if(checkUrl('/'))$('#count_trades').html(data.length);
+            }
+        }
     })
     if(checkUrl('/')) {
-        /*bsocket = io.connect( SITE_URL , {path:'/csgf-bot', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
-        bsocket.on('queue', function(data) {
-            updateSocketIO();
-            if(data) {
-                var n = data.indexOf(USER_ID);
-                if(n !== -1) {
-                    $.notify('Ваш депозит обрабатывается. Вы ' + (n + 1) + ' в очереди.', {
-                        clickToHide: 'false',
-                        autoHide: "false",
-                        className: "success"
-                    });
-                    $('#count_trades').html(data.length);
-                } else {
-                    $('#count_trades').html(data.length);
-                }
-            }
-        })
-        .on('bettime', function(data) {
-                updateSocketIO();
-                data = JSON.parse(data);
-                averagebettime = Math.round(((averagebettime * 100) + data) / 200) / 10;
-                $('#speed_trades').html(averagebettime);
-                $.cookie('averagebettime', averagebettime, {
-                    expires: 5,
-                    path: '/',
-                });
-        });*/
         updateSocketIO();
         socket.on('newDeposit', function(data) {
             updateChatScroll();
@@ -631,33 +621,6 @@ if(START && onpage) {
                         $('#depositButtonsBlock').hide();
                     }
                     $('#winnerInfo').show();
-
-                    function fillWinnerInfo(data) {
-                        data = data || {
-                            winner: {}
-                        };
-                        var obj = {
-                            totalPrice: data.game.price || 0,
-                            number: data.game.price ? ('#' + Math.floor(data.round_number * data.game.price)) : '???',
-                            tickets: data.tickets || 0,
-                            winner: {
-                                image: data.winner.avatar || '???',
-                                login: data.winner.username || '???',
-                                id: data.winner.steamid64 || '#',
-                                chance: data.chance || 0,
-                                winTicket: data.ticket || '???'
-                            }
-                        };
-                        $('#winnerInfo .winner-info-holder').hide();
-                        $('#winnerInfo #winTicket').text('#' + obj.winner.winTicket);
-                        $('#winnerInfo #totalTickets').text(obj.tickets);
-                        $('#winnerInfo img').attr('src', obj.winner.image);
-                        $('#winnerInfo #winnerLink').text(obj.winner.login);
-                        $('#winnerInfo #winnerLink').attr('href', '/user/' + obj.winner.id);
-                        $('#winnerInfo #winnerChance').text('(ШАНС: ' + obj.winner.chance.toFixed(2) + '%)');
-                        $('#winnerInfo #winnerSum').text(obj.totalPrice);
-                        updateChatScroll();
-                    }
                     fillWinnerInfo(data);
                     $('#roundFinishBlock .number').text(data.round_number);
                     $('#roundFinishBlock .date').html(data.date + '<span>' + data.date_hours + '</span>');
@@ -675,61 +638,68 @@ if(START && onpage) {
                     var easetype = 'easeOutCirc';
                     $('#usersCarousel').css('margin-left', -41);
                     if(data.showSlider) {
-                        var audio = new Audio('/assets/sounds/rollscrollskoniks.mp3');
-                        if(sound_status) audio.play();
-                        $('#usersCarousel').animate({
-                            marginLeft: scrollmar
-                        }, 1000 * (data.time - 10), easetype, function() {
-                            $('#li_winner_112').css({
-                                'height': '70px'
-                            });
-                            $('#div_winner_112').slideDown();
-                            $('#li_winner_112').addClass("rotate");
-                            $('#usersCarouselConatiner').css({
-                                'z-index': '107'
-                            });
-                            $('#winnerInfo .winner-info-holder').slideDown();
-                            $('#roundFinishBlock').show();
-                            if(data.winner.steamid64 == USER_ID) {
-                                $.notify('Поздравляем с победой', {
-                                    clickToHide: 'true',
-                                    autoHide: "false",
-                                    className: "success"
+                        if(!sliding){
+                            sliding = true;
+                            var audio = new Audio('/assets/sounds/rollscrollskoniks.mp3');
+                            if(sound_status) audio.play();
+                            $('#usersCarousel').animate({
+                                marginLeft: scrollmar
+                            }, 1000 * (data.time - 10), /*easetype,*/ function() {
+                                $('#li_winner_112').css({
+                                    'height': '70px'
                                 });
-                                $("#toTrade").attr("href", 'http://steamcommunity.com/profiles/' + USER_ID + '/tradeoffers/');
-                                $('#toTrade').fadeIn();
-                                setTimeout(function() {
-                                    $('#toTrade').fadeOut();
-                                }, 30000);
-                            }
-                            $('#usersCarousel').animate({
-                                marginLeft: -this_scrol
-                            }, 2000, easetype, function() {});
-                        });
+                                $('#div_winner_112').slideDown();
+                                $('#li_winner_112').addClass("rotate");
+                                $('#usersCarouselConatiner').css({
+                                    'z-index': '107'
+                                });
+                                $('#winnerInfo .winner-info-holder').slideDown();
+                                $('#roundFinishBlock').show();
+                                if(data.winner.steamid64 == USER_ID) {
+                                    $.notify('Поздравляем с победой', {
+                                        clickToHide: 'true',
+                                        autoHide: "false",
+                                        className: "success"
+                                    });
+                                    $("#toTrade").attr("href", 'http://steamcommunity.com/profiles/' + USER_ID + '/tradeoffers/');
+                                    $('#toTrade').fadeIn();
+                                    setTimeout(function() {
+                                        $('#toTrade').fadeOut();
+                                    }, 30000);
+                                }
+                                $('#usersCarousel').animate({
+                                    marginLeft: -this_scrol
+                                }, 2000, /*easetype,*/ function() {});
+                            });
+                        }
                     } else {
-                        $('#usersCarousel').animate({
-                            marginLeft: scrollmar
-                        }, 1000, easetype, function() {
-                            $('#li_winner_112').css({
-                                'height': '70px'
-                            });
-                            $('#div_winner_112').slideDown();
-                            $('#li_winner_112').addClass("rotate");
-                            $('#usersCarouselConatiner').css({
-                                'z-index': '107'
-                            });
-                            $('#winnerInfo .winner-info-holder').slideDown();
-                            $('#roundFinishBlock').show();
+                        if(!sliding){
+                            sliding = true;
                             $('#usersCarousel').animate({
-                                marginLeft: -this_scrol
-                            }, 1000, easetype, function() {});
-                        });
+                                marginLeft: scrollmar
+                            }, 1000, /*easetype,*/ function() {
+                                $('#li_winner_112').css({
+                                    'height': '70px'
+                                });
+                                $('#div_winner_112').slideDown();
+                                $('#li_winner_112').addClass("rotate");
+                                $('#usersCarouselConatiner').css({
+                                    'z-index': '107'
+                                });
+                                $('#winnerInfo .winner-info-holder').slideDown();
+                                $('#roundFinishBlock').show();
+                                $('#usersCarousel').animate({
+                                    marginLeft: -this_scrol
+                                }, 1000, easetype, function() {});
+                            });
+                        }
                     }
                 }
             }
         })
         .on('newGame', function(data) {
             updateSocketIO();
+            sliding = false;
             if(USER_ID != 76561197960265728) {
                 if(USER_ID != 76561197960265728) {
                     updateBalance();
@@ -879,7 +849,32 @@ $(document).on('click', '.vote', function() {
         }
     });
 });
-
+function fillWinnerInfo(data) {
+    data = data || {
+        winner: {}
+    };
+    var obj = {
+        totalPrice: data.game.price || 0,
+        number: data.game.price ? ('#' + Math.floor(data.round_number * data.game.price)) : '???',
+        tickets: data.tickets || 0,
+        winner: {
+            image: data.winner.avatar || '???',
+            login: data.winner.username || '???',
+            id: data.winner.steamid64 || '#',
+            chance: data.chance || 0,
+            winTicket: data.ticket || '???'
+        }
+    };
+    $('#winnerInfo .winner-info-holder').hide();
+    $('#winnerInfo #winTicket').text('#' + obj.winner.winTicket);
+    $('#winnerInfo #totalTickets').text(obj.tickets);
+    $('#winnerInfo img').attr('src', obj.winner.image);
+    $('#winnerInfo #winnerLink').text(obj.winner.login);
+    $('#winnerInfo #winnerLink').attr('href', '/user/' + obj.winner.id);
+    $('#winnerInfo #winnerChance').text('(ШАНС: ' + obj.winner.chance.toFixed(2) + '%)');
+    $('#winnerInfo #winnerSum').text(obj.totalPrice);
+    updateChatScroll();
+}
 function sortByChance(arrayPtr) {
     var temp = [],
         item = 0;

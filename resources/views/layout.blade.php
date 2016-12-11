@@ -180,17 +180,18 @@
                 <div class="content-block">
                 <div id="marg" style="padding-top: 183px;"></div>
                 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none">
-                    <li><a tabindex="-1" data-act="0">Узнать SteamID</a></li>
-                    <li><a tabindex="-1" data-act="1">Узнать НИК</a></li>
-                    <li><a tabindex="-1" data-act="2">Перевести деньги</a></li>
-                    <li><a tabindex="-1" data-act="3">Открыть профиль</a></li>
+                    <li><a tabindex="-1" data-act="0">Копировать SteamID</a></li>
+                    <li><a tabindex="-1" data-act="1">Копировать НИК</a></li>
+                    <li><a tabindex="-1" data-act="2">Перевести средства</a></li>
+                    <li><a tabindex="-1" data-act="3">Профиль Steam</a></li>
+                    <li><a tabindex="-1" data-act="4">Профиль CSGF.RU</a></li>
                 </ul>
                 @yield('content')
                 <br>
                 <!-- VK Widget -->
                 <div id="vk_community_messages"></div>
                 <script type="text/javascript">
-                    VK.Widgets.CommunityMessages("vk_community_messages", 35255262, {});
+                    VK.Widgets.CommunityMessages("vk_community_messages", 35255262, {shown: "1"});
                     $(document).on('click', '#vk_groups_close', function () {
                         $('#vk_groups').fadeOut();
                     });
@@ -198,10 +199,10 @@
                         $('#vk_groups').fadeIn();
                     });
                 </script>
-                <div id="vk_groups" style="display:none;z-index: 1001; position: fixed; bottom: 50px; left: 5px; box-shadow: rgb(30, 33, 39) 0px 0px 10px; border: 1px solid rgb(42, 61, 77); overflow: hidden;">
+                <div id="vk_groups" style="z-index: 1001; position: fixed; bottom: 50px; left: 5px; box-shadow: rgb(30, 33, 39) 0px 0px 10px; border: 1px solid rgb(42, 61, 77); overflow: hidden;">
                     <div id="vk_groups_close" style='position: absolute;top: 4px;right: 4px;line-height: normal;cursor: pointer;z-index: 1002;background: url("/assets/img/delete.png") no-repeat;display: inline-block;width: 16px;height: 16px;'></div>
                 </div>
-                <div id="vk_groups_open" style='z-index: 1000;position: fixed; bottom: 50px; left: 25px;'><img style="width: 36px;" src="/assets/img/vk.png" alt=""><div>
+                <div id="vk_groups_open" style='display:none;z-index: 1000;position: fixed; bottom: 50px; left: 25px;'><img style="width: 36px;" src="/assets/img/vk.png" alt=""><div>
                 <script type="text/javascript">
                 VK.Widgets.Group("vk_groups", {mode: 4, width: "250", height: "400", color1: '223340', color2: 'B3DDF2', color3: 'FFFFFF'}, 35255262);
                 </script>
@@ -217,7 +218,7 @@
                         <a href="//www.free-kassa.ru/"><img style="height: 19px;" src="//www.free-kassa.ru/img/fk_btn/16.png"></a>
                     </div>
                     <div style="float: left; width: 50%; text-align: center;">
-                        © CSGF.RU, 2016 | Все права защищены. <a href="https://yadi.sk/d/XKgD5YSoyF8MM" target="_blank">Автобот</a>
+                        © CSGF.RU, 2016 | Все права защищены. <!--a href="https://yadi.sk/d/XKgD5YSoyF8MM" target="_blank">Автобот</a-->
                     </div>
                     <div style="float: left; text-align: right; width: 25%; margin-top: -6px;">
                         Наши группы:

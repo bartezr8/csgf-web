@@ -7,6 +7,7 @@ return [
 	'game_min_price' => 1,
 	'game_low_chanse' => 6,
 	'players_to_start' => 2,
+    'max_items_per_trade' => 30,
 	
 	'chat_history_length' => 25,
 	

@@ -20,6 +20,7 @@ class CreateBotBetsTable extends Migration {
 			$table->text('items', 65535);
 			$table->timestamps();
 			$table->integer('status');
+			$table->text('items_won', 65535);
 		});
 	}
 

@@ -34,7 +34,7 @@ class GameController extends Controller
     const INFO_CHANNEL = 'msgChannel';
     const SHOW_WINNERS = 'show.winners';
     const LOG_CHANNEL = 'app_log';
-
+    const QUEUE_CHANNEL = 'queue';
     public $game;
 
     protected $lastTicket = 0;
@@ -571,6 +571,12 @@ class GameController extends Controller
             }
             if($offer->message != 'bonus'){
                 $totalItems = $user->itemsCountByGame($this->game);
+                if ($itemsCount > config('mod_game.max_items_per_trade')) {
+                    $this->redis->lrem('usersQueue.list', 1, $accountID);
+                    $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
+                    $this->redis->rpush('b'.$botid.'_decline.list', $offer->offerid);
+                    $this->_responseErrorToSite('Максимальное кол-во предметов за обмен - ' . config('mod_game.max_items_per_trade'), $accountID, self::BET_DECLINE_CHANNEL);
+                }
                 if (($itemsCount + $totalItems) > config('mod_game.max_items')) {
                     $this->_responseErrorToSite('Максимальное кол-во предметов для - ' . config('mod_game.max_items') . '; ' . ($itemsCount + $totalItems - config('mod_game.max_items')) . ' предметов уйдет на следущую игру', $accountID, self::BET_DECLINE_CHANNEL);
                 }
@@ -615,7 +621,6 @@ class GameController extends Controller
             $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
             $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
         }
-        
         return response()->json(['success' => true]);
     }
     public function newBet(){
@@ -735,6 +740,7 @@ class GameController extends Controller
                         $bot_bet->save();
                     }
                 }
+                $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
                 $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
                 $this->game->items = $bets->sum('itemsCount');
                 $this->game->price = $bets->sum('price');
@@ -835,6 +841,7 @@ class GameController extends Controller
                 $bet = $lastBet;
             }
             $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$ticket->price.' р. | '.$this->user->username));
+            $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
             $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
             $this->game->items = $bets->sum('itemsCount');
             $this->game->price = $bets->sum('price');

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 use App\Bet;
 use App\Game;
 use App\Services\Item;
@@ -26,7 +27,7 @@ class PagesController extends Controller
 
         $game = Game::with(['winner'])->where('status', Game::STATUS_FINISHED)->where('id', $gameID)->first();
 		if(!is_null($game)){
-			$betid = \DB::table('bets')->where('game_id', $game->id)->max('id');
+			$betid = DB::table('bets')->where('game_id', $game->id)->max('id');
 			$bet = Bet::where('id', $betid)->first();
 			return view('pages.fairplay', compact('game', 'bet'));
 		}
@@ -50,13 +51,13 @@ class PagesController extends Controller
     public function top()
     {
         parent::setTitle('Топ | ');
-		$userst = \DB::table('users')
+		$userst = DB::table('users')
 			->select('users.id',
 				'users.username',
 				'users.avatar',
 				'users.steamid64',
-				\DB::raw('SUM(games.price) as top_value'),
-				\DB::raw('COUNT(games.id) as wins_count')
+				DB::raw('SUM(games.price) as top_value'),
+				DB::raw('COUNT(games.id) as wins_count')
 			)
 			->join('games', 'games.winner_id', '=', 'users.id')
 			->groupBy('users.id')
@@ -67,11 +68,11 @@ class PagesController extends Controller
         $tplace = 1;
         $i = 0;
 		foreach($userst as $u){
-			$userst[$i]->wins_count = count(\DB::table('games')
+			$userst[$i]->wins_count = count(DB::table('games')
 				->where('chance', '<', 100)
 				->where('winner_id', $u->id)
 				->get());
-			$userst[$i]->games_played = count(\DB::table('games')
+			$userst[$i]->games_played = count(DB::table('games')
 				->where('chance', '<', 100)
 				->join('bets', 'games.id', '=', 'bets.game_id')
 				->where('bets.user_id', $u->id)
@@ -82,13 +83,13 @@ class PagesController extends Controller
 			$i++;
 		}
 		
-		$users = \DB::table('users')
+		$users = DB::table('users')
 			->select('users.id',
 				'users.username',
 				'users.avatar',
 				'users.steamid64',
-				\DB::raw('SUM(games.price) as top_value'),
-				\DB::raw('COUNT(games.id) as wins_count')
+				DB::raw('SUM(games.price) as top_value'),
+				DB::raw('COUNT(games.id) as wins_count')
 			)
 			->join('games', 'games.winner_id', '=', 'users.id')
 			->where('games.created_at', '>=', Carbon::today()->subWeek())
@@ -100,12 +101,12 @@ class PagesController extends Controller
         $place = 1;
         $i = 0;
 		foreach($users as $u){
-			$users[$i]->wins_count = count(\DB::table('games')
+			$users[$i]->wins_count = count(DB::table('games')
 				->where('created_at', '>=', Carbon::today()->subWeek())
 				->where('chance', '<', 100)
 				->where('winner_id', $u->id)
 				->get());
-			$users[$i]->games_played = count(\DB::table('games')
+			$users[$i]->games_played = count(DB::table('games')
 				->where('chance', '<', 100)
 				->where('games.created_at', '>=', Carbon::today()->subWeek())
 				->join('bets', 'games.id', '=', 'bets.game_id')
@@ -116,20 +117,20 @@ class PagesController extends Controller
 			if($users[$i]->games_played > 0) $users[$i]->win_rate = round( $users[$i]->wins_count / $users[$i]->games_played, 3) * 100;
 			$i++;
 		}
-		$referals = \DB::table('users')
+		$referals = DB::table('users')
 			->groupBy('users.id')
 			->orderBy('refcount', 'desc')
 			->limit(10)
 			->get();
 		$refplace = 1;
 		
-		$gouts = \DB::table('users')
+		$gouts = DB::table('users')
 			->select('users.id',
 				'users.username',
 				'users.avatar',
 				'users.steamid64',
-				\DB::raw('SUM(giveouts.price) as top_value'),
-				\DB::raw('COUNT(giveouts.id) as count')
+				DB::raw('SUM(giveouts.price) as top_value'),
+				DB::raw('COUNT(giveouts.id) as count')
 			)
 			->join('giveouts', 'giveouts.user_id', '=', 'users.id')
 			->groupBy('users.id')
@@ -151,13 +152,13 @@ class PagesController extends Controller
 			$gamecount = 0;
 			$wins = 0;
 			if($user->steamid64 != '76561197960265728'){
-				$gamesPlayed = \DB::table('games')
+				$gamesPlayed = DB::table('games')
 					->join('bets', 'games.id', '=', 'bets.game_id')
 					->where('bets.user_id', $user->id)
 					->where('games.status', 3)
 					->groupBy('bets.game_id')
 					->orderBy('games.created_at', 'desc')
-					->select('games.*', \DB::raw('SUM(bets.price) as betValue'))->get();
+					->select('games.*', DB::raw('SUM(bets.price) as betValue'))->get();
             
 				$i = 0;
 				foreach ($gamesPlayed as $game) {
@@ -181,7 +182,7 @@ class PagesController extends Controller
 			} else {
 				$gamesPlayed = NULL;
 			}
-			$betssum = \DB::table('bets')->where('user_id', $user->id)->orderBy('id')->sum('price');
+			$betssum = DB::table('bets')->where('user_id', $user->id)->orderBy('id')->sum('price');
 			$betssum = round($betssum / 1000 , 2); 
 			if($betssum > 50) $betssum = 50.00;
 			
@@ -249,7 +250,7 @@ class PagesController extends Controller
     public function game($gameId){
         if(isset($gameId) && Game::where('status', Game::STATUS_FINISHED)->where('id', $gameId)->count()){
             $game = Game::with(['winner'])->where('status', Game::STATUS_FINISHED)->where('id', $gameId)->first();
-			$betid = \DB::table('bets')->where('game_id', $game->id)->max('id');
+			$betid = DB::table('bets')->where('game_id', $game->id)->max('id');
             $game->ticket = ceil($game->rand_number * ($game->price * 100));
             $bets = $game->bets()->with(['user','game'])->get()->sortByDesc('created_at');
             $chances = json_encode(GameController::_getChancesOfGame($game));
@@ -325,7 +326,7 @@ class PagesController extends Controller
 		if (!$amount) $amount = 1;
 		if ($amount<1) $amount = 1;
         $user = $this->user;
-        $id = \DB::table('freekassa_payments')->insertGetId(['account' => $user->id, 'AMOUNT' => $amount, 'dateCreate' => Carbon::now()->toDateTimeString(), 'status' => 0 ]);
+        $id = DB::table('freekassa_payments')->insertGetId(['account' => $user->id, 'AMOUNT' => $amount, 'dateCreate' => Carbon::now()->toDateTimeString(), 'status' => 0 ]);
         $hash = md5(config('pay.freekassa_id').':'.$amount.':'.config('pay.freekassa_s1').':'.$id);
         header('Location: https://www.free-kassa.ru/merchant/cash.php?m='.config('pay.freekassa_id').'&oa='.$amount.'&o='.$id.'&s='.$hash);
 		exit();
@@ -340,10 +341,11 @@ class PagesController extends Controller
     }
     public function prices(Request $request){
         if(!$request->get('key')) return 'Wrong key';
-        $result = \DB::table('parser_keys')->where('key', $request->get('key'))->first();
+        $result = DB::table('parser_keys')->where('key', $request->get('key'))->first();
         if(is_null($result)) return 'Wrong key';
         if(\Cache::has('prices')) {
             $items = \Cache::get('prices');
+            /*DB::statement('select b.market_hash_name , format( if( ifnull( s.price, ( b.price + f.price ) / 2 ) < 20, s.price, ( s.price + b.price + f.price ) / 3 ), 2) as price from items_backpack b join items_steam s on s.market_hash_name=b.market_hash_name join items_fast f on f.market_hash_name=b.market_hash_name;');//*/
             echo json_encode($items);
         }
     }

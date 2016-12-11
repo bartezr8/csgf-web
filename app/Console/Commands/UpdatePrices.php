@@ -50,7 +50,7 @@ class UpdatePrices extends Command
                         }
                         $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
                         $count++;
-                        if($count>20){
+                        if($count>200){
                             $count = 0;
                             sleep(1);
                         }
@@ -77,7 +77,7 @@ class UpdatePrices extends Command
                         }
                         $this->log($nitem['market_hash_name'].' : '.$nitem['price']);
                         $count++;
-                        if($count>20){
+                        if($count>200){
                             $count = 0;
                             sleep(1);
                         }

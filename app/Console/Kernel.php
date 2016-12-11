@@ -28,6 +28,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')->hourly();
         $schedule->command('prices:update --bp --fast')->cron('0 */3 * * *');
         $schedule->command('prices:update --parser')->cron('30 */3 * * *');
-        $schedule->command('node /srv/csgf/node/parser.js')->cron('0 */6 * * *');
+        //$schedule->command('node /srv/csgf/node/parser.js')->cron('0 */6 * * *');
     }
 }

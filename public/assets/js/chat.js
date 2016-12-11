@@ -7,7 +7,7 @@ $(document).ready(function() {
         var $menu = $("#contextMenu");
         $menu.show().css({
             position: "absolute",
-            left: getMenuPosition(e.clientX, 'width', 'scrollLeft') - 285,
+            left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
             top: getMenuPosition(e.clientY, 'height', 'scrollTop')
         }).off("click").on("click", "a", function(e) {
             var act = $(this).data("act");
@@ -29,6 +29,17 @@ $(document).ready(function() {
         $("#contextMenu").hide();
     });
 });
+function getMenuPosition(mouse, direction, scrollDir) {
+    var win = $(window)[direction](),
+        scroll = $(window)[scrollDir](),
+        menu = $("#contextMenu")[direction](),
+        position = mouse + scroll;
+        if(direction == 'width') position = $(".dad-container.with-chat")['width']() + 100;
+       
+    if(mouse + menu > win && menu < mouse)
+        position -= menu;
+    return position;
+}
 if(START && checkPage()) {
     csocket = io.connect( SITE_URL , {path:'/csgf-chat', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
     csocket.on('chat_messages', function(data) {
@@ -86,16 +97,6 @@ if(START && checkPage()) {
 }
 function add_smile(smile) {
     $('#chatInput').val($('#chatInput').val() + smile);
-}
-
-function getMenuPosition(mouse, direction, scrollDir) {
-    var win = $(window)[direction](),
-        scroll = $(window)[scrollDir](),
-        menu = $("#contextMenu")[direction](),
-        position = mouse + scroll;
-    if(mouse + menu > win && menu < mouse)
-        position -= menu;
-    return position;
 }
 $(function() {
     if(checkPage()){
