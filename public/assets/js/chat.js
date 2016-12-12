@@ -21,6 +21,10 @@ $(document).ready(function() {
                 sendMoney(steamid);
             } else if(act == 3) {
                 window.open('https://steamcommunity.com/profiles/' + steamid + '/', '_blank');
+            } else if(act == 4) {
+                window.open('/user/' + steamid, '_blank');
+            } else if(act == 5) {
+                window.open('/admin/user/' + steamid, '_blank');
             }
             $("#chatInput").focus();
         });

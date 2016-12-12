@@ -62,6 +62,7 @@ class DiceController extends Controller {
                 }
             }
         }
+        //$roll = 6;
         $am = -$bet_sum;
         $win = -$bet_sum;
         if($bet_value == 'low') {

@@ -63,23 +63,23 @@ class CoinFlipController extends Controller {
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}
     public function nbet(Request $request){
-            if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
-            $sum = floor($request->get('sum')*100)/100;
-            if($sum=='') return response()->json(['text' => 'Укажите сумму.', 'type' => 'error']);
-            if($sum < 0.01) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
-            if(!User::mchange($this->user->id, -$sum)) return response()->json(['text' => 'У вас недостаточно средств.', 'type' => 'error']);
-            $id = DB::table('coin')->insertGetId([
-                'money' => $sum,
-                'creator' => $this->user->id,
-                'status' => 0,
-            ]);
-            $returnValue = [
-                'ava' => $this->user->avatar,
-                'name' => $this->user->username,
-                'id' => $id,
-                'sum' => $sum
-            ];
-            $this->redis->publish('coin_new', json_encode($returnValue));
-            return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
+        if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
+        $sum = floor($request->get('sum')*100)/100;
+        if($sum=='') return response()->json(['text' => 'Укажите сумму.', 'type' => 'error']);
+        if($sum < 0.01) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
+        if(!User::mchange($this->user->id, -$sum)) return response()->json(['text' => 'У вас недостаточно средств.', 'type' => 'error']);
+        $id = DB::table('coin')->insertGetId([
+            'money' => $sum,
+            'creator' => $this->user->id,
+            'status' => 0,
+        ]);
+        $returnValue = [
+            'ava' => $this->user->avatar,
+            'name' => $this->user->username,
+            'id' => $id,
+            'sum' => $sum
+        ];
+        $this->redis->publish('coin_new', json_encode($returnValue));
+        return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}
 }

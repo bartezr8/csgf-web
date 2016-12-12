@@ -228,12 +228,6 @@
     bottom: -4px;
     right: 43px;
 }
-
-.chat-form .smiles .sub img {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
 .chat-form .smiles span {
 	display: block;
     float: left;

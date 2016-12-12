@@ -6,11 +6,13 @@
     <title>{{ $title }}CSGF.RU</title>
     <meta name="keywords" content="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo, халява, от 1 рубля, рефералка, дабл, луты, steam" />
     <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
-    <meta name="viewport" content="width=1100" />
+    <meta name="viewport" content="width=1200" />
     <meta name="csrf-token" content="{!!  csrf_token()   !!}">
+    <!--meta name=viewport content="width=device-width, initial-scale=1"-->
     <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
     <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
+    <link href="{{ $asset('assets/css/smiles.css') }}" rel="stylesheet">
     <link href="{{ $asset('assets/css/perfect-scrollbar.css') }}" rel="stylesheet">
 	<link href="{{ $asset('assets/css/awesome.css') }}" rel="stylesheet">
 	<link href="{{ $asset('assets/css/fonts.css') }}" rel="stylesheet">
@@ -19,34 +21,33 @@
 	<script src="{{ $asset('assets/js/jquery-ui.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
-    <script src="{{ $asset('assets/js/snowstorm.js') }}" ></script>
-    <script charset="UTF-8" src="//cdn.sendpulse.com/js/push/afa6e6a9babb8fca7f18d1d432729100_0.js" async></script>
-    <script type="text/javascript" src="//vk.com/js/api/openapi.js?129"></script>
+    <script src="{{ $asset('assets/js/snowstorm.js') }}" async></script>
+    <!--script charset="UTF-8" src="//cdn.sendpulse.com/js/push/afa6e6a9babb8fca7f18d1d432729100_0.js" async></script-->
     <script>
-    var SITE_URL = "{{ config('app.url') }}";
-    var APPS_SECURE = "env('APPS_SECURE', false)";
-    var APPS_FCONNS = "env('APPS_FCONNS', false)";
-    var USER_BALANCE = 0;
-    @if(!Auth::guest())
-		var avatar = '{{ $u->avatar }}';
-        const USER_ID = '{{ $u->steamid64 }}';
-		const IS_MODER = '{{ $u->is_moderator }}';
-		const IS_ADMIN = '{{ $u->is_admin }}';
-        USER_BALANCE = {{ $u->money }};
-	@else 
-		var avatar = "{{ $asset('assets/img/blank.jpg') }}";
-        const USER_ID = '76561197960265728';
-		const IS_MODER = 0;
-		const IS_ADMIN = 0;
-    @endif
-	var START = true;
-	var LOAD = false;
-    var CONNECT = false;
-    var socket = io.connect( SITE_URL , {path:'/csgf-app', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
-    socket.on('connect', function() {
-        socket.emit('steamid64', USER_ID);
-        CONNECT = true;
-    }).on('disconnect', function() {});
+        var SITE_URL = "{{ config('app.url') }}";
+        var APPS_SECURE = "env('APPS_SECURE', false)";
+        var APPS_FCONNS = "env('APPS_FCONNS', false)";
+        var USER_BALANCE = 0;
+        @if(!Auth::guest())
+            var avatar = '{{ $u->avatar }}';
+            const USER_ID = '{{ $u->steamid64 }}';
+            const IS_MODER = '{{ $u->is_moderator }}';
+            const IS_ADMIN = '{{ $u->is_admin }}';
+            USER_BALANCE = {{ $u->money }};
+        @else 
+            var avatar = "{{ $asset('assets/img/blank.jpg') }}";
+            const USER_ID = '76561197960265728';
+            const IS_MODER = 0;
+            const IS_ADMIN = 0;
+        @endif
+        var START = true;
+        var LOAD = false;
+        var CONNECT = false;
+        var socket = io.connect( SITE_URL , {path:'/csgf-app', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
+        socket.on('connect', function() {
+            socket.emit('steamid64', USER_ID);
+            CONNECT = true;
+        }).on('disconnect', function() {});
     </script>
 </head>
 <body> 
@@ -136,13 +137,12 @@
                                     <div class="profile-footer">
                                         <ul class="list-reset">
                                             <li><a href="/user/{{ $u->steamid64 }}" target="_blank">мой профиль</a></li>
-                                            <!--li><a href="/send" target="_blank">перевод</a></li-->
                                             <li><a href="{{ route('my-inventory') }}" target="_blank">инвентарь</a></li>
                                             <li><a href="/ref" target="_blank">реферал</a></li>
                                             @if($u->is_moderator==1)
                                             <li><a href="/admin" target="_blank">панель</a></li>
                                             @endif
-                                            <li><a style="font-size: 14px;font-weight: bold;color: #d1ff78;" onclick="$('#addBalMod').arcticmodal();" target="_blank">+ <span class="userBalance" style="color: #d1ff78;">{{ $u->money }}</span> р.</a></li>
+                                            <li><a style="font-size: 14px;font-weight: bold;color: #d1ff78;" onclick="$('#addBalMod').arcticmodal();" target="_blank">+ <span class="userBalance orbit" style="color: #d1ff78;">{{ $u->money }}</span> р.</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -185,28 +185,19 @@
                     <li><a tabindex="-1" data-act="2">Перевести средства</a></li>
                     <li><a tabindex="-1" data-act="3">Профиль Steam</a></li>
                     <li><a tabindex="-1" data-act="4">Профиль CSGF.RU</a></li>
+                    @if(!Auth::guest())
+                        @if($u->is_moderator==1)
+                        <li><a tabindex="-1" data-act="5">Управление</a></li>
+                        @endif
+                    @endif
                 </ul>
                 @yield('content')
                 <br>
-                <!-- VK Widget -->
+                <script type="text/javascript" src="//vk.com/js/api/openapi.js?129"></script>
                 <div id="vk_community_messages"></div>
                 <script type="text/javascript">
                     VK.Widgets.CommunityMessages("vk_community_messages", 35255262, {shown: "1"});
-                    $(document).on('click', '#vk_groups_close', function () {
-                        $('#vk_groups').fadeOut();
-                    });
-                    $(document).on('click', '#vk_groups_open', function () {
-                        $('#vk_groups').fadeIn();
-                    });
                 </script>
-                <div id="vk_groups" style="z-index: 1001; position: fixed; bottom: 50px; left: 5px; box-shadow: rgb(30, 33, 39) 0px 0px 10px; border: 1px solid rgb(42, 61, 77); overflow: hidden;">
-                    <div id="vk_groups_close" style='position: absolute;top: 4px;right: 4px;line-height: normal;cursor: pointer;z-index: 1002;background: url("/assets/img/delete.png") no-repeat;display: inline-block;width: 16px;height: 16px;'></div>
-                </div>
-                <div id="vk_groups_open" style='display:none;z-index: 1000;position: fixed; bottom: 50px; left: 25px;'><img style="width: 36px;" src="/assets/img/vk.png" alt=""><div>
-                <script type="text/javascript">
-                VK.Widgets.Group("vk_groups", {mode: 4, width: "250", height: "400", color1: '223340', color2: 'B3DDF2', color3: 'FFFFFF'}, 35255262);
-                </script>
-                <!-- VK Widget -->
             </main>
             <center style="margin-top: 9px; margin-bottom: 27px; border-top: 1px solid rgb(61, 82, 96); padding-top: 27px;">
                 <a style="font-size: 26px; font-weight: 600; text-shadow: 0 2px 2px rgba(0,0,0,0.26); text-transform: uppercase; border: 2px dashed #ffffff; color: #fc8356; padding: 5px;">Не является азартной игрой!</a>
@@ -367,8 +358,8 @@
 	</div>
 </div>
 
-<script src="{{ $asset('assets/js/app.js') }}" ></script>
-<script src="{{ $asset('assets/js/chat.js') }}" ></script>
+<script src="{{ $asset('assets/js/app.js') }}" async></script>
+<script src="{{ $asset('assets/js/chat.js') }}" async></script>
     
 <script>
     @if(!Auth::guest())

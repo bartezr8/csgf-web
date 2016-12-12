@@ -277,8 +277,9 @@ $(function() {
         sell_cart_all: function(){
             var items_list = makeArray(this.shop_cart);
             items_list.forEach(function (item) {
-                console.log(item);
-                for (var i = 0; i < item.count; i++) shop.sell_cart(item.id);
+                shop.shiftPress = true;
+                shop.sell_cart(item.id);
+                shop.shiftPress = false;
             });
         },
         get_cart: function(){
