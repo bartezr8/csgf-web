@@ -142,7 +142,7 @@
                                             @if($u->is_moderator==1)
                                             <li><a href="/admin" target="_blank">панель</a></li>
                                             @endif
-                                            <li><a style="font-size: 14px;font-weight: bold;color: #d1ff78;" onclick="$('#addBalMod').arcticmodal();" target="_blank">+ <span class="userBalance orbit" style="color: #d1ff78;">{{ $u->money }}</span> р.</a></li>
+                                            <li class="profile-balance heartbeat"><a style="font-size: 14px;font-weight: bold;color: #d1ff78;" onclick="$('#addBalMod').arcticmodal();" target="_blank">+ <span class="userBalance orbit" style="color: #d1ff78;">{{ $u->money }}</span> р.</a></li>
                                         </ul>
                                     </div>
                                 </div>

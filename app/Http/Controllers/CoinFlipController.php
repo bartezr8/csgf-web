@@ -49,7 +49,8 @@ class CoinFlipController extends Controller {
             $looser = $this->user;
             $winner = $creator;
         }
-        User::mchange($winner->id, $game->money*2);
+        $bsum = $game->money*2 - ($game->money*2 / 100 * config('mod_game.comission'));
+        User::mchange($winner->id, $bsum);
         DB::table('coin')->where('id', $game->id)->update(['money' => ($game->money + $game->money), 'status' => 1, 'player' => $this->user->id, 'winner'=> $winner->id]);
         $returnValue = [
             'ava' => $this->user->avatar,
@@ -59,6 +60,8 @@ class CoinFlipController extends Controller {
             'lava' => $looser->avatar,
             'user_id' => $winner->steamid64
         ];
+        $this->user->slimit += $game->money / 100 * config('mod_game.slimit');
+        $this->user->save();
         $this->redis->publish('coin_scroll', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}
@@ -79,6 +82,8 @@ class CoinFlipController extends Controller {
             'id' => $id,
             'sum' => $sum
         ];
+        $this->user->slimit += $sum / 100 * config('mod_game.slimit');
+        $this->user->save();
         $this->redis->publish('coin_new', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}

@@ -59,6 +59,17 @@ $(function() {
     });
 });
 $(document).ready(function() {
+    $('.profile-balance').tooltip({
+        html: true,
+        trigger: 'hover',
+        delay: {
+            show: 500,
+            hide: 500
+        },
+        title: function() {
+            return '<div class="tooltip-title"><span>Пополнить баланс</span></div>';
+        }
+    });
     sound_status = true;
     if($.cookie('sound_status') == 'false') {
         $('.sound_off').hide();

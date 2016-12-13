@@ -11,14 +11,13 @@ use App\User;
 use App\Shop;
 use App\Item_Steam;
 use Carbon\Carbon;
+use LRedis;
 use Illuminate\Http\Request;
 use App\WinnerTicket;
 use Illuminate\Support\Str;
 use Illuminate\Support\Cache;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
-use LRedis;
-use Log;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -38,8 +37,6 @@ class GameController extends Controller
     public $game;
 
     protected $lastTicket = 0;
-
-    private static $chances_cache = [];
     
     public function __construct()
     {
@@ -723,22 +720,22 @@ class GameController extends Controller
                         $bet = $lastBet;
                     }
                 }
-                if(isset($newBet['botid'])){
-                    $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
-                    if(is_null($bot_bet)){
-                        Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
-                    } else {
-                        $newitems = [];
-                        $items = json_decode($bot_bet->items);
-                        foreach($items as $item){
-                            $newitems[] = $item;
-                        }
-                        foreach($newBet['items'] as $item){
-                            $newitems[] = $item;
-                        }
-                        $bot_bet->items = json_encode($newitems);
-                        $bot_bet->save();
+                $user->slimit += $bet->price / 100 * config('mod_game.slimit');
+                $user->save();
+                $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
+                if(is_null($bot_bet)){
+                    Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
+                } else {
+                    $newitems = [];
+                    $items = json_decode($bot_bet->items);
+                    foreach($items as $item){
+                        $newitems[] = $item;
                     }
+                    foreach($newBet['items'] as $item){
+                        $newitems[] = $item;
+                    }
+                    $bot_bet->items = json_encode($newitems);
+                    $bot_bet->save();
                 }
                 $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
                 $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
@@ -840,6 +837,8 @@ class GameController extends Controller
                 $lastBet->save();
                 $bet = $lastBet;
             }
+            $this->user->slimit += $bet->price / 100 * config('mod_game.slimit');
+            $this->user->save();
             $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$ticket->price.' р. | '.$this->user->username));
             $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
             $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();

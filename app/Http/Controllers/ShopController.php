@@ -40,13 +40,17 @@ class ShopController extends Controller {
     }
     public function index(){
         parent::setTitle('Магазин | ');
-        $betssum = 0;
+        $slimit = 0;
+        $slimit_ = '';
         if(!Auth::guest()){
-            $betssum = \DB::table('bets')->where('user_id', $this->user->id)->orderBy('id')->sum('price');
-            $betssum = round($betssum / 1000 , 2); 
-            if($betssum > 50) $betssum = 50.00;
+            $slimit = $this->user->slimit;
+			while($slimit>1000){
+                $slimit = round($slimit/1000,1);
+                $slimit_ .='к';
+            }
         }
-        return view('pages.shop.shop', compact('betssum'));
+        $slimit .= $slimit_;
+        return view('pages.shop.shop', compact('slimit'));
     }
     public function history()
 	{

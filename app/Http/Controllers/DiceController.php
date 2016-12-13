@@ -11,6 +11,9 @@ use App\Http\Controllers\Controller;
 use Storage;
 
 class DiceController extends Controller {
+    
+    const AMSUM = 25;
+    
     private function _responseMessageToSite($message, $userid)
     {
         return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
@@ -49,9 +52,11 @@ class DiceController extends Controller {
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
         if ($bet_sum == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
         if (!User::mchange($this->user->id, -$bet_sum)) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
+        $this->user->slimit += $bet_sum / 100 * config('mod_game.slimit');
+        $this->user->save();
         $roll = rand(1, 6);
         $am = \DB::table('dice')->sum('am') + $win_sum;
-        if ((rand(0, floor($bet_sum/25))!= 0) || ($am > 0) ){
+        if ((rand(0, floor($bet_sum/self::AMSUM))!= 0) || ($am > 0) ){
             if($bet_value == 'low'){
                 $roll = rand(4, 6);
             } elseif($bet_value == 'high'){

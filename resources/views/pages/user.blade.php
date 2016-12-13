@@ -18,15 +18,15 @@
                     {{ $username }}
                 </div>
                 <div class="reputation-container">
-                    Уровень:
+                    Лимит на вывод:
                     <div class="reputation-block">
-                        {{ $betssum }}
+                        {{ $slimit }}
                         <a id="user-level-btn" class="popover-btn"></a>
                     </div>
                 </div>
 				@if(!Auth::guest())
 				@if($userId == $u->steamid64 )
-				<div class="input-group" style="width: 72.8%;margin-top: -29px;margin-left: 172px;position: relative;">
+				<div class="input-group" style="width: 43.8%;margin-top: -29px;margin-left: 235px;position: relative;">
 					<input class="save-password-input" onchange="updatepassword(this.value)" type="text" pattern="^[a-zA-Z0-9]+$" placeholder="Пароль" maxlength="17" style="text-align: center;" value="">
 				</div>
 				@endif

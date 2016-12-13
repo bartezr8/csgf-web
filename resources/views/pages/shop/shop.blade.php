@@ -11,14 +11,14 @@
     </div>
     <div class="buy-cards-container" style="padding-top: 10px;">
         <div class="buy-cards-block">
-            <div class="user-profile-container" style="padding-top: 0px; width: 165px; margin: 0px 0px 0px; float: left; margin-right: 10px;">
+            <div class="user-profile-container" style="padding-top: 0px; width: 220px; margin: 0px 0px 0px; float: left; margin-right: 10px;">
                 <div class="user-profile-head" style="padding: 5px 5px 5px;">
                     <div class="left-block" style="width: inherit;">
                         <div class="user-info" style="padding-top: 0px; margin-right: 0px;">
                             <div class="reputation-container">
-                                Уровень:
+                                Лимит вывода:
                                 <div class="reputation-block">
-                                    {{ $betssum }}
+                                    {{ $slimit }}
                                     <a id="user-level-btn" class="popover-btn"></a>
                                 </div>
                             </div>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </div>
-            <div class="msg-wrap" style="width:835px; float: left;">
+            <div class="msg-wrap" style="width:780px; float: left;">
                 <div class="icon-warning"></div>
                 <div class="msg-green msg-mini" id="whenLoadingOrNoCardsOrTitle">На вашем аккаунте есть средства за которые вы можете покупать предметы или карточки!</div>
             </div>
@@ -102,7 +102,7 @@
                 
                 <div class="smiles">
                     <div class="sub">
-                        <?php for($i = 1; $i<= 505; $i++)echo "<img src=\"/assets/img/smiles/smile (".$i.").png\" id=\"smile\" style=\"background:none;\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
+                        <?php for($i = 1; $i<= 505; $i++)echo "<img id=\"smile\" class=\"smile-smile-_".$i."_\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
                     </div>
                     <span></span>
                 </div>

@@ -139,7 +139,7 @@
                 
                 <div class="smiles">
                     <div class="sub">
-                        <?php for($i = 1; $i < 505; $i++)echo "<img src=\"/assets/img/smiles/smile (".$i.").png\" id=\"smile\" style=\"background:none;\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
+                        <?php for($i = 1; $i<= 505; $i++)echo "<img id=\"smile\" class=\"smile-smile-_".$i."_\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
                     </div>
                     <span></span>
                 </div>

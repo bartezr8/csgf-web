@@ -182,16 +182,17 @@ class PagesController extends Controller
 			} else {
 				$gamesPlayed = NULL;
 			}
-			$betssum = DB::table('bets')->where('user_id', $user->id)->orderBy('id')->sum('price');
-			$betssum = round($betssum / 1000 , 2); 
-			if($betssum > 50) $betssum = 50.00;
 			
 			$username = $user->username;
 			$avatar = $user->avatar;
 			$totalBank = $games->sum('price');
-			$votes = $user->votes;
-			
-			
+			$slimit = $user->slimit;
+            $slimit_ = '';
+			while($slimit>1000){
+                $slimit = round($slimit/1000,1);
+                $slimit_ .='к';
+            }
+			$slimit .= $slimit_;
 			$url = 'https://steamcommunity.com/profiles/' . $user->steamid64 . '/';
 			if ( $gamecount > 0 ){
 				$winrate = count($gamesPlayed) ? round($wins / $gamecount, 3) * 100 : 0;
@@ -211,7 +212,7 @@ class PagesController extends Controller
             return redirect()->route('index');
         }
 
-        return view('pages.user', compact('username', 'avatar', 'votes', 'wins', 'url' , 'winrate' , 'totalBank' , 'games', 'list', 'userId', 'betssum', 'tradeurl'));
+        return view('pages.user', compact('username', 'avatar', 'slimit', 'wins', 'url' , 'winrate' , 'totalBank' , 'games', 'list', 'userId', 'tradeurl'));
     }
 
     public function settings()

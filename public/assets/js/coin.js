@@ -33,7 +33,7 @@ if(START) {
                                 $("#cointable #coin_" + data.id + " #first #user-name").css('color', '#d1ff78');
                             }
                             if(USER_ID == data.user_id){
-                                USER_BALANCE = num(num(USER_BALANCE) + num(num($("#cointable #coin_" + data.id + " #sum").text()) * 2));
+                                USER_BALANCE = num(num(USER_BALANCE) + num(num(num($("#cointable #coin_" + data.id + " #sum").text()) * 2)*0.9));
                                 $('.userBalance').text(USER_BALANCE);
                             }
                         }, 5000);

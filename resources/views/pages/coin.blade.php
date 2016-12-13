@@ -11,7 +11,7 @@
     <div class="page-content"style="">
         <div class="add-balance-block" style="text-align: center;padding: 12px 0px 10px;border-bottom: 1px solid #3D5260;">
             <div class="balance-item" style="font-size: 14px;color: #7995a8;font-weight: 400;display: inline-block;vertical-align: middle;">
-                БЕЗ КОМИССИИ
+                Комиссия {{ config('mod_game.comission') }}%
             </div>
             <span class="icon-arrow-right" style="height: 55px;margin: 0 10px;display: inline-block;vertical-align: middle;"></span>
             <div class="balance-item" style="font-size: 14px;color: #7995a8;font-weight: 400;display: inline-block;vertical-align: middle;">
