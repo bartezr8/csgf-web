@@ -17,6 +17,7 @@ class CreateBonusItemsTable extends Migration {
 			$table->increments('id');
 			$table->text('item', 65535);
 			$table->float('price');
+			$table->integer('bot_id');
 		});
 	}
 
