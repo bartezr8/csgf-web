@@ -191,6 +191,7 @@
                     @endif
                 </ul>
                 @yield('content')
+                @include('includes.chat')
                 <br>
                 <script type="text/javascript" src="//vk.com/js/api/openapi.js?129"></script>
                 <div id="vk_community_messages"></div>

@@ -55,9 +55,9 @@ $(function() {
                 classid: zipItem.classid,
                 shortexterior: zipItem.shortexterior,
                 count: zipItem.count,
-                filter_exterior: zipItem.exterior,
+                exterior_all: zipItem.exterior,
                 filter_rarity: zipItem.rarity,
-                filter_rarity_text: zipItem.rarity_text,
+                rarity_all: zipItem.rarity_text,
                 className: zipItem.rarity
             };
             item_obj.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + item_obj.classid + '/101fx100f';
@@ -73,9 +73,16 @@ $(function() {
             $('#filter-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
             }, 0));
-            items_list.sort(function (a, b) {
-                return b.price - a.price
-            });
+            if($('#sort_all').val() == 'desc'){
+                items_list.sort(function (a, b) {
+                    return b.price - a.price
+                });
+            } else {
+                items_list.sort(function (b, a) {
+                    return b.price - a.price
+                });
+            }
+            console.log(items_list);
             items_list.forEach(function (item) {
                 item.el = $(shop.item_tpl(item));
                 shop.shop_items_Holder.append(item.el);
@@ -105,12 +112,12 @@ $(function() {
         show_items: function(){
             var args = [];
             var items_list = makeArray(shop.shop_items);
-            ['exterior_all', 'rarity_all', 'type_all'].forEach(function(sel) {
-                var exterior = $('#' + sel).val();
-                if (exterior) {
+            ['exterior_all', 'rarity_all'].forEach(function(sel) {
+                var sorter = $('#' + sel).val();
+                if (sorter) {
                     var p = _.filter(items_list, function (item) {
-                        var _exterior = item.filter_exterior;
-                        return _exterior == exterior;
+                        var _exterior = item[sel];
+                        return _exterior == sorter;
                     });
                     p = _.pluck(p, 'id');
                     args.push(p);
@@ -205,9 +212,9 @@ $(function() {
             item.classid = zipItem.classid;
             item.shortexterior = zipItem.shortexterior;
             item.count = zipItem.count;
-            item.filter_exterior = zipItem.filter_exterior;
+            item.exterior_all = zipItem.exterior_all;
             item.filter_rarity = zipItem.filter_rarity;
-            item.filter_rarity_text = zipItem.filter_rarity_text;
+            item.rarity_all = zipItem.rarity_all;
             item.className = zipItem.className;
             item.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + zipItem.classid + '/101fx100f';
             return item;
@@ -324,15 +331,17 @@ $(function() {
         shop.sell_cart($(this).data('id'));
     });
     $(document).on('click', '#get-cart', function () { shop.get_cart() });
-    $(document).on('change', '#exterior_all', '#select_page', shop.show_items);
+    $(document).on('change', '#exterior_all', shop.show_items);
+    $(document).on('change', '#rarity_all', shop.show_items);
+    $(document).on('change', '#sort_all', function(){shop.draw_items()});
     $('#searchInput, #priceFrom, #priceTo').keyup(shop.show_items);
     document.onkeyup = function checkKeycode(event){
         if(!event) var event = window.event;
         var keyShift = event.shiftKey;
         if(keyShift){
-        shop.shiftPress = true;
+            shop.shiftPress = true;
         } else {
-        shop.shiftPress = false;
+            shop.shiftPress = false;
         }
     }
     document.onkeydown = function checkKeycode(event){

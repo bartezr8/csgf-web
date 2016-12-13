@@ -1,5 +1,5 @@
 <?php
-//config('shop_strade_secret')
+//config('mod_shop.shop_strade_secret')
 return [
 	'shop' => true,
 	

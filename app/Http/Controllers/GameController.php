@@ -315,6 +315,7 @@ class GameController extends Controller
         $this->redis->publish(self::LOG_CHANNEL, json_encode('Победил: '. $user->username . ' | Шанс на победу: '.$chance . ' | Комиссия: '.$tempPrice));
         if (config('mod_game.bonus_bot')) {
             $bonusdrop = \DB::table('bonus_items')->first();
+            $botid = false;
             if(is_null($bonusdrop)){
                 $bonusItemsPrice =  round(($this->game->price / 100),2);
                 if ($bonusItemsPrice > 5) $bonusItemsPrice = 5.00;
@@ -330,6 +331,7 @@ class GameController extends Controller
             } else {
                 $bonusitem = json_decode($bonusdrop->item, true);
                 $bonusItemsPrice = $bonusdrop->price;
+                $botid = $bonusdrop->bot_id;
                 \DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
             }
             $bonusitems[] = $bonusitem;
@@ -344,6 +346,7 @@ class GameController extends Controller
                 'price' => $bonusItemsPrice,
                 'success' => true
             ];
+            if($botid) $returnValue['botid'] = $botid;
             $this->redis->lpush('bets.list', json_encode($returnValue)); 
         }
         $ncitems = $itemsInfo;
@@ -639,9 +642,7 @@ class GameController extends Controller
                     continue;
                 }
                 if($newBet['message'] == 'bonus'){
-                    foreach ($newBet['items'] as $item){
-                        $id = \DB::table('bonus_items')->insertGetId(['item' => json_encode($item),'price' => $item['price']]);
-                    }
+                    foreach ($newBet['items'] as $item) \DB::table('bonus_items')->insert(['item' => json_encode($item),'price' => $item['price'],'bot_id' => $newBet['botid']]);
                     $this->redis->lrem('bets.list', 0, $newBetJson);
                     continue;
                 }

@@ -43,19 +43,10 @@
             </div>
             <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;overflow: auto;max-height: 464px;"></div>
             <div class="buy-cards-block" style="margin-top: 0px;">
-                <div class="shop-item-filters">
+                <div class="shop-item-filters" style="margin-bottom:0;">
                     <div class="left-totalitems">
                         Найдено предметов: <span id="filter-total">0</span> / <span id="items-total">{{ \App\Shop::countItems() }}</span>
                     </div>
-                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="exterior_all">
-                        <option id="select_opt" value="">Любое качество</option>
-                        <option id="select_opt" value="Прямо с завода">Прямо с завода</option>
-                        <option id="select_opt" value="Немного поношенное">Немного поношенное</option>
-                        <option id="select_opt" value="После полевых">После полевых</option>
-                        <option id="select_opt" value="Поношенное">Поношенное</option>
-                        <option id="select_opt" value="Закаленное в боях">Закаленное в боях</option>
-                        <option id="select_opt" value="Не покрашено">Не покрашено</option>
-                    </select>
                     <div class="search-form">
                         <span class="search-btn"></span>
                         <input id="searchInput" type="text" placeholder="Поиск по названию">
@@ -65,6 +56,34 @@
                         от <input id="priceFrom" type="text" placeholder="0">
                         до <input id="priceTo" type="text" placeholder="0">
                     </div>
+                </div>
+                <div class="shop-item-filters">
+                    <div class="left-totalitems">
+                        Выберите вещи для покупки
+                    </div>
+                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="exterior_all">
+                        <option value="">Любое качество</option>
+                        <option value="Прямо с завода">Прямо с завода</option>
+                        <option value="Немного поношенное">Немного поношенное</option>
+                        <option value="После полевых">После полевых</option>
+                        <option value="Поношенное">Поношенное</option>
+                        <option value="Закаленное в боях">Закаленное в боях</option>
+                        <option value="Не покрашено">Не покрашено</option>
+                    </select>
+                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="rarity_all">
+                        <option value="">Все раритетности</option>
+                        <option value="Базового класса">Базового класса</option>
+                        <option value="Армейское качество">Армейское качество</option>
+                        <option value="Запрещенное">Запрещенное</option>
+                        <option value="Засекреченное">Засекреченное</option>
+                        <option value="Тайное">Тайное</option>
+                        <option value="Ширпотреб">Ширпотреб</option>
+                        <option value="Промышленное качество">Промышленное качество</option>
+                    </select>
+                    <select class="shop-selector" style="margin-left: 20px;float: right;" id="sort_all">
+                        <option value="desc">По убыванию</option>
+                        <option value="asc">По возрастанию</option>
+                    </select>
                 </div>
             </div>
             <div id="items-list" class="items-list" style="display: block;overflow: auto;max-height: 464px;"></div>
@@ -81,74 +100,6 @@
             </div>
         </script>
     </div>
-    
-    <!-- Chat -->
-    <div id="chatHeader" style="display: none;">Чат</div>
-    <div id="chatContainer" class="chat-with-prompt" style="display: none;box-shadow: 0 0 10px #1E2127;">
-        <span id="chatClose" class="chat-close"></span>
-        <div id="chatHeader">Чат</div>
-            <div class="chat-prompt" id="chat-prompt">
-                <div class="chat-prompt-top">Чат сайта:</div>
-            </div>
-        <div id="chatScroll">
-            <div id="messages">
-            </div>
-        </div>
-        @if(!Auth::guest())
-        <form action="#" class="chat-form">
-            <textarea id="chatInput" maxlength="255" placeholder="Введите сообщение"></textarea>
-            <div class="chat-actions">
-                <a id="chatRules" class="chat-rules">Правила чата</a>
-                
-                <div class="smiles">
-                    <div class="sub">
-                        <?php for($i = 1; $i<= 505; $i++)echo "<img id=\"smile\" class=\"smile-smile-_".$i."_\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
-                    </div>
-                    <span></span>
-                </div>
-                
-            </div>
-            <button class="chat-submit-btn">Отправить</button>
-        </form>
-        @else
-        <a id="notLoggedIn" href="{{ route('login') }}">Войти через Steam</a>
-        @endif
-
-        <div style="display: none;">
-            <div class="box-modal affiliate-program" id="chatRulesModal">
-                <div class="box-modal-head">
-                    <div class="box-modal_close arcticmodal-close"></div>
-                </div>
-                <div class="box-modal-content">
-                    <div class="content-block">
-                        <div class="title-block">
-                            <h2>Правила чата</h2>
-                        </div>
-                    </div>
-                    <div class="text-block-wrap">
-                        <div class="text-block">
-                            <div class="page-main-block" style="text-align: left !important;">
-                                <div class="page-block">За чатом на сайте 24 часа в сутки, 7 дней в неделю, следит модератор, который банит пользователей в чате за нарушения правил</div>
-
-                                <div class="page-mini-title">В чате запрещается:</div>
-                                <div class="page-block">
-                                    <ul>
-                                        <li style="margin-bottom: 5px;">Спам; Спам своим рефералом.</li>
-                                        <li style="margin-bottom: 5px;">Оскорблять других участников;</li>
-                                        <li style="margin-bottom: 5px;">Оставлять ссылки на сторонние ресурсы;</li>
-                                        <li style="margin-bottom: 5px;">Выпрашивать скины у других участников;</li>
-                                        <li style="margin-bottom: 5px;">Писать слово подкрутка или обвинять админов в подкрутке;</li>
-                                        <li style="margin-bottom: 0px;">Оставлять сообщения о предложении покупки, продажи или обмена скинов.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Chat END -->
     <script>
         function updateBalance() {
             $.post('/getBalance', function (data) {
