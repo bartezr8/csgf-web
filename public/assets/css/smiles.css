@@ -1,6 +1,7 @@
 #smile {
     background-image: url(/assets/img/smiles/sprites.png);
     background-repeat: no-repeat;
+    display: inline-block;
     width: 16px;
     height: 16px;
     cursor: pointer;

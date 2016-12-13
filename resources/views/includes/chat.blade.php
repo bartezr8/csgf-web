@@ -33,7 +33,7 @@
                 
                 <div class="smiles">
                     <div class="sub">
-                        <?php for($i = 1; $i<= 505; $i++)echo "<img id=\"smile\" class=\"smile-smile-_".$i."_\" onclick=\"add_smile(':sm".$i.":')\">"; ?>
+                        <?php for($i = 1; $i<= 505; $i++)echo "<a id=\"smile\" class=\"smile-smile-_".$i."_\" onclick=\"add_smile(':sm".$i.":')\"></a>"; ?>
                     </div>
                     <span></span>
                 </div>
