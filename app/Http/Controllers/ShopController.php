@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\Item;
 use Auth;
+use Log;
 use App\Shop;
 use App\User;
 use Carbon\Carbon;
@@ -407,6 +408,8 @@ class ShopController extends Controller {
 		return response()->json(['list' => $list, 'success' => $success]);
     }
 	public function inv_update(Request $request){
+        if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
+		\Cache::put('shop.user.' . $this->user->id, '', 30);
 		$returnValue = self::updatemyinventory($this->user->steamid64);
         $success = false;
 		if($returnValue['success']){
@@ -418,57 +421,61 @@ class ShopController extends Controller {
 	}
     private function updatemyinventory($userid)
     {
-		$success = true;
-		$returnValue = [];
-        $myItems = [];
-		$jsonInventory = self::curl('http://steamcommunity.com/profiles/' . $userid . '/inventory/json/730/2?l=russian');
-		$items = json_decode($jsonInventory, true);
-		if ($items['success']) {
-			foreach ($items['rgInventory'] as $id => $value) {
-                $class_instance = $value['classid'].'_'.$value['instanceid'];
-                $item = $items['rgDescriptions'][$class_instance];
-                
-                if(!isset($myItems[$value['classid']])){
-                    $info = new Item($item);
-                    if(Item::pchk($info)){
-                        $item['price'] = $info->price;
-                        if ($item['price'] <= config('mod_shop.dep_comission_from')) {
-                            if ($item['price'] <= config('mod_shop.garbadge_from')) {
-                                $item['price'] = $item['price']/100*config('mod_shop.garbadge_%');
-                            }
-                            $item['price'] = round($item['price'] * (1 - config('mod_shop.dep_comission_%')/100) * 100)/100;
-                        }
-                        if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
-                            $name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
-                            $quality = $nameval[1][0];
-                        } else {
-                            $name = $item['market_name'];
-                            $quality = NULL;
-                        }
-                        $rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
-                        $rarity = trim($rarity[count($rarity) - 1]);
-                        $myItems[$value['classid']] = [
-                            $value['id'], 
-                            1,
-                            $name, 
-                            $item['price'], 
-                            $value['classid'], 
-                            $quality, 
-                            Shop::getClassRarity($rarity), 
-                            $rarity
-                        ];                        
-                    }
-                } else {
-                    $myItems[$value['classid']][1] += 1;
+        $jsonInventory = GameController::curl('http://steamcommunity.com/inventory/' . $userid . '/730/2?l=russian&count=1000');
+        $items = json_decode($jsonInventory, true);
+        $descriptions = [];$myItems = [];$returnValue = [];$success = true;
+        if(isset($items['assets']) && isset($items['descriptions']) && isset($items['success'])){
+            if ($items['success'] == 1) {
+                foreach ($items['descriptions'] as $id => $value) {
+                    $class_instance = $value['classid'].'_'.$value['instanceid'];
+                    $descriptions[$class_instance] = $value;
                 }
-			}
-		} else {
+                foreach ($items['assets'] as $id => $value) {
+                    if(!isset($myItems[$value['classid']])){
+                        $class_instance = $value['classid'].'_'.$value['instanceid'];
+                        $item = $descriptions[$class_instance];
+                        $info = new Item($item);
+                        if(Item::pchk($info)){
+                            $item['price'] = $info->price;
+                            if ($item['price'] <= config('mod_shop.dep_comission_from')) {
+                                if ($item['price'] <= config('mod_shop.garbadge_from')) {
+                                    $item['price'] = $item['price']/100*config('mod_shop.garbadge_%');
+                                }
+                                $item['price'] = round($item['price'] * (1 - config('mod_shop.dep_comission_%')/100) * 100)/100;
+                            }
+                            if(preg_match('/\(([^()]*)\)/', $item['market_name'], $nameval, PREG_OFFSET_CAPTURE)){
+                                $name = trim(substr( $item['market_name'] , 0 , $nameval[0][1] ));
+                                $quality = $nameval[1][0];
+                            } else {
+                                $name = $item['market_name'];
+                                $quality = NULL;
+                            }
+                            $rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
+                            $rarity = trim($rarity[count($rarity) - 1]);
+                            $myItems[$value['classid']] = [
+                                $value['assetid'], 
+                                1,
+                                $name, 
+                                $item['price'], 
+                                $value['classid'], 
+                                $quality, 
+                                Shop::getClassRarity($rarity), 
+                                $rarity
+                            ];                        
+                        }
+                    } else {
+                        $myItems[$value['classid']][1] += 1;
+                    }
+                }
+            } else {
+                $success = false;
+            }
+        } else {
 			$success = false;
 		}
         foreach($myItems as $key => $mi){
             $returnValue[] = $mi;
         }
-
 		return ['list' => $returnValue, 'success' => $success];
     }
 }

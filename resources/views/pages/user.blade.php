@@ -26,7 +26,7 @@
                 </div>
 				@if(!Auth::guest())
 				@if($userId == $u->steamid64 )
-				<div class="input-group" style="width: 43.8%;margin-top: -29px;margin-left: 235px;position: relative;">
+				<div class="input-group" style="width: 40%;margin-top: -29px;margin-left: 235px;position: relative;">
 					<input class="save-password-input" onchange="updatepassword(this.value)" type="text" pattern="^[a-zA-Z0-9]+$" placeholder="Пароль" maxlength="17" style="text-align: center;" value="">
 				</div>
 				@endif

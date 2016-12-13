@@ -722,20 +722,22 @@ class GameController extends Controller
                 }
                 $user->slimit += $bet->price / 100 * config('mod_game.slimit');
                 $user->save();
-                $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
-                if(is_null($bot_bet)){
-                    Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
-                } else {
-                    $newitems = [];
-                    $items = json_decode($bot_bet->items);
-                    foreach($items as $item){
-                        $newitems[] = $item;
+                if(isset($newBet['botid'])){
+                    $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
+                    if(is_null($bot_bet)){
+                        Bot_bet::create(['botid'=>$newBet['botid'],'game_id'=>$this->game->id,'items'=>json_encode($newBet['items'])]);
+                    } else {
+                        $newitems = [];
+                        $items = json_decode($bot_bet->items);
+                        foreach($items as $item){
+                            $newitems[] = $item;
+                        }
+                        foreach($newBet['items'] as $item){
+                            $newitems[] = $item;
+                        }
+                        $bot_bet->items = json_encode($newitems);
+                        $bot_bet->save();
                     }
-                    foreach($newBet['items'] as $item){
-                        $newitems[] = $item;
-                    }
-                    $bot_bet->items = json_encode($newitems);
-                    $bot_bet->save();
                 }
                 $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
                 $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();

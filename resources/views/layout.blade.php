@@ -6,7 +6,7 @@
     <title>{{ $title }}CSGF.RU</title>
     <meta name="keywords" content="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo, халява, от 1 рубля, рефералка, дабл, луты, steam" />
     <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
-    <meta name="viewport" content="width=1200" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{!!  csrf_token()   !!}">
     <!--meta name=viewport content="width=device-width, initial-scale=1"-->
     <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
@@ -21,7 +21,6 @@
 	<script src="{{ $asset('assets/js/jquery-ui.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
 	<script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
-    <script src="{{ $asset('assets/js/snowstorm.js') }}" async></script>
     <!--script charset="UTF-8" src="//cdn.sendpulse.com/js/push/afa6e6a9babb8fca7f18d1d432729100_0.js" async></script-->
     <script>
         var SITE_URL = "{{ config('app.url') }}";
@@ -357,9 +356,9 @@
 		</div>
 	</div>
 </div>
-
-<script src="{{ $asset('assets/js/app.js') }}" async></script>
-<script src="{{ $asset('assets/js/chat.js') }}" async></script>
+<script src="{{ $asset('assets/js/snowstorm.js') }}"></script>
+<script src="{{ $asset('assets/js/app.js') }}"></script>
+<script src="{{ $asset('assets/js/chat.js') }}"></script>
     
 <script>
     @if(!Auth::guest())

@@ -2,8 +2,8 @@
 
 return [
 
-    'is_cdn' => false,
-    'cdn_url' => 'http://csgf.ru/',
+    'is_cdn' => true,
+    'cdn_url' => 'http://cdn.gmurd.ru/',
     /*
     |--------------------------------------------------------------------------
     | View Storage Paths
