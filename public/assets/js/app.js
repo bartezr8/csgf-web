@@ -1,5 +1,4 @@
-var onpage = true;
-var averagebettime = 5.5;
+
 function updateBackground() {
     var mainHeight = $('.dad-container').height();
     var windowHeight = $(window).height();
@@ -10,12 +9,6 @@ function updateBackground() {
     }
 }
 $(function() {
-    if($.cookie('averagebettime') !== null) {
-        averagebettime = $.cookie('averagebettime');
-        $('#speed_trades').html(averagebettime);
-    } else {
-        $('#speed_trades').html(averagebettime);
-    }
     $(window).scroll(function() {
         var scrollHeight = Math.max(
             document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -34,13 +27,6 @@ $(function() {
             $('#toDown').fadeOut();
         }
     });
-    $(window).blur(function() {
-        onpage = false;
-    });
-    $(window).focus(function() {
-        onpage = true;
-    });
-
     $('#toTop').click(function() {
         $('body,html').animate({
             scrollTop: 0
@@ -157,7 +143,7 @@ $(document).ready(function() {
     $('[data-toggle="popover"]').popover({
         "container": "body"
     });
-    EZYSKINS.init();
+    CSGF.init();
     $(document).on('click', '.no-link', function() {
         $('#linkBlock').slideDown();
         return false;
@@ -298,14 +284,14 @@ function sendUpdate(){
 }
 
 function my_comm() {
-    $.ajax({
+    /*$.ajax({
         url: '/my_comission',
         type: 'POST',
         dataType: 'json',
         success: function(data) {
             $('#my_comission').html(data);
         }
-    });
+    });*/
 }
 
 function updateScrollbar() {
@@ -384,7 +370,7 @@ function updateSocketIO(){
         CONNECT = true;
     }
 }
-if(START && onpage) {
+if(START /*&& onpage*/) {
     var declineTimeout,
         r = 0,
         lastpos = 0,
@@ -534,7 +520,7 @@ if(START && onpage) {
                 container: 'body'
             });
             my_comm();
-            EZYSKINS.initTheme();
+            CSGF.initTheme();
             $('.ticket-number').tooltip({
                 html: true,
                 trigger: 'hover',

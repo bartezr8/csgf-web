@@ -1,5 +1,5 @@
 
-var EZYSKINS = function(){
+var CSGF = function(){
 
     'use strict';
 
@@ -20,7 +20,7 @@ var EZYSKINS = function(){
     return {
         init: function() {
             initAjaxToken();
-            EZYSKINS.initTheme();
+            CSGF.initTheme();
         },
         initTheme: function() {
             initTooltips();
