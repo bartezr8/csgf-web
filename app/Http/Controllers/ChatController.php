@@ -118,12 +118,10 @@ class ChatController extends Controller
         return $request->get('messages');
     }
     private function replaceSmile($a){
+        $a = str_replace("skoniks", " <br><ins>:sm104:<a href='http://natribu.org/'><b>SKONIKS</b></a>:sm104:</ins><br> ", $a);
         $a = str_replace(":b:", "<b>", $a);
         $a = str_replace(":/b:", "</b>", $a);
         $a = str_replace(":br:", "<br>", $a);
-        $a = str_replace(":писюн:", "<img style=\"background:none;wigth:100px;height:100px\"id=smile src=\"http://www.tongabonga.com/media/images/4/uncut-latino-gay/uncut-latino-gay-73331.jpg\">", $a);
-        $a = str_replace("skoniks", " :sm104:<a href='http://natribu.org/'><b>SKONIKS</b></a>:sm104: ", $a);
-        $a = str_replace(":csgf:", "<img style=\"background:none;\" id=smile src=\"/assets/img/". config('app.logo') ."\">", $a);
         $a = preg_replace("/:sm(\d+):/", "<a id='smile' class='smile-smile-_\$1_'></a>", $a);
         return $a;
     }

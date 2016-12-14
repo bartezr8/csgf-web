@@ -475,9 +475,9 @@ if(START && onpage) {
                     autoHide: "false",
                     className: "success"
                 });
-                if(checkUrl('/'))$('#count_trades').html(data.length);
+                $('#count_trades').html(data.length);
             } else {
-                if(checkUrl('/'))$('#count_trades').html(data.length);
+                $('#count_trades').html(data.length);
             }
         }
     })
@@ -935,12 +935,3 @@ function load_page() {
         $preloader.delay(350).fadeOut('slow');
     }
 }
-/*$(window).on('load', function() {
-    setInterval(function(){
-        if( !CONNECT ) socket = io.connect(':2082');
-    }, 5000);
-    //setTimeout(function() {
-        //load_page();
-    //}, 10);
-    //}, 2000);
-});*/

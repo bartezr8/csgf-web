@@ -60,18 +60,17 @@
                         <div class="text-block">
                             <div class="page-main-block" style="text-align: left !important;">
                                 <div class="page-block">За чатом на сайте 24 часа в сутки, 7 дней в неделю, следит модератор, который банит пользователей в чате за нарушения правил</div>
-
                                 <div class="page-mini-title">В чате запрещается:</div>
                                 <div class="page-block">
                                     <ul>
-                                        <li style="margin-bottom: 5px;">Спам; Спам своим рефералом.</li>
-                                        <li style="margin-bottom: 5px;">Оскорблять других участников;</li>
-                                        <li style="margin-bottom: 5px;">Оставлять ссылки на сторонние ресурсы;</li>
-                                        <li style="margin-bottom: 5px;">Выпрашивать скины у других участников;</li>
-                                        <li style="margin-bottom: 5px;">Писать слово подкрутка или обвинять админов в подкрутке;</li>
-                                        <li style="margin-bottom: 0px;">Оставлять сообщения о предложении покупки, продажи или обмена скинов.</li>
+                                        <li style="margin-bottom: 5px;">Упоминание своего реферала без просьбы других игроков;</li>
+                                        <li style="margin-bottom: 5px;">Оскорблять других игроков, модераторо или создателей;</li>
+                                        <li style="margin-bottom: 5px;">Оставлять ссылки на сторонние ресурсы и просить перейти;</li>
+                                        <li style="margin-bottom: 5px;">Выпрашивать скины у других участников игрового процесса;</li>
+                                        <li style="margin-bottom: 5px;">Обвинять и рулетку в нечествности игры, подкрутке;</li>
                                     </ul>
                                 </div>
+                                <div class="page-mini-title">Любое нарушение видет к муту.</div>
                             </div>
                         </div>
                     </div>
