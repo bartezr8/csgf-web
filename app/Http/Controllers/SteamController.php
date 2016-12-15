@@ -37,6 +37,7 @@ class SteamController extends Controller
                         'avatar' => $info->avatarfull,
                         'steamid' => $info->steamID,
                         'steamid64' => $info->steamID64,
+                        'slimit' => config('mod_game.slimit_default')
                     ]);
                 } else {
                     $nick = $info->personaname;

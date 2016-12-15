@@ -128,13 +128,13 @@ $(document).ready(function() {
         snowStorm.freeze();
     });
     load_page();
-    if($.cookie('vk_post') != 'true') {
+    /*if($.cookie('vk_post') != 'true') {
         $('#vk-post').arcticmodal();
         $.cookie('vk_post', 'true', {
             expires: 0.1,
             path: '/',
         });
-    }
+    }*/
     
     $('a[href="' + document.location.pathname + '"]').parent().addClass('active');
     $('.deposit-item:not(.card)').tooltip({
@@ -144,6 +144,9 @@ $(document).ready(function() {
         "container": "body"
     });
     CSGF.init();
+    $('.close-this-msg').click(function (e) {
+        $(this).parent('.msg-wrap').slideUp();
+    });
     $(document).on('click', '.no-link', function() {
         $('#linkBlock').slideDown();
         return false;

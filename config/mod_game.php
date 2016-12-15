@@ -10,7 +10,8 @@ return [
 	
 	'chat_history_length' => 25,    // Длина чата.    
     'slimit' => 5,                  // Процент начислений на вывод
-	
+    'slimit_default' => 5,          // Изначальный лимит
+
 	'comission' => 10,              // Комиссия на сайте
 	'comission_first_bet' => 1,     // - ком. за первую ставку
 	'comission_site_nick' => 2,     // - ком. за сат в нике
