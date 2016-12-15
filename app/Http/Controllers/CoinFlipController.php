@@ -60,8 +60,7 @@ class CoinFlipController extends Controller {
             'lava' => $looser->avatar,
             'user_id' => $winner->steamid64
         ];
-        $this->user->slimit += $game->money / 100 * config('mod_game.slimit');
-        $this->user->save();
+        User::slchange($this->user->id, $game->money / 100 * config('mod_game.slimit'));
         $this->redis->publish('coin_scroll', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}
@@ -82,8 +81,7 @@ class CoinFlipController extends Controller {
             'id' => $id,
             'sum' => $sum
         ];
-        $this->user->slimit += $sum / 100 * config('mod_game.slimit');
-        $this->user->save();
+        User::slchange($this->user->id, $sum / 100 * config('mod_game.slimit'));
         $this->redis->publish('coin_new', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
 	}

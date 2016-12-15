@@ -721,8 +721,7 @@ class GameController extends Controller
                         $bet = $lastBet;
                     }
                 }
-                $user->slimit += $bet->price / 100 * config('mod_game.slimit');
-                $user->save();
+                User::slchange($user->id, $bet->price / 100 * config('mod_game.slimit'));
                 if(isset($newBet['botid'])){
                     $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
                     if(is_null($bot_bet)){
@@ -840,8 +839,7 @@ class GameController extends Controller
                 $lastBet->save();
                 $bet = $lastBet;
             }
-            $this->user->slimit += $bet->price / 100 * config('mod_game.slimit');
-            $this->user->save();
+            User::slchange($this->user->id, $bet->price / 100 * config('mod_game.slimit'));
             $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$ticket->price.' р. | '.$this->user->username));
             $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
             $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();

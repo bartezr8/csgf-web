@@ -88,8 +88,7 @@ class DoubleController extends Controller {
             'price' => $amount,
             'type' => $type
         ];
-        $this->user->slimit += $amount / 100 * config('mod_game.slimit');
-        $this->user->save();
+        User::slchange($this->user->id, $amount / 100 * config('mod_game.slimit'));
         $this->redis->publish('nbdouble', json_encode($returnValue));
         return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
     }

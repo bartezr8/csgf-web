@@ -80,9 +80,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         try {
             $user = User::where('id', $id)->sharedLock()->first();
             if (is_null($user)) return false;
-            $newsum = $user->slimit + $sum;
-            if (($newsum < 0) && ($sum < 0)) return false;
-            $user->slimit = $newsum;
+            $user->slimit += $sum;
             $user->save();
             DB::commit();
             return true;

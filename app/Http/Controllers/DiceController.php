@@ -52,8 +52,7 @@ class DiceController extends Controller {
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
         if ($bet_sum == 0) return response()->json(['text' => 'Минимальная ставка 0.01р.', 'type' => 'error']);
         if (!User::mchange($this->user->id, -$bet_sum)) return response()->json(['text' => 'У вас недостаточно средств', 'type' => 'error']);
-        $this->user->slimit += $bet_sum / 100 * config('mod_game.slimit');
-        $this->user->save();
+        User::slchange($this->user->id, $bet_sum / 100 * config('mod_game.slimit'));
         $roll = rand(1, 6);
         $am = \DB::table('dice')->sum('am') + $win_sum;
         if ((rand(0, floor($bet_sum/self::AMSUM))!= 0) || ($am > 0) ){
