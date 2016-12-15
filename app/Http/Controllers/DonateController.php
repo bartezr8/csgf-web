@@ -28,12 +28,11 @@ class DonateController extends Controller
         if($payment->status != 0) return "Already Payed";
         $sign = md5(config('pay.freekassa_id').':'.$request->get('AMOUNT').':'.config('pay.freekassa_s2').':'.$request->get('MERCHANT_ORDER_ID'));
         if ($request->get('SIGN') != $sign) return "Wrong SIGN";
-        $user = User::find($payment->account);$vip = 0;
-		if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
+        $user = User::find($payment->account); $vip = 1;
+		if (config('pay.vip_only') && (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) == false)) $vip = 0;
         $sum = $request->get('AMOUNT') + ($vip * $request->get('AMOUNT') * config('pay.factor')/100);
-        $user->money += $sum;
-        $user->slimit += $sum / 100 * config('mod_game.slimit');
-        $user->save();
+        User::mchange($user->id, $sum);
+        User::slchange($user->id, $sum / 100 * config('mod_game.slimit'));
         $this->_responseMessageToSite('Пополнениее засчитано | Сумма: ' . $sum , $user->steamid64);
         \DB::table('deposits')->insertGetId([
             'user_id' => $user->id, 

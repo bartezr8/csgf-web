@@ -234,7 +234,7 @@ $(function() {
         },
         sell_cart: function(id){
             if(is_null(shop.shop_cart[id])) return $.notify("Предмет не существует", { className: "error" });
-            if(shop.shop_cart[id].count <= 0) return $.notify("Предмет отсутствует", { className: "error" });
+            if(shop.shop_cart[id].count <= 0) return;
             if(shop.shiftPress){
                 shop.shop_items[id].count += shop.shop_cart[id].count;
                 shop.shop_cart[id].count = 0;

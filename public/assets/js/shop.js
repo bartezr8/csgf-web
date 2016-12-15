@@ -82,7 +82,6 @@ $(function() {
                     return b.price - a.price
                 });
             }
-            console.log(items_list);
             items_list.forEach(function (item) {
                 item.el = $(shop.item_tpl(item));
                 shop.shop_items_Holder.append(item.el);
@@ -204,6 +203,23 @@ $(function() {
             });
             this.draw_items();
         },
+        dell_items: function(data){
+            data = JSON.parse(data);
+            data.list.forEach(function (id) {
+                if(!is_null(shop.shop_items[id])){
+                    if(shop.shop_items[id].count > 0){
+                        shop.shop_items[id].count -= 1;
+                    } else {
+                        if(!is_null(shop.shop_cart[id])){
+                            if(shop.shop_cart[id].count > 0){
+                                shop.shop_cart[id].count -= 1;
+                            }
+                        }
+                    }
+                }
+            });
+            this.show_cart();
+        },
         new_item: function(zipItem){
             var item = new Object();
             item.id = zipItem.id;
@@ -250,7 +266,7 @@ $(function() {
         },
         sell_cart: function(id){
             if(is_null(shop.shop_cart[id])) return $.notify("Предмет не существует", { className: "error" });
-            if(shop.shop_cart[id].count <= 0) return $.notify("Предмет отсутствует", { className: "error" });
+            if(shop.shop_cart[id].count <= 0) return;
             if(shop.shiftPress){
                 shop.shop_items[id].count += shop.shop_cart[id].count;
                 shop.shop_cart[id].count = 0;
@@ -263,23 +279,6 @@ $(function() {
         show_cart: function(){
             this.draw_cart();
             this.draw_items();
-        },
-        dell_items: function(data){
-            data = JSON.parse(data);
-            data.list.forEach(function (id) {
-                if(!is_null(shop.shop_items[id])){
-                    if(shop.shop_items[id].count > 0){
-                        shop.shop_items[id].count -= 1;
-                    } else {
-                        if(!is_null(shop.shop_cart[id])){
-                            if(shop.shop_cart[id].count > 0){
-                                shop.shop_cart[id].count -= 1;
-                            }
-                        }
-                    }
-                }
-            });
-            this.show_cart();
         },
         sell_cart_all: function(){
             var items_list = makeArray(this.shop_cart);

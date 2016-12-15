@@ -61,13 +61,34 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     
     public static function mchange($id, $sum){
         DB::beginTransaction();
-        $user = User::where('id', $id)->lockForUpdate()->first();
-        if (is_null($user)) return false;
-        $newsum = $user->money + $sum;
-        if (($newsum < 0) && ($sum < 0)) return false;
-        $user->money = $newsum;
-        $user->save();
-        DB::commit();
-        return true;
+        try {
+            $user = User::where('id', $id)->sharedLock()->first();
+            if (is_null($user)) return false;
+            $newsum = $user->money + $sum;
+            if (($newsum < 0) && ($sum < 0)) return false;
+            $user->money = $newsum;
+            $user->save();
+            DB::commit();
+            return true;
+        } catch(\Exception $e){
+            DB::rollback();
+            return false;
+        }
+    }
+    public static function slchange($id, $sum){
+        DB::beginTransaction();
+        try {
+            $user = User::where('id', $id)->sharedLock()->first();
+            if (is_null($user)) return false;
+            $newsum = $user->slimit + $sum;
+            if (($newsum < 0) && ($sum < 0)) return false;
+            $user->slimit = $newsum;
+            $user->save();
+            DB::commit();
+            return true;
+        } catch(\Exception $e){
+            DB::rollback();
+            return false;
+        }
     }
 }
