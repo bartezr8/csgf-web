@@ -128,14 +128,12 @@ $(document).ready(function() {
         snowStorm.freeze();
     });
     load_page();
-    /*if($.cookie('vk_post') != 'true') {
-        $('#vk-post').arcticmodal();
-        $.cookie('vk_post', 'true', {
-            expires: 0.1,
-            path: '/',
-        });
-    }*/
-    
+    if($.cookie('vk_post') != 'true') {
+        VK.Widgets.CommunityMessages("vk_community_messages", 133906356, {widgetPosition: "left",expandTimeout: "5000",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
+        $.cookie('vk_post', 'true', {expires: 0.1,path: '/',});
+    } else {
+        VK.Widgets.CommunityMessages("vk_community_messages", 133906356, {widgetPosition: "left",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
+    }
     $('a[href="' + document.location.pathname + '"]').parent().addClass('active');
     $('.deposit-item:not(.card)').tooltip({
         container: 'body'

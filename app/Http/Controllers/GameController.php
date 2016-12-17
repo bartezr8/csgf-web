@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\Bet;
 use App\Bot_bet;
 use App\Game;
@@ -885,6 +886,21 @@ class GameController extends Controller
     public function getBalance()
     {
         return $this->user->money;
+    }
+    
+    public function getSlimit()
+    {
+        $slimit = 0;
+        $slimit_ = '';
+        if(!Auth::guest()){
+            $slimit = $this->user->slimit;
+			while($slimit>1000){
+                $slimit = round($slimit/1000,1);
+                $slimit_ .='к';
+            }
+        }
+        $slimit .= $slimit_;
+        return $slimit;
     }
 
     public static function _getChancesOfGame($game)

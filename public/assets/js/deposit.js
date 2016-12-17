@@ -67,6 +67,21 @@ $(function() {
         draw_items: function(){
             this.shop_items_Holder.children().replaceWith('');
             var items_list = makeArray(this.shop_items);
+            var raritys = [], exteriors = []; 
+            items_list.forEach(function (item) {
+                if(raritys.indexOf(item.rarity_all) == -1) raritys.push(item.rarity_all);
+                if(exteriors.indexOf(item.exterior_all) == -1) exteriors.push(item.exterior_all);
+            });
+            $('#rarity_all').children().replaceWith('');
+            $('#rarity_all').append('<option value="">Все раритетности</option>');
+            raritys.forEach(function(item){
+                $('#rarity_all').append('<option value="' + item + '">' + item + '</option>');
+            });
+            $('#exterior_all').children().replaceWith('');
+            $('#exterior_all').append('<option value="">Любое качество</option>');
+            exteriors.forEach(function(item){
+                $('#exterior_all').append('<option value="' + item + '">' + item + '</option>');
+            });
             $('#items-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
             }, 0));
@@ -261,7 +276,7 @@ $(function() {
             var items_list = makeArray(this.shop_cart);
             var ids = '';
             items_list.forEach(function (item) {
-                ids += item.id + ',';
+                if(item.count > 0) ids += item.id + ',';
             });
             $.ajax({
                 url: '/shop/sellitems',

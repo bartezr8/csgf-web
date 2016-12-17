@@ -113,8 +113,7 @@
                     <div style="float: left">
                         <span class="icon-arrow-right" style="margin: 0px 15px 0px -15px;"></span>
                         <div class="participate-info">
-                            Вы внесли <span id="myItemsCount" style="color: #d1ff78;">{{ $user_items }}</span>
-                            <span style="font-size: 12px; color: #b3dcf9;"> {{ trans_choice('lang.items', $user_items) }}</span><br>
+                            Вы внесли <span id="myItemsCount" style="color: #d1ff78;">{{ $user_items }}<span style="font-size: 12px; color: #b3dcf9;"> {{ trans_choice('lang.items', $user_items) }}</span></span><br>
                             ваш шанс на победу: <span id="myChance" style="color: #d1ff78;">{{ $user_chance }}%</span>
                         </div>
                     </div>

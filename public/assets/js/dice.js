@@ -55,7 +55,8 @@ $(function() {
                 value: value
             }, function(data) {
                 if(data.type == 'success') {
-                    $('.userBalance').text(num(num($('.userBalance').text()) - num(sum)));
+                    USER_BALANCE = num(num(USER_BALANCE) - num(sum));
+                    $('.userBalance').text(USER_BALANCE);
                     dice.roll(data.value);
                 }
                 return $.notify(data.text, data.type);

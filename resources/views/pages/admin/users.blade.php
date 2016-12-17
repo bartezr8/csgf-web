@@ -48,8 +48,8 @@
 						<td class="winner-name-h">Профиль</td>
 						<td>Мут</td>
 						<td>Бан</td>
-						<td>Реферов</td>
 						<td>Баланс</td>
+						<td>Лимит</td>
 						<td>А</td>
 						<td>М</td>
 					</tr>
@@ -66,8 +66,8 @@
 						</td>
 						<td class="participations"><input onchange="updateMute(this.value)" class="ainput" type="text" id="banc" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->banchat }}" maxlength="18" value="" autocomplete="off"></td>
 						<td class="win-count"><input onchange="updateBan(this.value)" class="ainput" type="text" id="ban" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->ban }}" maxlength="18" value="" autocomplete="off"></td>
-						<td id="ref" class="participations">{{ $user->refcount }}</td>
-						<td class="win-count"><input @if($u->is_admin==0)readonly @endif onchange="updateMoney(this.value)" class="ainput" type="text" id="money" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->money }}" maxlength="18" value="" autocomplete="off"></td>
+						<td class="participations"><input @if($u->is_admin==0)readonly @endif onchange="updateMoney(this.value)" class="ainput" type="text" id="money" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->money }}" maxlength="18" value="" autocomplete="off"></td>
+						<td class="win-count"><input @if($u->is_admin==0)readonly @endif onchange="updateUSlimit(this.value)" class="ainput" type="text" id="slimit" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->slimit }}" maxlength="18" value="" autocomplete="off"></td>
 						<td class="participations"><input @if($u->is_admin==0)readonly @endif onchange="updateAdmin(this.value)" class="ainput" type="text" id="isa" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->is_admin }}" maxlength="18" value="" autocomplete="off"></td>
 						<td class="win-count"><input @if($u->is_admin==0)readonly @endif onchange="updateModerator(this.value)" class="ainput" type="text" id="ism" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->is_moderator }}" maxlength="18" value="" autocomplete="off"></td>
 					</tr>
@@ -92,11 +92,13 @@
 						$('.count-block').text(data.id);
 						$('#user-name').text(data.username);
 						$("#user-ava").attr("src", data.avatar);
-						$('#ref').text(data.refcount);
 						$('#steamid64').text(data.steamid64);
 						
 						$("#money").attr("placeholder", data.money);
 						$("#money").val('');
+                        
+                        $("#slimit").attr("placeholder", data.slimit);
+						$("#slimit").val('');
 						
 						$("#banc").attr("placeholder", data.banchat);
 						$("#banc").val('');
@@ -247,6 +249,32 @@
 				});
 				$("#money").attr("placeholder", data.value);
 				$("#money").val('');
+			},
+			error: function () {
+				$.notify("Произошла ошибка. Попробуйте еще раз", {
+					className: "error"
+				});
+			}
+		});
+    }	
+    function updateUSlimit(value) {
+        console.log(value);
+		console.log('S64:' + $('#steamid64').text());
+		console.log('VAL:' + value);
+		$.ajax({
+			url: '/admin/users/updateSlimit',
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				steamid: $('#steamid64').text(),
+				value: value
+			},
+			success: function (data) {
+				$.notify("Данные изменены", {
+					className: "success"
+				});
+				$("#slimit").attr("placeholder", data.value);
+				$("#slimit").val('');
 			},
 			error: function () {
 				$.notify("Произошла ошибка. Попробуйте еще раз", {

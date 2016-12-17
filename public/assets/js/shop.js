@@ -67,6 +67,22 @@ $(function() {
         draw_items: function(){
             this.shop_items_Holder.children().replaceWith('');
             var items_list = makeArray(this.shop_items);
+            var raritys = [], exteriors = [], temp_exterior = $('#exterior_all').val(), temp_rarity = $('#rarity_all').val();
+            items_list.forEach(function (item) {
+                if(raritys.indexOf(item.rarity_all) == -1) raritys.push(item.rarity_all);
+                if(exteriors.indexOf(item.exterior_all) == -1) exteriors.push(item.exterior_all);
+            });
+            $('#rarity_all').children().replaceWith('');
+            $('#rarity_all').append('<option value="">Все раритетности</option>');
+            $('#exterior_all').children().replaceWith('');
+            $('#exterior_all').append('<option value="">Любое качество</option>');
+            raritys.forEach(function(item){
+                $('#rarity_all').append('<option value="' + item + '">' + item + '</option>');
+            });
+            exteriors.forEach(function(item){
+                $('#exterior_all').append('<option value="' + item + '">' + item + '</option>');
+            });
+            $('#exterior_all').val(temp_exterior);$('#rarity_all').val(temp_rarity);
             $('#items-total').text(_.reduce(items_list, function (memo, num) {
                 return memo + num.count;
             }, 0));
@@ -310,6 +326,7 @@ $(function() {
                     if (data.success) {
                         $.notify(data.msg, {className: "success"});
                         updateBalance();
+                        updateSlimit();
                     } else {
                         if (data.msg) $.notify(data.msg, {className: "error"});
                     }
@@ -373,6 +390,5 @@ $(function() {
         });
         return array;
     }
-    
     shop.load_items();
 });

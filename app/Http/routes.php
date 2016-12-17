@@ -22,6 +22,8 @@ get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
 get('/prices', 'PagesController@prices');
 
+post('/getSlimit', ['as' => 'get.slimit', 'uses' => 'GameController@getSlimit']);
+
 Route::group(['middleware' => 'auth'], function () {
     get('/logout', ['as' => 'logout', 'uses' => 'SteamController@logout']);
     get('/ref', ['as' => 'ref', 'uses' => 'RefController@ref']);    
@@ -131,6 +133,7 @@ Route::group(['middleware' => 'auth'], function () {
     post('/admin/users/updateBan', ['as' => 'give', 'uses' => 'AdminController@updateBan', 'middleware' => 'access:moderator']);
     post('/admin/users/updateBanSup', ['as' => 'give', 'uses' => 'AdminController@updateBanSup', 'middleware' => 'access:moderator']);
     post('/admin/users/updateMoney', ['as' => 'give', 'uses' => 'AdminController@updateMoney', 'middleware' => 'access:admin']);
+    post('/admin/users/updateSlimit', ['as' => 'give', 'uses' => 'AdminController@updateSlimit', 'middleware' => 'access:admin']);
     post('/admin/users/updateAdmin', ['as' => 'give', 'uses' => 'AdminController@updateAdmin', 'middleware' => 'access:admin']);
     post('/admin/users/updateModerator', ['as' => 'give', 'uses' => 'AdminController@updateModerator', 'middleware' => 'access:admin']);
     /* ADMIN FUSER*/
@@ -167,4 +170,8 @@ Route::group(['middleware' => 'auth'], function () {
 Route::group(['middleware' => 'auth'], function () {
     get('/dice', ['as' => 'dicegame', 'uses' => 'DiceController@index']);
     post('/dice/bet', ['as' => 'dicebet', 'uses' => 'DiceController@bet']);
+});
+/* VK ROUTES */
+Route::group(['prefix' => 'api'], function () {
+    post('/vk', 'VKController@index');
 });

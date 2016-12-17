@@ -180,11 +180,20 @@ class AdminController extends Controller
 			$value = $request->get('value');
 		}
 		$user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
-		\DB::table('users')
-		->where('steamid64', $request->get('steamid'))
-		->update(['money' => $value]);
+		\DB::table('users')->where('steamid64', $request->get('steamid'))->update(['money' => $value]);
 		$user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
 		return response()->json(['success' => true, 'value' => $user->money]);
+	}
+    public function updateSlimit(Request $request){
+		if ($request->get('value')==''){
+			$value = 0;
+		} else {
+			$value = $request->get('value');
+		}
+		$user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
+		\DB::table('users')->where('steamid64', $request->get('steamid'))->update(['slimit' => $value]);
+		$user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
+		return response()->json(['success' => true, 'value' => $user->slimit]);
 	}
 	public function updateAdmin(Request $request){
 		if ($request->get('value')==''){

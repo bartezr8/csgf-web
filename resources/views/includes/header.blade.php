@@ -13,7 +13,7 @@
                     <li class="fairplay"><a href="{{ route('fairplay') }}" ><img src="/assets/img/fair.png" alt="">Честная игра</a></li>
                     <li class="giveout"><a href="{{ route('out_index') }}" ><img src="/assets/img/give.png" alt="">Раздача</a></li>
                     <li class="magazine last"><a href="{{ route('shop') }}"><img src="/assets/img/shop.png" alt="">Магазин</a></li>
-                    <li><a href="https://vk.com/csgfr" target="_blank"><img style="width: 36px;" src="/assets/img/vk.png" alt=""></a></li>
+                    <li><a href="https://vk.com/csgfru" target="_blank"><img style="width: 36px;" src="/assets/img/vk.png" alt=""></a></li>
                 </ul>
             </div>
         </div>

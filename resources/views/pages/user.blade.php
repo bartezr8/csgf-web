@@ -20,7 +20,7 @@
                 <div class="reputation-container">
                     Лимит на вывод:
                     <div class="reputation-block">
-                        {{ $slimit }}
+                        <div id="slimit">{{ $slimit }}</div>
                         <a id="user-level-btn" class="popover-btn"></a>
                     </div>
                 </div>

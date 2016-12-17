@@ -18,7 +18,7 @@
                             <div class="reputation-container">
                                 Лимит вывода:
                                 <div class="reputation-block">
-                                    {{ $slimit }}
+                                    <div id="slimit">{{ $slimit }}</div>
                                     <a id="user-level-btn" class="popover-btn"></a>
                                 </div>
                             </div>
@@ -72,7 +72,7 @@
                     </select>
                     <select class="shop-selector" style="margin-left: 20px;float: right;" id="rarity_all">
                         <option value="">Все раритетности</option>
-                        <option value="Базового класса">Базового класса</option>
+                        <option value="Базового класса">базового класса</option>
                         <option value="Армейское качество">Армейское качество</option>
                         <option value="Запрещенное">Запрещенное</option>
                         <option value="Засекреченное">Засекреченное</option>

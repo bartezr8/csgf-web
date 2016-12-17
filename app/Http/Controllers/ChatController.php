@@ -65,9 +65,6 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
         }
-        /*if (preg_match("/href|url|http|www|.ru|.com|.net|.info|.org/i", $messages)) {
-            return response()->json(['message' => 'Ссылки запрещены !', 'status' => 'error']);
-        }*/
 		$data = $this->redis->rpop(self::CHAT_CHANNEL);
 		if(!is_null($data)){
 			$data = json_decode($data, true);

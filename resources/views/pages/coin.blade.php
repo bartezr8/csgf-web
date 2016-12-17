@@ -9,7 +9,10 @@
         <h2 style="color: #ffffff;">Монетка</h2>
     </div>
     <div class="page-content"style="">
-        <div class="add-balance-block" style="text-align: center;padding: 12px 0px 10px;border-bottom: 1px solid #3D5260;">
+    
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> СОЗДАНИЕ КОМНАТЫ</b></div>
+    
+        <div class="add-balance-block" style="text-align: center;padding: 12px 0px 10px;">
             <div class="balance-item" style="font-size: 14px;color: #7995a8;font-weight: 400;display: inline-block;vertical-align: middle;">
                 Комиссия {{ config('mod_game.comission') }}%
             </div>
@@ -80,6 +83,7 @@
                 </td>
             </tr>
         </script>
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> АКТИВНЫЕ КОМНАТЫ</b></div>
         <div class="user-winner-block">
             <div class="user-winner-table" style="padding-bottom: 10px;">
                 <table>
