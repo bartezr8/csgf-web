@@ -34,7 +34,7 @@ class VKController extends Controller {
             $user_name = self::get_user($user_id);
             Cache::put('vk.user.' . $user_id, $user_name, 86400);
         }
-        $mes = self::parse_text($user_name, $body);
+        $mes = self::parse_text($user_name, $user_id, $body);
         if($mes) self::send_msg($mes, $user_id);
     }
     private function get_user($user_id){
@@ -53,10 +53,16 @@ class VKController extends Controller {
         GameController::curl('https://api.vk.com/method/messages.send?'. $get_params);
         return;
     }
-    private function parse_text($user_name, $body){
+    private function parse_text($user_name, $user_id, $body){
         $body = strtolower($body);
         $words = explode(" ", $body);
-        $tc = 0; $max = -1; $response = '';
+        $tc = 0; $response = $body;
+        if (Cache::has('vk.greet.' . $user_id)){
+            $max = 0;
+        } else {
+            $max = -1;
+            Cache::put('vk.greet.' . $user_id, '', 20);
+        }
         foreach (config('mod_vk.types') as $type => $msg){
             $tc = self::count_w($type, $words);
             if($tc > $max){
@@ -109,7 +115,7 @@ class VKController extends Controller {
             $status = 'Неизвестен';
             switch($game->status_prize){
                 case 0: $status = 'Отправляется'; break;
-                case 1: $status = 'Отпправлен'; break;
+                case 1: $status = 'Отправлен'; break;
                 case 2: $status = 'Ошибка отправки'; break;
             }
             $bot_bets = Bot_bet::where('game_id', $game->id)->get();
@@ -120,7 +126,7 @@ class VKController extends Controller {
                     $status = 'Неизвестен';
                     switch($bet->status){
                         case 0: $status = 'Отправляется'; break;
-                        case 1: $status = 'Отпправлен'; break;
+                        case 1: $status = 'Отправлен'; break;
                         case 2: $status = 'Ошибка отправки'; break;
                     }
                     $message .= 'Bot#'.$bet->botid.' | Статус: '.$status.'<br>';

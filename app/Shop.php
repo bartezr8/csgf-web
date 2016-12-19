@@ -1,7 +1,6 @@
 <?php
 
 namespace App;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
@@ -42,5 +41,22 @@ class Shop extends Model
             case 'Ширпотреб':               return 'common'; break;
             case 'Промышленное качество':   return 'common'; break;
         }
+    }
+    public static function selectBot(){
+        $max = 1000; $botid = 0;
+        foreach (config('mod_shop.bots') as $bot_id => $bot){
+            $count = self::where('status', self::ITEM_STATUS_FOR_SALE)->where('bot_id', $bot_id)->count();
+            if($count < $max) {
+                $max = $count;
+                $botid = $bot_id;
+            }
+        }
+        return $botid;
+    }
+    public static function parceTradeLinkShop($trade_link){
+        $query_str = parse_url($trade_link, PHP_URL_QUERY);
+        parse_str($query_str, $query_params);
+        $response = ['accessToken' => $query_params['token'], 'steamid64' => (intval($query_params['partner']) + 76561197960265728)];
+        return $response;
     }
 }

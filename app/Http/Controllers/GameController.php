@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Log;
 use Auth;
 use App\Bet;
 use App\Bot_bet;
@@ -373,19 +373,22 @@ class GameController extends Controller
                     'items' => $userItems,
                     'game' => $this->game->id
                 ];
+                Log::error($valueUser);
                 $bet->items_won = json_encode($userItems);
                 $bet->save();
                 $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
                 if (config('mod_game.comission_to_shop') && count($shopItems)) {
-                    $shop = User::where('steamid64', config('mod_game.shop_steamid64'))->first();
+                    $shop_id = Shop::selectBot();
+                    $shop = Shop::parceTradeLinkShop(config('mod_shop.bots')[$shop_id]);
                     if ($shop != NULL) {
                         $valueShop = [
                             'appId' => config('mod_game.appid'),
-                            'steamid' => $shop->steamid64,
-                            'accessToken' => $shop->accessToken,
+                            'steamid' => (string)$shop['steamid64'],
+                            'accessToken' => (string)$shop['accessToken'],
                             'items' => $shopItems,
                             'game' => 0
                         ];
+                        Log::error($valueShop);
                         $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueShop));
                     }
                 }

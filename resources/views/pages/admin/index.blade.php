@@ -63,7 +63,8 @@
 		</form>
         <form action="/updateShop" method="POST">
 			<div style="width: 333px" class="nSend">
-				<input type="submit" style="width: 333px" name="mute" value="Обновить магазин">
+                <input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
+				<input type="submit" style="width: 218px" value="Инвентарь бота (шоп)">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>

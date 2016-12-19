@@ -2,10 +2,7 @@
 //config('mod_shop.shop_strade_secret')
 return [
 	'shop' => true,
-	
-	'max_daily' => true,
-	'max_daily_sum' => 20, //per each level
-	
+
 	'items_per_trade' => 100, 
 	
 	'games_need' => true,
@@ -19,5 +16,10 @@ return [
 	'garbadge_%' => 30,
 	
 	'shop_strade_port' => '80',
-	'shop_strade_ip' => '46.105.42.220'
+	'shop_strade_ip' => '46.105.42.220',
+    
+    'bots' => [
+        '0' => 'https://steamcommunity.com/tradeoffer/new/?partner=112797909&token=AMFNbblk',
+        '1' => 'https://steamcommunity.com/tradeoffer/new/?partner=332885872&token=62dFVhTR'
+    ]
 ];

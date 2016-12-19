@@ -78,6 +78,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
 post('/shop/items', ['as' => 'shop_items', 'uses' => 'ShopController@shop']);
 Route::group(['middleware' => 'auth'], function () {
+    post('/updateShop', ['as' => 'give', 'uses' => 'ShopController@updateShop', 'middleware' => 'access:moderator']);
     get('/shop/deposit', ['as' => 'shop_deposit', 'uses' => 'ShopController@deposit']);
     get('/shop/history', ['as' => 'cards-history', 'uses' => 'ShopController@history']);
     post('/shop/buy', ['as' => 'settings.update', 'uses' => 'ShopController@buyItem']);
@@ -88,7 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
     post('/shop/checkOffers', ['as' => 'shop_checkOffers', 'uses' => 'ShopController@checkOffers']);
 });
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
-    //post('/shop/checkAllOffers', 'ShopController@checkAllOffers');
+    post('/shop/checkAllOffers', 'ShopController@checkAllOffers');
     post('/shop/newItems', 'ShopController@addItemsToSale');
     post('/shop/itemlist', 'ShopController@itemlist');
     post('/shop/checkShop', 'ShopController@checkShop');
@@ -115,7 +116,6 @@ Route::group(['middleware' => 'auth'], function () {
     post('/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);    
     post('/ctime', ['as' => 'give', 'uses' => 'AdminController@ctime', 'middleware' => 'access:admin']);
     post('/updateNick', ['as' => 'give', 'uses' => 'AdminController@updateNick', 'middleware' => 'access:moderator']);
-    post('/updateShop', ['as' => 'give', 'uses' => 'AdminController@updateShop', 'middleware' => 'access:moderator']);
     post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
     post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
     get('/fixgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);

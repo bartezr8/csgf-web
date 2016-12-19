@@ -217,14 +217,6 @@ class AdminController extends Controller
 		->update(['is_moderator' => $value]);
 		return response()->json(['success' => true, 'value' => $value]);
 	}
-	
-	public function updateShop(){
-		$returnValue = [
-			'somestring' => 'is_important'
-		];
-		$this->redis->publish('updateShop', json_encode($returnValue));
-		return redirect('/admin');
-	}
 	public function updateUsers($string){
 		$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
         $words = GameController::object_to_array(json_decode($words));

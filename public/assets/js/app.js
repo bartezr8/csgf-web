@@ -471,6 +471,7 @@ if(START /*&& onpage*/) {
     if(checkUrl('/')) {
         updateSocketIO();
         socket.on('newDeposit', function(data) {
+            $('#roundFinishBlock').hide();
             updateChatScroll();
             //if(USER_ID != 76561197960265728) updateBalance();
             data = JSON.parse(data);
