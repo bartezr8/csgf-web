@@ -19,6 +19,7 @@ class ShopController extends Controller {
     const NEW_ITEMS_CHANNEL = 				'items.to.sale';
     const GIVE_ITEMS_CHANNEL = 				'items.to.give';
 	const CHECK_ITEMS_CHANNEL = 			'items.to.check';
+    const STATUS_ITEMS_CHANNEL =            'items.to.status';
     const DECLINE_ITEMS_CHANNEL =           'shop.decline.list';
     const DEPOSIT_RESULT_CHANNEL =          'offers.deposit.result';
 
@@ -97,28 +98,35 @@ class ShopController extends Controller {
     }
     public function setItemStatus(Request $request)
 	{
-        $items = json_decode($request->get('id'));
-        $total_price = 0;
-        foreach($items as $id){
-            $item = DB::table('shop')->where('inventoryId', $id)->where('bot_id', $request->get('bot_id'))->first();
-            if(!is_null($item)){
-                $status = $request->get('status');
-                $item = Shop::find($item->id);
-                $item->status = $status;
-                $item->save();
-                $returnValue = [];
-                if ($status == Shop::ITEM_STATUS_ERROR_TO_SEND || $status == Shop::ITEM_STATUS_RETURNED || $status == Shop::ITEM_STATUS_NOT_FOUND){
-                    if($status != Shop::ITEM_STATUS_NOT_FOUND) self::makeNew($item);
-                    $total_price += $item->price;
+        $bot_id = $request->get('bot_id');
+        $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::STATUS_ITEMS_CHANNEL, 0, -1);
+        foreach($jsonItems as $jsonItem){
+            $this->redis->lrem('s'.$bot_id.'_'.self::STATUS_ITEMS_CHANNEL, 1, $jsonItem);
+            $data = json_decode($jsonItem, true);
+            $total_price = 0; $returnValue = []; $user_id = 0;
+            Log::error($data);
+            foreach($data['items'] as $id) {
+                $item = DB::table('shop')->where('inventoryId', $id)->where('bot_id', $bot_id)->first();
+                if(!is_null($item)){
+                    $status = $data['status'];
+                    $item = Shop::find($item->id);
+                    $item->status = $status;
+                    $item->save();
+                    if ($status == Shop::ITEM_STATUS_ERROR_TO_SEND || $status == Shop::ITEM_STATUS_RETURNED || $status == Shop::ITEM_STATUS_NOT_FOUND){
+                        if($status != Shop::ITEM_STATUS_NOT_FOUND) self::makeNew($item);
+                        $total_price += $item->price;
+                    }
+                    $user_id = $item->buyer_id;
                 }
-            }
+			}
+            $user = User::find($user_id);
+            if(!is_null($user)) User::mchange($user->id, $total_price);
         }
-        $user = User::find($item->buyer_id);
-        User::mchange($user->id, $total_price);
         return response()->json(['success' => false]);
     }
     private function makeNew($item)
-    {
+    { 
+        $returnValue = [];
         $newid = DB::table('shop')->insertGetId([
             'name' => $item->name,
             'classid' => $item->classid,
