@@ -373,7 +373,6 @@ class GameController extends Controller
                     'items' => $userItems,
                     'game' => $this->game->id
                 ];
-                Log::error($valueUser);
                 $bet->items_won = json_encode($userItems);
                 $bet->save();
                 $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueUser));
@@ -388,7 +387,6 @@ class GameController extends Controller
                             'items' => $shopItems,
                             'game' => 0
                         ];
-                        Log::error($valueShop);
                         $this->redis->rpush('b'. $bet->botid.'_'.self::SEND_OFFERS_LIST, json_encode($valueShop));
                     }
                 }

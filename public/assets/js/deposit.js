@@ -20,6 +20,7 @@ $(function() {
                 exterior: zipItem[i++],
                 rarity: zipItem[i++],
                 rarity_text: zipItem[i++],
+                ids: zipItem[i++],
                 shortexterior: '',
             };
             if (zipItem.exterior == 'Прямо с завода') {
@@ -58,7 +59,8 @@ $(function() {
                 exterior_all: zipItem.exterior,
                 filter_rarity: zipItem.rarity,
                 rarity_all: zipItem.rarity_text,
-                className: zipItem.rarity
+                className: zipItem.rarity,
+                ids: zipItem.ids
             };
             item_obj.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + item_obj.classid + '/101fx100f';
             item_obj.el = $(this.item_tpl(item_obj));
@@ -217,6 +219,7 @@ $(function() {
             item.filter_rarity = zipItem.filter_rarity;
             item.rarity_all = zipItem.rarity_all;
             item.className = zipItem.className;
+            item.ids = zipItem.ids;
             item.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + zipItem.classid + '/101fx100f';
             return item;
         },
@@ -274,16 +277,20 @@ $(function() {
         get_cart: function(){
             $.notify("Отправляем обмен", {className: "success"});
             var items_list = makeArray(this.shop_cart);
-            var ids = '';
+            var senditems = '';
             items_list.forEach(function (item) {
-                if(item.count > 0) ids += item.id + ',';
+                if(item.count > 0){
+                    for (var i = 0; i < item.count; i++) {
+                        senditems += item.ids[i] + ',';
+                    }
+                }
             });
             $.ajax({
                 url: '/shop/sellitems',
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    classids: ids
+                    classids: senditems
                 },
                 success: function (data) {
                     if (data.success) {

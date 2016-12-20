@@ -9,7 +9,7 @@ class Shop extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'inventoryId', 'classid', 'price', 'steam_price', 'rarity', 'quality', 'type'];
+    protected $fillable = ['name', 'inventoryId', 'classid', 'price', 'bot_id', 'steam_price', 'rarity', 'quality', 'type'];
 
     const ITEM_STATUS_FOR_SALE = 0;
     const ITEM_STATUS_SOLD = 1;

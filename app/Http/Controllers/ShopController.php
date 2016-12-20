@@ -98,6 +98,7 @@ class ShopController extends Controller {
     public function setItemStatus(Request $request)
 	{
         $items = json_decode($request->get('id'));
+        $total_price = 0;
         foreach($items as $id){
             $item = DB::table('shop')->where('inventoryId', $id)->where('bot_id', $request->get('bot_id'))->first();
             if(!is_null($item)){
@@ -108,11 +109,12 @@ class ShopController extends Controller {
                 $returnValue = [];
                 if ($status == Shop::ITEM_STATUS_ERROR_TO_SEND || $status == Shop::ITEM_STATUS_RETURNED || $status == Shop::ITEM_STATUS_NOT_FOUND){
                     if($status != Shop::ITEM_STATUS_NOT_FOUND) self::makeNew($item);
-                    $user = User::find($item->buyer_id);
-                    User::mchange($user->id, $item->price);
+                    $total_price += $item->price;
                 }
             }
         }
+        $user = User::find($item->buyer_id);
+        User::mchange($user->id, $total_price);
         return response()->json(['success' => false]);
     }
     private function makeNew($item)
@@ -194,11 +196,11 @@ class ShopController extends Controller {
     }
     public function checkShop(Request $request){
         $bot_id = $request->get('bot_id');
-		$items = DB::table('shop')->where('bot_id', $bot_id)->get();
+		$items = DB::table('shop')->where('bot_id', '=', $bot_id)->get();
 		$delitems = []; foreach ($items as $item){ $delitems[] = $item->classid; }
 		$returnValue = ['list' => $delitems, 'off' => false];
 		$this->redis->publish('delShop', json_encode($returnValue));
-		DB::table('shop')->where('bot_id', $bot_id)->delete();
+		DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
             $itemsToAdd = json_decode($jsonItem, true);
@@ -328,7 +330,7 @@ class ShopController extends Controller {
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                     }
                     if($tradeCheck['status'] == 0){
-                        $this->_responseMessageToSite('Обмен #' + $trade->tradeid + ' не действителен', $user->steamid64);
+                        $this->_responseMessageToSite('Обмен #' . $trade->tradeid . ' не действителен', $user->steamid64);
                         DB::table('shop_offers')->where('id', $trade->id)->delete();
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                     }
@@ -344,8 +346,9 @@ class ShopController extends Controller {
         $aoffer = DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
         if(!is_null($aoffer)) return response()->json(['success' => false, 'msg' => 'У вас уже есть неподтвержденный обмен']);
         $classids = $request->get('classids');
-        if($classids == '')return response()->json(['success' => false, 'msg' => 'Вы не выбрали предметов']);
-        $value = [
+        if($classids == '') return response()->json(['success' => false, 'msg' => 'Вы не выбрали предметов']);
+        
+       $value = [
             'items' => $classids,
             'steamid' => $this->user->steamid64,
             'accessToken' => $this->user->accessToken
@@ -428,18 +431,20 @@ class ShopController extends Controller {
                             $rarity = preg_split('/,/', $item['type'], PREG_SPLIT_OFFSET_CAPTURE);
                             $rarity = trim($rarity[count($rarity) - 1]);
                             $myItems[$value['classid']] = [
-                                $value['assetid'], 
+                                $value['classid'], 
                                 1,
                                 $name, 
                                 $item['price'], 
                                 $value['classid'], 
                                 $quality, 
                                 Shop::getClassRarity($rarity), 
-                                $rarity
-                            ];                        
+                                $rarity,
+                                [$value['assetid']]
+                            ];
                         }
                     } else {
                         $myItems[$value['classid']][1] += 1;
+                        $myItems[$value['classid']][8][] = $value['assetid'];
                     }
                 }
             } else {

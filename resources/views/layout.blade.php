@@ -120,7 +120,6 @@
         @endif
         function updateSlimit() {
             $.post('/getSlimit', function (data) {
-                console.log(data);
                 $('#slimit').text(data);
             });
         }

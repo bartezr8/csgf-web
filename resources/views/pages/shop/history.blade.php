@@ -76,6 +76,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Дата</th>
+                                <th>Бот №</th>
                                 <th>Предмет</th>
                                 <th>Качество</th>
                                 <th>Цена</th>
@@ -87,6 +88,7 @@
                                 <tr>
                                     <td>{{ $item->id }}</td>
                                     <td>{{ $item->buy_at }}</td>
+                                    <td>{{ $item->bot_id }}</td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->quality }}</td>
                                     <td>{{ $item->price }} руб</td>
