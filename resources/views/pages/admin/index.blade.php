@@ -63,7 +63,7 @@
 		</form>
         <form action="/updateShop" method="POST">
 			<div style="width: 333px" class="nSend">
-                <input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
+                <input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="#бота" maxlength="18" autocomplete="off">
 				<input type="submit" style="width: 218px" value="Инвентарь бота (шоп)">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
@@ -85,6 +85,15 @@
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>	
 	</div>
+    <div class="support" >
+        <form action="/winnerr" method="POST">
+			<div style="width: 999px" class="nSend">
+				<input type="text" name="id" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
+				<input type="submit" style="width: 148px" value="Разослать">
+			</div>
+			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
+		</form>
+    </div>
 	@else
 	<div class="support" >
 		<form action="/updateNick" method="POST">

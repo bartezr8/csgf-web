@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Log;
 use Cache;
 use App\User;
 use App\Game;
@@ -77,7 +78,7 @@ class VKController extends Controller {
         foreach (config('mod_vk.words')[$type] as $word){
             if(in_array($word, $arr)) $counter++;
         }
-        return $counter;//count(config('mod_vk.words')[$type]);
+        return $counter;
     }
     private function check_cmd($user_id, $body){
         switch ($body){
@@ -134,6 +135,31 @@ class VKController extends Controller {
             }
             self::send_msg($message, $user_id);
             return;
+        }
+    }
+    private function getDialogs(){
+        $request_params = array(
+            'offset' => 0,
+            'count' => 200,
+            'start_message_id' => 0,
+            'preview_length' => 1,
+            'access_token' => config('mod_vk.access_token')
+        ); 
+        $get_params = http_build_query($request_params); 
+        $response = GameController::curl('https://api.vk.com/method/messages.getDialogs?'. $get_params);
+        Log::error($response);Log::error('fuck');
+        return $response;
+    }
+    public function sendTextVK(Request $request){
+        $text = $request->get('text');
+        $dialogs = self::getDialogs();
+        Log::error($dialogs);
+        foreach( $dialogs as $dialog){
+            if(isset($dialog['uid'])){
+                Log::error($dialog);
+                self::send_msg($text, $dialog->uid);
+            }
+            sleep(1);
         }
     }
 }

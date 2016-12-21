@@ -174,4 +174,5 @@ Route::group(['middleware' => 'auth'], function () {
 /* VK ROUTES */
 Route::group(['prefix' => 'api'], function () {
     post('/vk', 'VKController@index');
+    post('/vk/sendText', 'VKController@sendTextVK');
 });

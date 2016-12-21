@@ -104,7 +104,6 @@ class ShopController extends Controller {
             $this->redis->lrem('s'.$bot_id.'_'.self::STATUS_ITEMS_CHANNEL, 1, $jsonItem);
             $data = json_decode($jsonItem, true);
             $total_price = 0; $returnValue = []; $user_id = 0;
-            Log::error($data);
             foreach($data['items'] as $id) {
                 $item = DB::table('shop')->where('inventoryId', $id)->where('bot_id', $bot_id)->first();
                 if(!is_null($item)){
