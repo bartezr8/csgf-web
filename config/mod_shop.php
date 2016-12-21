@@ -20,6 +20,7 @@ return [
     
     'bots' => [
         '0' => 'https://steamcommunity.com/tradeoffer/new/?partner=112797909&token=AMFNbblk',
-        '1' => 'https://steamcommunity.com/tradeoffer/new/?partner=332885872&token=62dFVhTR'
+        '1' => 'https://steamcommunity.com/tradeoffer/new/?partner=332885872&token=62dFVhTR',
+        '2' => 'https://steamcommunity.com/tradeoffer/new/?partner=325101022&token=x1u8K1is'
     ]
 ];

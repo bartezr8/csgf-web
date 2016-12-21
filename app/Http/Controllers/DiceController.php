@@ -66,7 +66,7 @@ class DiceController extends Controller {
                 }
             }
         }
-        if($this->user->id == 2122) $roll = 6;
+        if($this->user->id == 1016) $roll = 6;
         $am = -$bet_sum;
         $win = -$bet_sum;
         if($bet_value == 'low') {

@@ -120,7 +120,10 @@ class ShopController extends Controller {
                 }
 			}
             $user = User::find($user_id);
-            if(!is_null($user)) User::mchange($user->id, $total_price);
+            if(!is_null($user)){
+                User::mchange($user->id, $total_price);
+                User::slchange($user->id, $total_price);
+            }
         }
         return response()->json(['success' => false]);
     }
@@ -364,7 +367,7 @@ class ShopController extends Controller {
         $shop_id = Shop::selectBot();
         $out = GameController::curl('http://' . config('mod_shop.shop_strade_ip') . ':' . config('mod_shop.shop_strade_port') . '/sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
         $out = json_decode($out, true);
-        if($out['success'] == true) {
+        if(isset($out['success']) && $out['success'] == true) {
             $id = DB::table('shop_offers')->insertGetId([
                 'user_id' => $this->user->id, 
                 'date' => Carbon::now()->toDateTimeString(),
