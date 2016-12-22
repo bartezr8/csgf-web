@@ -1,11 +1,10 @@
 <?php
 //config('mod_vk.confirmation_key')
 return [
-	'confirmation_key' => '23a66da8',
-    'group_id' => 133906356,
+	'confirmation_key' => '23a66da8',//'dabec10f',//
+    'group_id' => 133906356,//35255262,//
     'secret' => 'kJUgJ2oDqycty8JsolbhSb9IeveqWi',
-    'access_token' => '904fcecacd6688612945adb341eb88b6e558f90c7d4cb4ac417c25197558012d63396802a81701f19a20a',
-    'names' => ['Аввакум','Агафангел','Агафоник','Агриппин','Акакий','Алипий','Ананий','Боян','Бронислав','Вукол','Евлампий','Казимир','Кондрат','Никодим','Феодул'],
+    'access_token' => '904fcecacd6688612945adb341eb88b6e558f90c7d4cb4ac417c25197558012d63396802a81701f19a20a',//'d28fee58a39eaf680e6db0069eaf9cceafe7875e7f6fb5ee94667f94568dd03095ae933df7ccada18104c',//
     'jokes' => [
         '<br>Надпись над писсуаром:<br>«Не льсти себе,<br>подойди поближе».<br>',
         '<br>- Мой муж такой агрессивный за рулем! А твой такой спокойный! Что ты ему даешь?<br>- Я ему даю.<br>',

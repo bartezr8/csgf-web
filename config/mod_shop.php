@@ -1,7 +1,7 @@
 <?php
 //config('mod_shop.shop_strade_secret')
 return [
-	'shop' => false,
+	'shop' => true,
 
 	'items_per_trade' => 100, 
 	

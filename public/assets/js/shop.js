@@ -5,6 +5,7 @@ $(function() {
         item_tpl: _.template($('#item-template').html()),
         shop_items: {},
         shop_items_Holder: $('#items-list'),
+        shop_cart_sliden: false,
         shop_cart: {},
         shop_cart_price: 0,
         shop_cart_Holder: $('#cart-list'),
@@ -360,6 +361,14 @@ $(function() {
             shop.shiftPress = false;
         }
     }
+    $(document).on('click', '#card_block', function () { 
+        shop.shop_cart_sliden = !shop.shop_cart_sliden;
+        if(shop.shop_cart_sliden){
+            shop.shop_cart_Holder.slideDown();
+        } else {
+            shop.shop_cart_Holder.slideUp();
+        }
+    });
     document.onkeydown = function checkKeycode(event){
         if(!event) var event = window.event;
         var keyShift = event.shiftKey;

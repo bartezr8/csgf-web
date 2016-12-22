@@ -213,6 +213,7 @@ class ShopController extends Controller {
 		DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
+            $returnValue = [];
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
 			foreach($itemsToAdd as $item) {
@@ -221,10 +222,11 @@ class ShopController extends Controller {
 					$item['steam_price'] = $info->price;
 					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
 					$item = Shop::create($item);
-                    $returnValue = ['list' => [[ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ]], 'off' => false]; 
-                    $this->redis->publish('addShop', json_encode($returnValue));
+                    $returnValue[] = [ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ];
                 }
 			}
+            $returnValue = ['list' => $returnValue, 'off' => false]; 
+            $this->redis->publish('addShop', json_encode($returnValue));
 		}
         return response()->json(['success' => true]);
     }

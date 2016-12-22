@@ -147,19 +147,19 @@ class VKController extends Controller {
         ); 
         $get_params = http_build_query($request_params); 
         $response = GameController::curl('https://api.vk.com/method/messages.getDialogs?'. $get_params);
-        Log::error($response);Log::error('fuck');
         return $response;
     }
     public function sendTextVK(Request $request){
         $text = $request->get('text');
         $dialogs = self::getDialogs();
-        Log::error($dialogs);
+        $dialogs = json_decode($dialogs, true);
+        $dialogs = $dialogs['response'];
         foreach( $dialogs as $dialog){
             if(isset($dialog['uid'])){
-                Log::error($dialog);
-                self::send_msg($text, $dialog->uid);
+                self::send_msg($text, $dialog['uid']);
+                usleep(10000);
             }
-            sleep(1);
         }
+        return redirect('/admin');
     }
 }

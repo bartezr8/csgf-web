@@ -32,13 +32,14 @@
             </div>
         </div>
         <div style="overflow: hidden;">
-            <div class="buy-cards-block" style="margin-top: 0px;">
+            <div class="buy-cards-block"  style="margin-top: 0px;">
                 <div class="shop-item-filters">
                     <div class="left-totalitems">
                        Ваши выбранные предметы | Предметов: <span id="cart-total">0</span> | Сумма: <span id="cart-total-price">0</span>
                     </div>
                     <a href="{{ route('cards-history') }}" class="btn-history">История обменов</a>
                     <a class="btn-buy" id="get-cart">Купить предметы</a>
+                    <a class="btn-inv" id="card_block" style="height: 30px;width: 30px;margin: 2px;" target="_blank">&#9760;</a>
                 </div>
             </div>
             <div id="cart-list" class="cart-list" style="margin-right: -25px;display: block;overflow: auto;max-height: 464px;"></div>

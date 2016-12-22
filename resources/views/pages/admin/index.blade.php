@@ -86,9 +86,9 @@
 		</form>	
 	</div>
     <div class="support" >
-        <form action="/winnerr" method="POST">
+        <form action="/api/vk/sendText" method="POST">
 			<div style="width: 999px" class="nSend">
-				<input type="text" name="id" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
+				<input type="text" name="text" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
 				<input type="submit" style="width: 148px" value="Разослать">
 			</div>
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
