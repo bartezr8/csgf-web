@@ -57,14 +57,16 @@ class ShopController extends Controller {
         parent::setTitle('История покупок | ');
 		$items = Shop::where('buyer_id', $this->user->id)->orderBy('buy_at', 'desc')->get();
         $deposits = DB::table('deposits')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
-        return view('pages.shop.history', compact('items', 'deposits'));
+        $shop_offers = DB::table('shop_offers')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
+        return view('pages.shop.history', compact('items', 'deposits', 'shop_offers'));
     }
     public function admin()
 	{
         parent::setTitle('История покупок | ');
 		$items = [];
         $deposits = DB::table('deposits')->orderBy('date', 'desc')->get();
-        return view('pages.shop.history', compact('items', 'deposits'));
+        $shop_offers = DB::table('shop_offers')->orderBy('date', 'desc')->get();
+        return view('pages.shop.history', compact('items', 'deposits', 'shop_offers'));
     }
     
     public function sendItem($items,$botid)
@@ -301,7 +303,7 @@ class ShopController extends Controller {
     }
     public function depositToCheck(Request $request)
     {
-        $aoffers = DB::table('shop_offers')->where('status', 0)->get();
+        $aoffers = DB::table('shop_offers')->where('bot_id', $request->get('bot_id'))->where('status', 0)->get();
 		if(is_null($aoffers)) return response()->json(['success' => true, 'trades' => []]);
         if(!count($aoffers)) return response()->json(['success' => true, 'trades' => []]);
         $trades = []; foreach($aoffers as $offer) $trades[] = $offer->tradeid;
@@ -343,7 +345,7 @@ class ShopController extends Controller {
                     }
                     if($tradeCheck['status'] == 0){
                         $this->_responseMessageToSite('Обмен #' . $trade->tradeid . ' не действителен', $user->steamid64);
-                        DB::table('shop_offers')->where('id', $trade->id)->delete();
+                        DB::table('shop_offers')->where('id', $trade->id)->update(['status' => 2]);
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                     }
                 }

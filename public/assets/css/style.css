@@ -130,6 +130,7 @@ html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:1
 	clear: both;
 }
 .list-reset {
+    transition: cubic-bezier(0, 0, 0.2, 1);
 	list-style: none;
 	margin: 0;
 	padding: 0;

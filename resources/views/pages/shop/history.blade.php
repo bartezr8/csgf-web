@@ -58,6 +58,62 @@
         <div class="user-history-block bid-history" style="padding-top: 10px;">
 
             <div class="title-block">
+                <h2>История ваших депозитов в магазин</h2>
+            </div>
+
+            <div class="user-history-content" id="showMoreContainer">
+                <div class="body-content">
+                    <div class="purchase-history-table">
+                        <table>
+                            <thead>
+                            
+                            <tr>
+                                <th>ID</th>
+                                <th>Дата</th>
+                                <th>User ID</th>
+                                <th>Бот №</th>
+                                <th>ID обмена</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse($shop_offers as $item)
+                                <tr>
+                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $item->date }}</td>
+                                    <td>{{ $item->user_id }}</td>
+                                    <td>{{ $item->bot_id }}</td>
+                                    <td>{{ $item->tradeid }}</td>
+                                    <td>{{ $item->price }} руб</td>
+                                    <td>
+                                        @if($item->status == 0)
+                                            Активен
+                                        @elseif($item->status == 1)
+                                            Зачислен
+                                        @elseif($item->status == 2)
+                                            Отклонен
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7">Вы не делали депозитов</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+
+                        <div class="pagination-history">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="user-history-block bid-history" style="padding-top: 10px;">
+
+            <div class="title-block">
                 <h2>История ваших покупок</h2>
             </div>
 
@@ -74,13 +130,13 @@
                         <table>
                             <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Дата</th>
-                                <th>Бот №</th>
-                                <th>Предмет</th>
-                                <th>Качество</th>
-                                <th>Цена</th>
-                                <th>Статус</th>
+                                <th style="width: 1%;">ID</th>
+                                <th style="width: 2%;">Дата</th>
+                                <th style="width: 1%;">Бот №</th>
+                                <th style="width: 5%;">Предмет</th>
+                                <th style="width: 1%;">Качество</th>
+                                <th style="width: 2%;">Цена</th>
+                                <th style="width: 3%;">Статус</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -108,7 +164,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6">Вы не делали покупок</td>
+                                    <td colspan="7">Вы не делали покупок</td>
                                 </tr>
                             @endforelse
                             </tbody>

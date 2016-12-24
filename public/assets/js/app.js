@@ -285,14 +285,14 @@ function sendUpdate(){
 }
 
 function my_comm() {
-    /*$.ajax({
+    $.ajax({
         url: '/my_comission',
         type: 'POST',
         dataType: 'json',
         success: function(data) {
             $('#my_comission').html(data);
         }
-    });*/
+    });
 }
 
 function updateScrollbar() {
@@ -593,7 +593,6 @@ if(START /*&& onpage*/) {
                 if(ngtimerStatus) {
                     ngtimerStatus = false;
                     $('#roundFinishBlock').hide();
-
                     function getRandomInt(min, max) {
                         return Math.floor(Math.random() * (max - min + 1)) + min;
                     }
@@ -634,24 +633,17 @@ if(START /*&& onpage*/) {
                     } else {
                         var scrollmar = -this_scrol - scrollmarl;
                     }
-                    var easetype = 'easeOutCirc';
-                    $('#usersCarousel').css('margin-left', -41);
                     if(data.showSlider) {
                         if(!sliding){
                             sliding = true;
                             var audio = new Audio('/assets/sounds/rollscrollskoniks.mp3');
                             if(sound_status) audio.play();
-                            $('#usersCarousel').animate({
-                                marginLeft: scrollmar
-                            }, 1000 * (data.time - 10), /*easetype,*/ function() {
-                                $('#li_winner_112').css({
-                                    'height': '70px'
-                                });
+                            $('#usersCarousel').css("transform", "translate(" + scrollmar + "px)").css('transition-duration', (1000 * (data.time - 10)) + 'ms');
+                            setTimeout(function(){
+                                $('#li_winner_112').css({'height': '70px'});
                                 $('#div_winner_112').slideDown();
                                 $('#li_winner_112').addClass("rotate");
-                                $('#usersCarouselConatiner').css({
-                                    'z-index': '107'
-                                });
+                                $('#usersCarouselConatiner').css({'z-index': '107'});
                                 $('#winnerInfo .winner-info-holder').slideDown();
                                 $('#roundFinishBlock').show();
                                 if(data.winner.steamid64 == USER_ID) {
@@ -662,35 +654,24 @@ if(START /*&& onpage*/) {
                                     });
                                     $("#toTrade").attr("href", 'http://steamcommunity.com/profiles/' + USER_ID + '/tradeoffers/');
                                     $('#toTrade').fadeIn();
-                                    setTimeout(function() {
-                                        $('#toTrade').fadeOut();
-                                    }, 30000);
+                                    setTimeout(function() {$('#toTrade').fadeOut();}, 30000);
                                 }
-                                $('#usersCarousel').animate({
-                                    marginLeft: -this_scrol
-                                }, 2000, /*easetype,*/ function() {});
-                            });
+                                $('#usersCarousel').css("transform", "translate(" + (-this_scrol) + "px)").css('transition-duration', '2000ms');
+                            }, 1000 * (data.time - 10));
                         }
                     } else {
                         if(!sliding){
                             sliding = true;
-                            $('#usersCarousel').animate({
-                                marginLeft: scrollmar
-                            }, 1000, /*easetype,*/ function() {
-                                $('#li_winner_112').css({
-                                    'height': '70px'
-                                });
+                            $('#usersCarousel').css("transform", "translate(" + scrollmar + "px)").css('transition-duration', '1000ms');
+                            setTimeout(function(){
+                                $('#li_winner_112').css({'height': '70px'});
                                 $('#div_winner_112').slideDown();
                                 $('#li_winner_112').addClass("rotate");
-                                $('#usersCarouselConatiner').css({
-                                    'z-index': '107'
-                                });
+                                $('#usersCarouselConatiner').css({'z-index': '107'});
                                 $('#winnerInfo .winner-info-holder').slideDown();
                                 $('#roundFinishBlock').show();
-                                $('#usersCarousel').animate({
-                                    marginLeft: -this_scrol
-                                }, 1000, easetype, function() {});
-                            });
+                                $('#usersCarousel').css("transform", "translate(" + (-this_scrol) + "px)").css('transition-duration', '1000ms');
+                            }, 1000);
                         }
                     }
                 }
