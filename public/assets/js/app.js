@@ -638,6 +638,7 @@ if(START /*&& onpage*/) {
                             sliding = true;
                             var audio = new Audio('/assets/sounds/rollscrollskoniks.mp3');
                             if(sound_status) audio.play();
+                            $('#usersCarousel').css("transform", "translate(0px)").css('transition-duration', '0ms');
                             $('#usersCarousel').css("transform", "translate(" + scrollmar + "px)").css('transition-duration', (1000 * (data.time - 10)) + 'ms');
                             setTimeout(function(){
                                 $('#li_winner_112').css({'height': '70px'});
@@ -662,6 +663,7 @@ if(START /*&& onpage*/) {
                     } else {
                         if(!sliding){
                             sliding = true;
+                            $('#usersCarousel').css("transform", "translate(0px)").css('transition-duration', '0ms');
                             $('#usersCarousel').css("transform", "translate(" + scrollmar + "px)").css('transition-duration', '1000ms');
                             setTimeout(function(){
                                 $('#li_winner_112').css({'height': '70px'});
