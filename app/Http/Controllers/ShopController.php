@@ -240,6 +240,7 @@ class ShopController extends Controller {
         if ($this->user->ban != 0) return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте']);
         $classids = $request->get('classids'); $itemsum = 0; $fintems = [];
         if (is_null($classids)) return response()->json(['success' => false, 'msg' => 'Вы ничего не выбрали!']);
+        if(count($classids) > config('mod_shop.select_limit')) return response()->json(['success' => false, 'msg' => 'Максимум '.config('mod_shop.select_limit').' предметов за раз.']);
         foreach ($classids as $classid){
             $items = DB::table('shop')->where('classid', $classid)->where('status', Shop::ITEM_STATUS_FOR_SALE)->get();
             foreach ($items as $item){ if (!in_array($item, $fintems)){ $fintems[] = $item; break; } }
@@ -361,8 +362,9 @@ class ShopController extends Controller {
         if(!is_null($aoffer)) return response()->json(['success' => false, 'msg' => 'У вас уже есть неподтвержденный обмен']);
         $classids = $request->get('classids');
         if($classids == '') return response()->json(['success' => false, 'msg' => 'Вы не выбрали предметов']);
-        
-       $value = [
+        $items = explode(',', $classids);
+        if((count($items)-1) > config('mod_shop.select_limit')) return response()->json(['success' => false, 'msg' => 'Максимум '.config('mod_shop.select_limit').' предметов за раз.']);
+        $value = [
             'items' => $classids,
             'steamid' => $this->user->steamid64,
             'accessToken' => $this->user->accessToken
@@ -400,8 +402,8 @@ class ShopController extends Controller {
 		return response()->json(['list' => $list, 'success' => $success]);
     }
 	public function inv_update(Request $request){
-        if (\Cache::has('shop.user.inv.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user.inv.' . $this->user->id, '', 30);
+        if (\Cache::has('shop.user_inv_' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
+		\Cache::put('shop.user_inv_' . $this->user->id, '', 30);
 		$returnValue = self::updatemyinventory($this->user->steamid64);
         $success = false;
 		if($returnValue['success']){

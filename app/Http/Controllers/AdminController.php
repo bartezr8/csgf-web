@@ -251,7 +251,7 @@ class AdminController extends Controller
 	public function updateNick(Request $request) {
 		$str = '';
 		$i = 0;
-		$user = \DB::table('users')->where(/*'username', 'LIKE', '%.COM%'*/'updated_at', '<', Carbon::today()->subDay())->limit(250)->get();
+		$user = \DB::table('users')->where('updated_at', '<', Carbon::today()->subDay())->limit(500)->get();
 		foreach ($user as $u) {
 			if ($str != ''){ $str .= ',' . $u->steamid64; } else { $str .= '' . $u->steamid64; }
 			$i++;

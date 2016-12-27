@@ -4,7 +4,8 @@ return [
 	'shop' => true,
 
 	'items_per_trade' => 100, 
-	
+	'select_limit' => 250,
+    
 	'games_need' => true,
 	'games_need_count' => 1,
 
@@ -19,7 +20,7 @@ return [
 	'shop_strade_ip' => '46.105.42.220',
     
     'bots' => [
-        '0' => 'https://steamcommunity.com/tradeoffer/new/?partner=112797909&token=AMFNbblk',
+        '0' => 'https://steamcommunity.com/tradeoffer/new/?partner=299892040&token=oCQT6Ujr',
         '1' => 'https://steamcommunity.com/tradeoffer/new/?partner=332885872&token=62dFVhTR',
         '2' => 'https://steamcommunity.com/tradeoffer/new/?partner=325101022&token=x1u8K1is'
     ]
