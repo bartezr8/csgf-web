@@ -54,41 +54,34 @@ if(START && checkPage()) {
             message = message.reverse();
             for(var i in message) {
                 var a = $("#chatScroll")[0];
-                //var isScrollDown = (a.offsetHeight + a.scrollTop) == a.scrollHeight;
                 var isScrollDown = Math.abs((a.offsetHeight + a.scrollTop) - a.scrollHeight) < 5;
                 var CANDEL = false;
                 if(IS_MODER == 1) CANDEL = true;
                 if(IS_ADMIN == 1) CANDEL = true;
                 if(message[i].userid == USER_ID) CANDEL = true;
+                var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
+                html += '<a href="/user/' + message[i].userid + '" target="_blank"><img ';
                 if(message[i].admin == 1) {
-                    var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                    html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #FF2D00;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                    if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                    html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #FF2D00;">[A]</span> ' + message[i].username + '</div>';
-                    html += '<div class="body">' + message[i].messages + '</div>';
-                    html += '</div>';
+                    html += 'style="border: 1px dashed #FF2D00;" ';
                 } else if(message[i].moder == 1) {
-                    var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                    html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #E400B0;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                    if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                    html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #E400B0;">[M]</span> ' + message[i].username + '</div>';
-                    html += '<div class="body">' + message[i].messages + '</div>';
-                    html += '</div>';
+                    html += 'style="border: 1px dashed #E400B0;" ';
                 } else if(message[i].vip == 1) {
-                    var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                    html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #F9FF2F;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                    if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                    html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #F9FF2F;">' + message[i].username + '</span></div>';
-                    html += '<div class="body">' + message[i].messages + '</div>';
-                    html += '</div>';
-                } else {
-                    var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                    html += '<a href="/user/' + message[i].userid + '" target="_blank"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                    if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                    html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank">' + message[i].username + '</div>';
-                    html += '<div class="body">' + message[i].messages + '</div>';
-                    html += '</div>';
+                    html += 'style="border: 1px dashed #F9FF2F;" ';
                 }
+                html += 'src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
+                if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
+                html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank">';
+                if(message[i].admin == 1) {
+                    html += '<span style="color: #FF2D00;">[A]</span> ';
+                } else if(message[i].moder == 1) {
+                    html += '<span style="color: #E400B0;">[M]</span> ';
+                } else if(message[i].vip == 1) {
+                    html += '<span style="color: #F9FF2F;">';
+                }
+                html += message[i].username + '</div>';
+                html += '<div class="timeMessage" style="position: absolute; margin-top: -16px; margin-left: 230px; color: gray; font-size: 12px;">' + message[i].time + '</div>';
+                html += '<div class="body">' + message[i].messages + '</div>';
+                    html += '</div>';
                 $('#messages').append(html);
                 if($('.chatMessage').length > 255) {
                     $('.chatMessage').eq(0).remove();
@@ -340,43 +333,36 @@ function update_chat() {
                 message = message.reverse();
                 for(var i in message) {
                     var a = $("#chatScroll")[0];
-                    //var isScrollDown = (a.offsetHeight + a.scrollTop) == a.scrollHeight;
                     var isScrollDown = Math.abs((a.offsetHeight + a.scrollTop) - a.scrollHeight) < 5;
                     var CANDEL = false;
                     if(IS_MODER == 1) CANDEL = true;
                     if(IS_ADMIN == 1) CANDEL = true;
                     if(message[i].userid == USER_ID) CANDEL = true;
+                    var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
+                    html += '<a href="/user/' + message[i].userid + '" target="_blank"><img ';
                     if(message[i].admin == 1) {
-                        var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                        html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #FF2D00;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                        if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                        html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #FF2D00;">[A]</span> ' + message[i].username + '</div>';
-                        html += '<div class="body">' + message[i].messages + '</div>';
-                        html += '</div>';
+                        html += 'style="border: 1px dashed #FF2D00;" ';
                     } else if(message[i].moder == 1) {
-                        var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                        html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #E400B0;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                        if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                        html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #E400B0;">[M]</span> ' + message[i].username + '</div>';
-                        html += '<div class="body">' + message[i].messages + '</div>';
-                        html += '</div>';
+                        html += 'style="border: 1px dashed #E400B0;" ';
                     } else if(message[i].vip == 1) {
-                        var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                        html += '<a href="/user/' + message[i].userid + '" target="_blank"><img style="border: 1px dashed #F9FF2F;" src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                        if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                        html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank"><span style="color: #F9FF2F;">' + message[i].username + '</span></div>';
-                        html += '<div class="body">' + message[i].messages + '</div>';
-                        html += '</div>';
-                    } else {
-                        var html = '<div class="chatMessage clearfix" data-uuid="' + message[i].id + '" data-user="' + message[i].userid + '" data-username="' + message[i].username + '">';
-                        html += '<a href="/user/' + message[i].userid + '" target="_blank"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
-                        if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
-                        html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank">' + message[i].username + '</div>';
-                        html += '<div class="body">' + message[i].messages + '</div>';
-                        html += '</div>';
+                        html += 'style="border: 1px dashed #F9FF2F;" ';
                     }
+                    html += 'src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/' + _.escape(message[i].avatar).replace('_full', '') + '"></a>';
+                    if(CANDEL) html += '<div class="delete_message" onclick="delete_message( ' + message[i].id + ' )"><img src="/assets/img/delete.png" alt=""></div>';
+                    html += '<div class="login" href="/user/' + message[i].userid + '" target="_blank">';
+                    if(message[i].admin == 1) {
+                        html += '<span style="color: #FF2D00;">[A]</span> ';
+                    } else if(message[i].moder == 1) {
+                        html += '<span style="color: #E400B0;">[M]</span> ';
+                    } else if(message[i].vip == 1) {
+                        html += '<span style="color: #F9FF2F;">';
+                    }
+                    html += message[i].username + '</div>';
+                    html += '<div class="timeMessage" style="position: absolute; margin-top: -16px; margin-left: 230px; color: gray; font-size: 12px;">' + message[i].time + '</div>';
+                    html += '<div class="body">' + message[i].messages + '</div>';
+                        html += '</div>';
                     $('#messages').append(html);
-                    if($('.chatMessage').length > 100) {
+                    if($('.chatMessage').length > 255) {
                         $('.chatMessage').eq(0).remove();
                     }
                 }

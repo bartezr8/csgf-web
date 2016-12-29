@@ -283,18 +283,6 @@ function sendUpdate(){
         }
     });
 }
-
-function my_comm() {
-    $.ajax({
-        url: '/my_comission',
-        type: 'POST',
-        dataType: 'json',
-        success: function(data) {
-            $('#my_comission').html(data);
-        }
-    });
-}
-
 function updateScrollbar() {
     $('.current-chance-block').perfectScrollbar('destroy');
     $('.current-chance-block').perfectScrollbar({
@@ -302,7 +290,6 @@ function updateScrollbar() {
         useBothWheelAxes: true
     });
 }
-
 function num(val) {
     return Math.round(parseFloat(val) * 100) / 100;
 }
@@ -358,6 +345,18 @@ function updateUsers(){
     $(".onine_user").css({
         'height': r,
         'width': r
+    });
+    $('.onine_user').tooltip({
+        html: true,
+        trigger: 'hover',
+        delay: {
+            show: 500,
+            hide: 500
+        },
+        title: function() {
+            var text = $(this).data('old-title');
+            return '<div class="tooltip-title"><span>' + text + '</span></div>';
+        }
     });
 }
 function ConntectSocketIO(){
@@ -521,7 +520,6 @@ if(START /*&& onpage*/) {
             $('.current-user').tooltip({
                 container: 'body'
             });
-            my_comm();
             CSGF.initTheme();
             $('.ticket-number').tooltip({
                 html: true,
@@ -543,32 +541,18 @@ if(START /*&& onpage*/) {
         .on('online_add', function(data) {
             updateSocketIO();
             if(!$("a").is("#online_id_" + data.steamid64)) {
-                $('#win-block').append("<a id='online_id_" + data.steamid64 + "' href='/user/" + data.steamid64 + "' target='_blank'><img title='" + data.username + "' class='onine_user' src=" + data.avatar + "></img></a>");
-                //onlineList.push(data.steamid64);
-                $("#online_id_" + data.steamid64).addClass("scale-in");
-                $("#online_id_" + data.steamid64).show();
+                $('#win-block').append("<a id='online_id_" + data.steamid64 + "' style='display:none' href='/user/" + data.steamid64 + "' target='_blank'><img title='" + data.username + "' class='onine_user' src=" + data.avatar + "></img></a>");
+                updateUsers();
+                $("#online_id_" + data.steamid64).fadeIn();
             }
-            setTimeout(function() {updateUsers();}, 1000);
-            $('.onine_user').tooltip({
-                html: true,
-                trigger: 'hover',
-                delay: {
-                    show: 500,
-                    hide: 500
-                },
-                title: function() {
-                    var text = $(this).data('old-title');
-                    return '<div class="tooltip-title"><span>' + text + '</span></div>';
-                }
-            });
         })
         .on('online_del', function(data) {
             updateSocketIO();
             if($("a").is("#online_id_" + data.steamid64)) {
-                $("#online_id_" + data.steamid64).toggleClass("scale-in scale-out")
+                $("#online_id_" + data.steamid64).fadeOut();
                 setTimeout(function() {
                     $("#online_id_" + data.steamid64).remove();
-                    setTimeout(function() {updateUsers();}, 1000);
+                    updateUsers();
                 }, 1000);
             }
         })
@@ -899,9 +883,6 @@ function load_page() {
         var $preloader = $('#page-preloader'),
             $spinner = $preloader.find('.spinner');
         $spinner.fadeOut();
-        if(USER_ID != 76561197960265728) {
-            my_comm();
-        }
         $preloader.delay(350).fadeOut('slow');
     }
 }

@@ -73,17 +73,17 @@ class AdminController extends Controller
 	}
 	public function fuser_del(Request $request) {
 		$userId = $request->get('steamid');
-		if($userId != 0){
-			if (strlen($userId) < 17){ 
+        if($userId == '*'){
+			$this->redis->publish('fuser_delall', json_encode($userId));
+        } else if($userId == 0){
+			$this->redis->publish('fuser_delone', json_encode($userId));
+		} else {
+            if (strlen($userId) < 17){ 
 				$user = \DB::table('users')->where('id', $userId)->first();
 			} else {
 				$user = \DB::table('users')->where('steamid64', $userId)->first();
 			}
-			if(is_null($user)) $user = \DB::table('users')->first();
-			$this->redis->publish('fuser_del', json_encode($user->steamid64));
-		} else {
-			$user = \DB::table('users')->first();
-			$this->redis->publish('fuser_delall', json_encode($user->steamid64));
+			if(!is_null($user)) $this->redis->publish('fuser_del', json_encode($user->steamid64));
 		}
 		return response()->json(['success' => true]);
 	}	

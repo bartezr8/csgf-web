@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Inspire::class,
-        \App\Console\Commands\UpdatePrices::class
+        \App\Console\Commands\Parser::class,
+        \App\Console\Commands\Online::class
     ];
 
     /**
@@ -26,8 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('inspire')->hourly();
-        $schedule->command('prices:update --bp --fast')->cron('0 */3 * * *');
-        $schedule->command('prices:update --parser')->cron('30 */3 * * *');
-        //$schedule->command('node /srv/csgf/node/parser.js')->cron('0 */6 * * *');
+        $schedule->command('parser:prices --bp --fast')->cron('0 */3 * * *');
+        $schedule->command('parser:prices --parser')->cron('30 */3 * * *');
+        $schedule->command('online:change')->cron('*/1 * * * *');
     }
 }

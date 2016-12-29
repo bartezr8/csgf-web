@@ -1,7 +1,5 @@
 <!-- Chat -->
-
     <div id="chatHeader" style="display: none;">Чат</div>
-
     <div id="chatContainer" class="chat-with-prompt" style="display: none;box-shadow: 0 0 10px #1E2127;">
         <span id="chatClose" class="chat-close"></span>
         <div id="chatHeader">Чат</div>
@@ -11,14 +9,8 @@
                 <div style="margin-top:7px;margin-bottom: 9px;text-align: -webkit-auto;border-bottom: 1px solid #2D4455;">
                     <ul>
                         <li style="list-style: none;"><span class="title">В очереди:</span> <span style="color: #8bb629" id="count_trades">0</span> <span class="title">трейдов</span></li>
-                        @if(!Auth::guest())
-                        <li style="list-style: none; margin-top: 3px"><span class="title">Ваша комиссия:</span> <span id="my_comission" style="color: rgb(139, 182, 41);">10</span> <span class="title">%</span></li>
-                        @endif
                     </ul>
                 </div>
-                <!--div style="margin-top:7px;margin-bottom: 9px;">
-                    На нашем сайте присутствует система по которой с выигрыша каждого приглашенного вами человека вам начисляеся 1 процент валютой сайта (карточками)
-                </div-->
             </div>
         </div>
         <div id="chatScroll">
@@ -78,4 +70,4 @@
             </div>
         </div>
     </div>
-    <!-- Chat END -->
+<!-- Chat END -->
