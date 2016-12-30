@@ -136,7 +136,19 @@ class AdminController extends Controller
         $words = json_decode($words);
 		return response()->json($words);
 	}
-	public function updateMute(Request $request){
+	public function updateUNick(Request $request){
+		if ($request->get('value')==''){
+			$value = $request->get('steamid');
+		} else {
+			$value = $request->get('value');
+		}
+		$user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
+		\DB::table('users')
+		->where('steamid64', $request->get('steamid'))
+		->update(['username' => $value]);
+		return response()->json(['success' => true, 'value' => $value]);
+	}
+    public function updateMute(Request $request){
 		if ($request->get('value')==''){
 			$value = 0;
 		} else {

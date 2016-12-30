@@ -19,7 +19,7 @@
 				</div>
 				<span class="icon-arrow-right"></span>
 				<div class="buy-card-item">
-					<span class="text">За каждого приглашенного вы сразу</span><br><span class="text">получите</span><span style="color: #d1ff78;font-size: 20px;font-weight: 600;margin-left: 5px;margin-right: 5px;">{{ \App\Http\Controllers\RefController::ADD_MONEY_REF }}</span><span class="text">руб. и 1% с его побед</span>
+					<span class="text">За каждого приглашенного вы сразу</span><br><span class="text">получите</span><span style="color: #d1ff78;font-size: 20px;font-weight: 600;margin-left: 5px;margin-right: 5px;">{{ \App\Http\Controllers\RefController::ADD_MONEY_REF }}</span><span class="text">руб.</span>
 				</div>
 				<span class="icon-arrow-right"></span>
 

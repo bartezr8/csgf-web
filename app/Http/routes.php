@@ -129,6 +129,7 @@ Route::group(['middleware' => 'auth'], function () {
     get('/admin/users', ['as' => 'give', 'uses' => 'AdminController@users', 'middleware' => 'access:moderator']);    
     get('/admin/user/{user}', ['as' => 'give', 'uses' => 'AdminController@user', 'middleware' => 'access:moderator']);    
     post('/admin/userinfo', ['as' => 'give', 'uses' => 'AdminController@userinfo', 'middleware' => 'access:moderator']);
+    post('/admin/users/updateNick', ['as' => 'give', 'uses' => 'AdminController@updateUNick', 'middleware' => 'access:moderator']);
     post('/admin/users/updateMute', ['as' => 'give', 'uses' => 'AdminController@updateMute', 'middleware' => 'access:moderator']);
     post('/admin/users/updateBan', ['as' => 'give', 'uses' => 'AdminController@updateBan', 'middleware' => 'access:moderator']);
     post('/admin/users/updateBanSup', ['as' => 'give', 'uses' => 'AdminController@updateBanSup', 'middleware' => 'access:moderator']);

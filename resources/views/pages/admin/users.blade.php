@@ -62,7 +62,7 @@
 						</td>
 						<td class="winner-name" >
 							<div class="user-ava"><img id="user-ava" src="{{ $user->avatar }}"></div>
-							<span id="user-name" style="max-width:150px;">{{ $user->username }}</span>
+                            <input onchange="updateNick(this.value)" class="ainput" type="text" id="user-name" style="overflow: hidden;width:75%;float:none; text-align: center;" cols="50" placeholder="{{ $user->username }}" maxlength="100" value="" autocomplete="off">
 						</td>
 						<td class="participations"><input onchange="updateMute(this.value)" class="ainput" type="text" id="banc" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->banchat }}" maxlength="18" value="" autocomplete="off"></td>
 						<td class="win-count"><input onchange="updateBan(this.value)" class="ainput" type="text" id="ban" style="overflow: hidden;width:100%; text-align: center;" cols="50" placeholder="{{ $user->ban }}" maxlength="18" value="" autocomplete="off"></td>
@@ -93,7 +93,10 @@
 						$('#user-name').text(data.username);
 						$("#user-ava").attr("src", data.avatar);
 						$('#steamid64').text(data.steamid64);
-						
+                        
+						$('#user-name').attr("placeholder", data.username);
+                        $('#user-name').val('');
+                        
 						$("#money").attr("placeholder", data.money);
 						$("#money").val('');
                         
@@ -176,6 +179,29 @@
 				});
 				$("#banc").attr("placeholder", data.value);
 				$("#banc").val('');
+			},
+			error: function () {
+				$.notify("Произошла ошибка. Попробуйте еще раз", {
+					className: "error"
+				});
+			}
+		});
+    }
+    function updateNick(value) {
+		$.ajax({
+			url: '/admin/users/updateNick',
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				steamid: $('#steamid64').text(),
+				value: value
+			},
+			success: function (data) {
+				$.notify("Данные изменены", {
+					className: "success"
+				});
+				$("#user-name").attr("placeholder", data.value);
+				$("#user-name").val('');
 			},
 			error: function () {
 				$.notify("Произошла ошибка. Попробуйте еще раз", {
