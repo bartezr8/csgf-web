@@ -669,28 +669,22 @@ if(START /*&& onpage*/) {
                     updateBalance();
                 }
             }
-            $('html, body').animate({
-                'scrollTop': '0'
-            }, 'slow');
+            $('html, body').animate({'scrollTop': '0'}, 'slow');
             updateChatScroll();
-            $('#usersCarouselConatiner').css({
-                'z-index': '0'
-            });
+            $('#usersCarouselConatiner').css({'z-index': '0'});
             var audio = new Audio('/assets/sounds/newgamestartm.mp3');
             if(sound_status) audio.play();
             $('#usersCarousel').css("transform", "translate(0px)").css('transition-duration', '0ms');
             $('#usersChances .users .current-chance-wrap').html('');
             $('#usersChances .items .current-chance-wrap').html('');
             $('#usersChances').hide();
-            /*$('#div_winner_112').hide();*/
             $('#deposits').html('');
-            updateBackground();
             $('#myItemsCount').html('0 <span style="font-size: 12px;"> предметов</span>');
             $('#myChance').text('0%');
             $('#roundId').text(data.id);
             $('#roundBank').html('0 <span class="money" style="color: #b3e5ff;">руб</span>');
             $('#hash').text(data.hash);
-            $('.item-bar-text').html('<span>0</span> предметов');
+            $('.item-bar-text').html('<span>0<span style="font-weight: 100;"> / </span>200</span> предметов');
             $('.item-bar').css('width', '0%');
             $('#roundFinishBlock').hide();
             $('#barContainer').show();
@@ -703,6 +697,7 @@ if(START /*&& onpage*/) {
             $('title').text('0 р. | CSGF.RU');
             $('#roundStartBlock #date').html(data.created_at);
             ngtimerStatus = true;
+            updateBackground();
         })
         .on('depositDecline', function(data) {
             updateSocketIO();

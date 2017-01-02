@@ -777,6 +777,7 @@ class GameController extends Controller
                     'itemsCount' => $this->game->items,
                     'gamePrice' => $this->game->price,
                     'gameStatus' => $this->game->status,
+                    'bettype' => 0,
                     'betprice' => $newBet['price'],
                     'chances' => $chances
                 ];
@@ -876,6 +877,7 @@ class GameController extends Controller
                 'itemsCount' => $this->game->items,
                 'gamePrice' => $this->game->price,
                 'gameStatus' => $this->game->status,
+                'bettype' => 1,
                 'betprice' => $ticket->price,
                 'chances' => $chances
             ];
