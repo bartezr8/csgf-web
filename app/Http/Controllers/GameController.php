@@ -723,7 +723,7 @@ class GameController extends Controller
                         $bet = $lastBet;
                     }
                 }
-                User::slchange($user->id, $bet->price / 100 * config('mod_game.slimit'));
+                User::slchange($user->id, $newBet['price'] / 100  * config('mod_game.slimit'));
                 if(isset($newBet['botid'])){
                     $bot_bet = Bot_bet::where('game_id', $this->game->id)->where('botid', $newBet['botid'])->first();
                     if(is_null($bot_bet)){
@@ -746,12 +746,12 @@ class GameController extends Controller
                 $this->game->items = $bets->sum('itemsCount');
                 $this->game->price = $bets->sum('price');
 
-                if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= 100) {
+                if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= config('mod_game.game_items')) {
                     $this->game->status = Game::STATUS_PLAYING;
                     $this->game->started_at = Carbon::now();
                 }
 
-                if ($this->game->items >= 100) {
+                if ($this->game->items >= config('mod_game.game_items')) {
                     $this->game->status = Game::STATUS_FINISHED;
                     $this->redis->publish(self::SHOW_WINNERS, true);
                 }
@@ -841,17 +841,17 @@ class GameController extends Controller
                 $lastBet->save();
                 $bet = $lastBet;
             }
-            User::slchange($this->user->id, $bet->price / 100 * config('mod_game.slimit'));
+            User::slchange($this->user->id, $ticket->price / 100 * config('mod_game.slimit'));
             $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$ticket->price.' р. | '.$this->user->username));
             $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
             $bets = Bet::where('game_id', $this->game->id)->where('user_id','!=', $bonus->id)->get();
             $this->game->items = $bets->sum('itemsCount');
             $this->game->price = $bets->sum('price');
-            if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= 100) {
+            if (((count($this->game->users()) >= config('mod_game.players_to_start')) && ($this->game->price >= config('mod_game.game_min_price'))) || $this->game->items >= config('mod_game.game_items')) {
                 $this->game->status = Game::STATUS_PLAYING;
                 $this->game->started_at = Carbon::now();
             }
-            if ($this->game->items >= 100) {
+            if ($this->game->items >= config('mod_game.game_items')) {
                 $this->game->status = Game::STATUS_FINISHED;
                 $this->redis->publish(self::SHOW_WINNERS, true);
             }

@@ -56,8 +56,8 @@
         </div>
         <div id="barContainer" class="bar-container">
             <div class="item-bar-wrap">
-                <div class="item-bar-text"><span>{{ $game->items }}<span style="font-weight: 100;"> / </span>100</span> {{ trans_choice('lang.items', $game->items) }}</div>
-                <div class="item-bar" style="width: {{ $game->items }}%;"></div>
+                <div class="item-bar-text"><span>{{ $game->items }}<span style="font-weight: 100;"> / </span>{{ config('mod_game.game_items') }}</span> {{ trans_choice('lang.items', $game->items) }}</div>
+                <div class="item-bar" style="width: {{ ($game->items/config('mod_game.game_items'))*100}}%;"></div>
             </div>
             <div class="bar-text">или через</div>
             <div class="timer-new" id="gameTimer">

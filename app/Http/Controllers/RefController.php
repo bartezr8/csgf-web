@@ -12,7 +12,7 @@ class RefController extends Controller
 {
 
 	const TITLE_UP = 'Реферал | ';
-	const ADD_MONEY_MAIN_REF = 1; //Деньги пришедший
+	const ADD_MONEY_MAIN_REF = 2; //Деньги пришедший
 	const ADD_MONEY_REF = 1; //Деньги пригласившего
 	const CHECK = 1; // 0-выкл. 1-Проверка на ставку 2-проверка на CSGO 3-Все сразу
 	const GAMESNEED = 1; // Необходимо игр
