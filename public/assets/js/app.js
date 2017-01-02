@@ -497,7 +497,7 @@ if(START /*&& onpage*/) {
             updateBackground();
             $('#roundBank').html(Math.round(data.gamePrice) + ' <span class="money" style="color: #b3e5ff;">руб</span>');
             $('title').text(Math.round(data.gamePrice) + ' р. | CSGF.RU');
-            $('.item-bar-text').html('<span>' + (data.itemsCount/200)*100 + '<span style="font-weight: 100;"> / </span>200</span>' + n2w(data.itemsCount, [' предмет', ' предмета', ' предметов']));
+            $('.item-bar-text').html('<span>' + data.itemsCount + '<span style="font-weight: 100;"> / </span>200</span>' + n2w(data.itemsCount, [' предмет', ' предмета', ' предметов']));
             $('.item-bar').css('width', data.itemsCount + '%');
             $('.deposit-item').tooltip({
                 container: 'body',
