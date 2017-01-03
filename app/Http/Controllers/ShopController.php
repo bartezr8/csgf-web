@@ -52,6 +52,18 @@ class ShopController extends Controller {
         }
 		return redirect('/admin');
 	}
+    public function clearShop(Request $request){
+        if($request->get('id') == '*'){
+            DB::table('shop')->truncate();
+        } else {
+            DB::table('shop')->where('bot_id', '=', $request->get('id'))->delete();
+        }
+		return redirect('/admin');
+	}
+    public function updateSTrade(Request $request){
+        DB::table('shop_offers')->where('id', $request->get('id'))->update(['status' => $request->get('status')]);
+		return redirect('/admin');
+	}
     public function history()
 	{
         parent::setTitle('История покупок | ');

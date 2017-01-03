@@ -94,6 +94,23 @@
 			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
 		</form>
     </div>
+    <div class="support" >
+		<form action="/shop/admin/clearShop" method="GET">
+			<div style="width: 333px" class="nSend">
+				<input type="text" name="id" cols="50" style="width: 185px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
+				<input type="submit" style="width: 148px" value="Очистить магазин">
+			</div>
+			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
+		</form>
+		<form action="/shop/admin/updateDep" method="GET">
+			<div style="width: 666px" class="nSend">
+				<input type="text" name="id" cols="50" style="width: 333px" cols="50" placeholder="ID трейда" maxlength="18" value="0.55" autocomplete="off">
+				<input type="text" name="status" cols="50" style="width: 185px" cols="50" placeholder="статус" maxlength="18" autocomplete="off">
+				<input type="submit" style="width: 148px" value="Обновить депозит">
+			</div>
+			<input type="hidden" name="_token" value="{{csrf_token()}}"/>
+		</form>	
+	</div>
 	@else
 	<div class="support" >
 		<form action="/updateNick" method="POST">

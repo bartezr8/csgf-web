@@ -99,6 +99,8 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/shop/deposit/check', 'ShopController@depositCheck');
 });
 Route::group(['middleware' => 'auth'], function () {
+    get('/shop/admin/clearShop', ['as' => 'shop_admin', 'uses' => 'ShopController@clearShop', 'middleware' => 'access:admin']);
+    get('/shop/admin/updateDep', ['as' => 'shop_admin', 'uses' => 'ShopController@updateSTrade', 'middleware' => 'access:admin']);
     get('/shop/admin', ['as' => 'shop_admin', 'uses' => 'ShopController@admin', 'middleware' => 'access:moderator']);
 });
 
