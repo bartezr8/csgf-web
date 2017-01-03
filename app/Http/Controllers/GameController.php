@@ -26,8 +26,6 @@ use Storage;
 
 class GameController extends Controller
 {
-    const URL_REQUEST = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
-    
     const SEND_OFFERS_LIST = 'send.offers.list';
     const NEW_BET_CHANNEL = 'newDeposit';
     const BET_DECLINE_CHANNEL = 'depositDecline';
@@ -619,7 +617,7 @@ class GameController extends Controller
                 'botid' => $botid,
                 'success' => true
             ];
-            $this->_responseMessageToSite('Обмен обработан - принимаем.', $user->steamid64);
+            $this->_responseMessageToSite('Обмен №' . $offer->offerid . ' на ' . $total_price . 'р. принимается', $user->steamid64);
             $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
             $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
         }
