@@ -5,31 +5,31 @@ use Illuminate\Database\Schema\Blueprint;
 
 class CreateItemsFastTable extends Migration {
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('items_fast', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->string('market_hash_name');
-			$table->float('price');
-			$table->timestamps();
-		});
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('items_fast', function(Blueprint $table)
+        {
+            $table->increments('id');
+            $table->string('market_hash_name');
+            $table->float('price');
+            $table->timestamps();
+        });
+    }
 
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('items_fast');
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('items_fast');
+    }
 
 }

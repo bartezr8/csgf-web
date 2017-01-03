@@ -21,7 +21,7 @@
             <div class="left-block">
                 <div class="information-block">
                     <ul class="list-reset">
-                        <li>						
+                        <li>                        
                             <div class="statBot">
                                 <span id="statBot" class="{{ $steam_status }}" title="Нагрузка серверов Steam: {{ trans('lang.status.steam.' . $steam_status) }}" data-toggle="tooltip"></span>
                             </div>

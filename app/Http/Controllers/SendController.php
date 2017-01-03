@@ -11,8 +11,8 @@ use App\Http\Controllers\Controller;
 use Storage;
 
 class SendController extends Controller {
-	const TITLE_UP = "Перевод | ";
-	
+    const TITLE_UP = "Перевод | ";
+    
     private function _responseMessageToSite($message, $userid)
     {
         return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
@@ -25,7 +25,7 @@ class SendController extends Controller {
         return json_encode($perevod);
     }
     
-	public function send(Request $request){
+    public function send(Request $request){
 
         $sum = $request->get('sum');
         if($this->user->ban) return response()->json(['text' => 'Вы забанены на сайте!', 'type' => 'error']);
@@ -46,6 +46,6 @@ class SendController extends Controller {
             'money_id_from' => $this->user->steamid64,
         ]);
         $this->_responseMessageToSite('Вам переведены '.$sum.'р. от '.$this->user->username, $user->steamid64);
-		return response()->json(['text' => 'Средства переведены.', 'type' => 'success']);
-	}
+        return response()->json(['text' => 'Средства переведены.', 'type' => 'success']);
+    }
 }

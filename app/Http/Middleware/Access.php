@@ -25,13 +25,13 @@ class Access
                 }
             break;
             case 'moderator':
-				if(!$request->user()->is_admin){
-					if(!$request->user()->is_moderator){
-						if($request->ajax())
-							return response('Access Denied')->setStatusCode(403);
-						abort(404);
-					}
-				}
+                if(!$request->user()->is_admin){
+                    if(!$request->user()->is_moderator){
+                        if($request->ajax())
+                            return response('Access Denied')->setStatusCode(403);
+                        abort(404);
+                    }
+                }
             break;
             default:
                 return response('Access Denied')->setStatusCode(403);

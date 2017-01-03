@@ -432,16 +432,16 @@ class GameController extends Controller
         return $game;
     } 
     public function fixRequest(Request $request){
-		$gameid = $request->get('game_id'); $count = 0;
-		if ($gameid == '*'){
-			$games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
+        $gameid = $request->get('game_id'); $count = 0;
+        if ($gameid == '*'){
+            $games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
             foreach($games as $game){
                 $count = self::fixBotBets($game->id);
             }
-		} else {
-			$count = self::fixBotBets($gameid);
-		}
-		return redirect('/admin');
+        } else {
+            $count = self::fixBotBets($gameid);
+        }
+        return redirect('/admin');
     }
     public function checkBrokenGames(Request $request){
         $games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
@@ -449,7 +449,7 @@ class GameController extends Controller
         foreach($games as $game){
             $count = self::fixBotBets($game->id);
         }
-		return response()->json(['success' => true, 'count' => $count]);
+        return response()->json(['success' => true, 'count' => $count]);
     }
     private function fixBotBets($gameid){
         $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->get();
@@ -895,7 +895,7 @@ class GameController extends Controller
         $slimit_ = '';
         if(!Auth::guest()){
             $slimit = $this->user->slimit;
-			while($slimit>1000){
+            while($slimit>1000){
                 $slimit = round($slimit/1000,1);
                 $slimit_ .='к';
             }

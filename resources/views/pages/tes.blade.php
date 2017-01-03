@@ -1,10 +1,10 @@
 @extends('layout')
 @section('content')
     <div class="faq-page">
-		<div class="escrow-banner">
-			<div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ВАЖНЫЕ ИЗМЕНЕНИЯ В <b>STEAM</b>: ВСЕМ ПОЛЬЗОВАТЕЛЯМ НЕОБХОДИМО УСТАНОВИТЬ МОБИЛЬНЫЙ АУТЕНТИФИКАТОР!!!</div>
-			<a href="/escrow" target="_blank">ЧИТАТЬ ПОДРОБНЕЕ</a>
-		</div>
+        <div class="escrow-banner">
+            <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ВАЖНЫЕ ИЗМЕНЕНИЯ В <b>STEAM</b>: ВСЕМ ПОЛЬЗОВАТЕЛЯМ НЕОБХОДИМО УСТАНОВИТЬ МОБИЛЬНЫЙ АУТЕНТИФИКАТОР!!!</div>
+            <a href="/escrow" target="_blank">ЧИТАТЬ ПОДРОБНЕЕ</a>
+        </div>
 
         <div class="title-block">
             <h2>
@@ -78,7 +78,7 @@
                     - минимальная сумма депозита {{ config('mod_game.min_price') }} рублей;<br>
                     - максимально предметов за обмен - {{ config('mod_game.max_items_per_trade') }}<br>
                     - принимаются предметы только с CS:GO;<br>
-					- если вы забанены на сайте бот примет вещи но не сделает ставку;
+                    - если вы забанены на сайте бот примет вещи но не сделает ставку;
                 </div>
             </div>
             <div class="page-main-block">

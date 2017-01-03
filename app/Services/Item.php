@@ -21,20 +21,20 @@ class Item {
         $this->price = $this->getItemPrice($this->market_hash_name);
     }
     private function curl($url) {
-		$ch = curl_init();
+        $ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
 
-		$data = curl_exec($ch);
-		curl_close($ch);
+        $data = curl_exec($ch);
+        curl_close($ch);
 
-		return $data;
-	}
+        return $data;
+    }
     public static function getItemPrice($item_name) {
         $price_item = false; $count = 0;
         $si = Item_Steam::where('market_hash_name', $item_name)->first();

@@ -68,11 +68,11 @@ class Game extends Model
         return round(self::max('price'));
     }
 
-	public static function sumFW()
+    public static function sumFW()
     {
         return ($price = self::where('created_at', '>=', Carbon::today()->subWeek())->sum('price')) ? $price : 0;
     }
-	public static function sumFAT()
+    public static function sumFAT()
     {
         return ($price = self::sum('price')) ? $price : 0;
     }

@@ -15,10 +15,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class ShopController extends Controller {
-	// REDIS каналы
-    const NEW_ITEMS_CHANNEL = 				'items.to.sale';
-    const GIVE_ITEMS_CHANNEL = 				'items.to.give';
-	const CHECK_ITEMS_CHANNEL = 			'items.to.check';
+    // REDIS каналы
+    const NEW_ITEMS_CHANNEL =                 'items.to.sale';
+    const GIVE_ITEMS_CHANNEL =                 'items.to.give';
+    const CHECK_ITEMS_CHANNEL =             'items.to.check';
     const STATUS_ITEMS_CHANNEL =            'items.to.status';
     const DECLINE_ITEMS_CHANNEL =           'shop.decline.list';
     const DEPOSIT_RESULT_CHANNEL =          'offers.deposit.result';
@@ -36,7 +36,7 @@ class ShopController extends Controller {
         $slimit_ = '';
         if(!Auth::guest()){
             $slimit = $this->user->slimit;
-			while($slimit>1000){
+            while($slimit>1000){
                 $slimit = round($slimit/1000,1);
                 $slimit_ .='к';
             }
@@ -50,32 +50,32 @@ class ShopController extends Controller {
         } else {
             $this->redis->publish('s'.$request->get('id').'_'.'updateShop', json_encode('data'));
         }
-		return redirect('/admin');
-	}
+        return redirect('/admin');
+    }
     public function clearShop(Request $request){
         if($request->get('id') == '*'){
             DB::table('shop')->truncate();
         } else {
             DB::table('shop')->where('bot_id', '=', $request->get('id'))->delete();
         }
-		return redirect('/admin');
-	}
+        return redirect('/admin');
+    }
     public function updateSTrade(Request $request){
         DB::table('shop_offers')->where('id', $request->get('id'))->update(['status' => $request->get('status')]);
-		return redirect('/admin');
-	}
+        return redirect('/admin');
+    }
     public function history()
-	{
+    {
         parent::setTitle('История покупок | ');
-		$items = Shop::where('buyer_id', $this->user->id)->orderBy('buy_at', 'desc')->get();
+        $items = Shop::where('buyer_id', $this->user->id)->orderBy('buy_at', 'desc')->get();
         $deposits = DB::table('deposits')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
         $shop_offers = DB::table('shop_offers')->where('user_id', $this->user->id)->orderBy('date', 'desc')->get();
         return view('pages.shop.history', compact('items', 'deposits', 'shop_offers'));
     }
     public function admin()
-	{
+    {
         parent::setTitle('История покупок | ');
-		$items = [];
+        $items = [];
         $deposits = DB::table('deposits')->orderBy('date', 'desc')->get();
         $shop_offers = DB::table('shop_offers')->orderBy('date', 'desc')->get();
         return view('pages.shop.history', compact('items', 'deposits', 'shop_offers'));
@@ -83,35 +83,35 @@ class ShopController extends Controller {
     
     public function sendItem($items,$botid)
     {
-		$senditems = [];
+        $senditems = [];
         foreach ($items as $item) { $senditems[] = $item->inventoryId; }
         $value = [ 'appId' => config('mod_game.appid'), 'items' => $senditems, 'steamid' => $this->user->steamid64, 'accessToken' => $this->user->accessToken ];
         $this->redis->rpush('s'.$botid.'_'.self::GIVE_ITEMS_CHANNEL, json_encode($value));
     }
     public function shop()
-	{
-		$returnValue = [];
+    {
+        $returnValue = [];
         $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)
-			->groupBy('classid')
+            ->groupBy('classid')
             ->orderBy('price', 'desc')
-			->orderBy('name')
+            ->orderBy('name')
             ->get();
-		foreach ($items as $item) {
-			$returnValue[] = [
-				$item->id, 
-				Shop::countItem($item->classid), 
-				$item->name, 
-				$item->price, 
-				$item->classid, 
-				$item->quality, 
-				Shop::getClassRarity($item->rarity), 
-				$item->rarity
-			];
-		}
-		return response()->json(['list' => $returnValue, 'off' => false]);
+        foreach ($items as $item) {
+            $returnValue[] = [
+                $item->id, 
+                Shop::countItem($item->classid), 
+                $item->name, 
+                $item->price, 
+                $item->classid, 
+                $item->quality, 
+                Shop::getClassRarity($item->rarity), 
+                $item->rarity
+            ];
+        }
+        return response()->json(['list' => $returnValue, 'off' => false]);
     }
     public function setItemStatus(Request $request)
-	{
+    {
         $bot_id = $request->get('bot_id');
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::STATUS_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
@@ -131,7 +131,7 @@ class ShopController extends Controller {
                     }
                     $user_id = $item->buyer_id;
                 }
-			}
+            }
             $user = User::find($user_id);
             if(!is_null($user)){
                 User::mchange($user->id, $total_price);
@@ -170,7 +170,7 @@ class ShopController extends Controller {
         $this->redis->publish('addShop', json_encode($returnValue));
     }
     public function _parseItems($items)
-	{
+    {
         $itemInfo = []; $total_price = 0; $i = 0;
         foreach ($items as $item) {
             $value = $item['classid'];
@@ -191,18 +191,18 @@ class ShopController extends Controller {
                     unset($items[$i]['appid']);
                     $i++;
                 }
-			}
+            }
         }
         return $total_price;
     }
     public function addItemsToSale(Request $request)
-	{
+    {
         $bot_id = $request->get('bot_id');
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::NEW_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
-			$returnValue = [];
+            $returnValue = [];
             $items = json_decode($jsonItem, true);
-			$total_price = $this->_parseItems($items);
+            $total_price = $this->_parseItems($items);
             foreach($items as $item) {
                 $info = new Item($item);
                 if(Item::pchk($info)){
@@ -211,44 +211,44 @@ class ShopController extends Controller {
                     Shop::create($item);
                     $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
                 }
-			}
-			$returnValue = ['list' => $returnValue, 'off' => false];
-			$this->redis->publish('addShop', json_encode($returnValue));
+            }
+            $returnValue = ['list' => $returnValue, 'off' => false];
+            $this->redis->publish('addShop', json_encode($returnValue));
             $this->redis->lrem('s'.$bot_id.'_'.self::NEW_ITEMS_CHANNEL, 1, $jsonItem);
-        }		
+        }        
         return response()->json(['success' => true]);
     }
     public function checkShop(Request $request){
         $bot_id = $request->get('bot_id');
-		$items = DB::table('shop')->where('bot_id', '=', $bot_id)->get();
-		$delitems = []; foreach ($items as $item){ $delitems[] = $item->classid; }
-		$returnValue = ['list' => $delitems, 'off' => false];
-		$this->redis->publish('delShop', json_encode($returnValue));
-		DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
+        $items = DB::table('shop')->where('bot_id', '=', $bot_id)->get();
+        $delitems = []; foreach ($items as $item){ $delitems[] = $item->classid; }
+        $returnValue = ['list' => $delitems, 'off' => false];
+        $this->redis->publish('delShop', json_encode($returnValue));
+        DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
             $returnValue = [];
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
-			foreach($itemsToAdd as $item) {
-				$info = new Item($item);
-				if (Item::pchk($info)) {
-					$item['steam_price'] = $info->price;
-					$item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-					$item = Shop::create($item);
+            foreach($itemsToAdd as $item) {
+                $info = new Item($item);
+                if (Item::pchk($info)) {
+                    $item['steam_price'] = $info->price;
+                    $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
+                    $item = Shop::create($item);
                     $returnValue[] = [ $item->id, Shop::countItem($item->classid), $item->name, $item->price, $item->classid, $item->quality, Shop::getClassRarity($item->rarity), $item->rarity ];
                 }
-			}
+            }
             $returnValue = ['list' => $returnValue, 'off' => false]; 
             $this->redis->publish('addShop', json_encode($returnValue));
-		}
+        }
         return response()->json(['success' => true]);
     }
     public function getcart(Request $request){
-		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user.' . $this->user->id, '', 5);
+        if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
+        \Cache::put('shop.user.' . $this->user->id, '', 5);
         
-		if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
+        if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
         if ($this->user->ban != 0) return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте']);
         $classids = $request->get('classids'); $itemsum = 0; $fintems = [];
         if (is_null($classids)) return response()->json(['success' => false, 'msg' => 'Вы ничего не выбрали!']);
@@ -279,7 +279,7 @@ class ShopController extends Controller {
                 $item->buyer_id = $this->user->id;
                 $item->buy_at = Carbon::now();
                 $item->save();
-                $senditems[] = $item;								
+                $senditems[] = $item;                                
                 if (count($senditems) == config('mod_shop.items_per_trade')){
                     $this->sendItem($senditems,$bot_id);
                     $senditems = [];
@@ -298,7 +298,7 @@ class ShopController extends Controller {
             'type' => 1
         ]);
         return response()->json(['success' => true, 'msg' => 'Предметы будут отправлены в течение 1 мин.']);
-	}
+    }
     
     
     // DEPOSIT
@@ -317,7 +317,7 @@ class ShopController extends Controller {
     public function depositToCheck(Request $request)
     {
         $aoffers = DB::table('shop_offers')->where('bot_id', $request->get('bot_id'))->where('status', 0)->get();
-		if(is_null($aoffers)) return response()->json(['success' => true, 'trades' => []]);
+        if(is_null($aoffers)) return response()->json(['success' => true, 'trades' => []]);
         if(!count($aoffers)) return response()->json(['success' => true, 'trades' => []]);
         $trades = []; foreach($aoffers as $offer) $trades[] = $offer->tradeid;
         if(count($trades) > 0) return response()->json(['success' => true, 'trades' => $trades]);
@@ -367,9 +367,9 @@ class ShopController extends Controller {
         return response()->json(['success' => true]);
     }
     public function sellitems(Request $request){
-		if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user.' . $this->user->id, '', 5);
-		if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
+        if (\Cache::has('shop.user.' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
+        \Cache::put('shop.user.' . $this->user->id, '', 5);
+        if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
         $aoffer = DB::table('shop_offers')->where('user_id', $this->user->id)->where('status', 0)->first();
         if(!is_null($aoffer)) return response()->json(['success' => false, 'msg' => 'У вас уже есть неподтвержденный обмен']);
         $classids = $request->get('classids');
@@ -398,33 +398,33 @@ class ShopController extends Controller {
             if(isset($out['error'])) $msg = $out['error'];
             return response()->json(['success' => false, 'msg' => $msg]);
         }
-	}
+    }
     public function myinventory(Request $request)
     {
-		$success = true; $returnValue = [];
-		if(!\Cache::has('shop_inv_' . $this->user->steamid64)) {
-			$returnValue = self::updatemyinventory($this->user->steamid64);
-			$success = $returnValue['success'];
-			$returnValue = $returnValue['list'];
-			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
-		} else {
-			$returnValue = \Cache::get('shop_inv_' . $this->user->steamid64);
-		}
-		$list = $returnValue;
-		return response()->json(['list' => $list, 'success' => $success]);
+        $success = true; $returnValue = [];
+        if(!\Cache::has('shop_inv_' . $this->user->steamid64)) {
+            $returnValue = self::updatemyinventory($this->user->steamid64);
+            $success = $returnValue['success'];
+            $returnValue = $returnValue['list'];
+            \Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
+        } else {
+            $returnValue = \Cache::get('shop_inv_' . $this->user->steamid64);
+        }
+        $list = $returnValue;
+        return response()->json(['list' => $list, 'success' => $success]);
     }
-	public function inv_update(Request $request){
+    public function inv_update(Request $request){
         if (\Cache::has('shop.user_inv_' . $this->user->id)) return response()->json(['success' => false, 'msg' => 'Подождите...']);
-		\Cache::put('shop.user_inv_' . $this->user->id, '', 30);
-		$returnValue = self::updatemyinventory($this->user->steamid64);
+        \Cache::put('shop.user_inv_' . $this->user->id, '', 30);
+        $returnValue = self::updatemyinventory($this->user->steamid64);
         $success = false;
-		if($returnValue['success']){
-			$success = $returnValue['success'];
-			$returnValue = $returnValue['list'];
-			\Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
-		}
-		return response()->json(['success' => $success]);
-	}
+        if($returnValue['success']){
+            $success = $returnValue['success'];
+            $returnValue = $returnValue['list'];
+            \Cache::put('shop_inv_' . $this->user->steamid64, $returnValue, 12 * 60 * 60);
+        }
+        return response()->json(['success' => $success]);
+    }
     private function updatemyinventory($userid)
     {
         $jsonInventory = GameController::curl('http://steamcommunity.com/inventory/' . $userid . '/730/2?l=russian&count=1000');
@@ -479,11 +479,11 @@ class ShopController extends Controller {
                 $success = false;
             }
         } else {
-			$success = false;
-		}
+            $success = false;
+        }
         foreach($myItems as $key => $mi){
             $returnValue[] = $mi;
         }
-		return ['list' => $returnValue, 'success' => $success];
+        return ['list' => $returnValue, 'success' => $success];
     }
 }

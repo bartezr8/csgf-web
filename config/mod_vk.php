@@ -1,7 +1,7 @@
 <?php
 //config('mod_vk.confirmation_key')
 return [
-	'confirmation_key' => '23a66da8',//'dabec10f',//
+    'confirmation_key' => '23a66da8',//'dabec10f',//
     'group_id' => 133906356,//35255262,//
     'secret' => 'kJUgJ2oDqycty8JsolbhSb9IeveqWi',
     'access_token' => '904fcecacd6688612945adb341eb88b6e558f90c7d4cb4ac417c25197558012d63396802a81701f19a20a',//'d28fee58a39eaf680e6db0069eaf9cceafe7875e7f6fb5ee94667f94568dd03095ae933df7ccada18104c',//

@@ -48,7 +48,7 @@ return [
 
         'mysql' => [
             'driver'    => 'mysql',
-	    'unix_socket' => env('DB_UNIX'),
+        'unix_socket' => env('DB_UNIX'),
             'port'      => env('DB_PORT'),
             'host'      => env('DB_HOST'),
             'database'  => env('DB_DATABASE'),

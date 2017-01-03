@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 class VKController extends Controller {
-	public function index(Request $request){
+    public function index(Request $request){
         if($request->get('group_id') == config('mod_vk.group_id') && $request->get('secret') == config('mod_vk.secret')){
             switch ($request->get('type')){
                 case 'confirmation':
@@ -22,7 +22,7 @@ class VKController extends Controller {
             }
         }
         return 'ok';
-	}
+    }
     private function message_new($user_id, $body){
         if (Cache::has('vk.temp.' . $user_id)){return;} else {
             Cache::put('vk.temp.' . $user_id, '', 5);

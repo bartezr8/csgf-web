@@ -5,30 +5,30 @@ use Illuminate\Database\Schema\Blueprint;
 
 class CreateRefersTable extends Migration {
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('refers', function(Blueprint $table)
-		{
-			$table->integer('id', true);
-			$table->string('usera');
-			$table->string('userb');
-		});
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('refers', function(Blueprint $table)
+        {
+            $table->integer('id', true);
+            $table->string('usera');
+            $table->string('userb');
+        });
+    }
 
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('refers');
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('refers');
+    }
 
 }

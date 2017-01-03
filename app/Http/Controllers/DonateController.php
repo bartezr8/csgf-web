@@ -20,7 +20,7 @@ class DonateController extends Controller
             'message' => $message
         ]));
     }
-	
+    
     public function Donate(Request $request)
     {
         $payment = \DB::table('freekassa_payments')->where('id', $request->get('MERCHANT_ORDER_ID'))->first();
@@ -29,7 +29,7 @@ class DonateController extends Controller
         $sign = md5(config('pay.freekassa_id').':'.$request->get('AMOUNT').':'.config('pay.freekassa_s2').':'.$request->get('MERCHANT_ORDER_ID'));
         if ($request->get('SIGN') != $sign) return "Wrong SIGN";
         $user = User::find($payment->account); $vip = 1;
-		if (config('pay.vip_only') && (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) == false)) $vip = 0;
+        if (config('pay.vip_only') && (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) == false)) $vip = 0;
         $sum = $request->get('AMOUNT') + ($vip * $request->get('AMOUNT') * config('pay.factor')/100);
         User::mchange($user->id, $sum);
         User::slchange($user->id, $sum / 100 * config('mod_game.slimit'));

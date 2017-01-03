@@ -174,18 +174,18 @@ class BGameController extends Controller
                 $userItems[] = $item['classid'];
             }
         }
-		$value = [
-			'appId' => config('mod_game.appid'),
+        $value = [
+            'appId' => config('mod_game.appid'),
             'steamid' => $user->steamid64,
             'accessToken' => $user->accessToken,
             'items' => $userItems,
             'game' => $this->game->id
-		];
-		$this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
-		if (config('mod_game.comission_to_shop') && count($commissionItems)) {
-			$shopItems = [];
-			foreach ($commissionItems as $item) $shopItems[] = $item['classid'];
-			$shop_id = Shop::selectBot();
+        ];
+        $this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
+        if (config('mod_game.comission_to_shop') && count($commissionItems)) {
+            $shopItems = [];
+            foreach ($commissionItems as $item) $shopItems[] = $item['classid'];
+            $shop_id = Shop::selectBot();
             $shop = Shop::parceTradeLinkShop(config('mod_shop.bots')[$shop_id]);
             if ($shop != NULL) {
                 $valueShop = [
@@ -197,7 +197,7 @@ class BGameController extends Controller
                 ];
                 $this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($valueShop));
             }
-		}
+        }
         $this->redis->publish(self::LOG_CHANNEL, json_encode('БомжГейм Победил: '. $user->username . ' | Шанс на победу: '.$chance . ' | Комиссия: '.$tempPrice));
         $response = [
             'itemsInfo' => $itemsInfo,
@@ -214,32 +214,32 @@ class BGameController extends Controller
         return $game;
     }
     public function checkBrokenGames(){
-		$games = \DB::table('games')->where('status_prize', 2)->get();
+        $games = \DB::table('games')->where('status_prize', 2)->get();
         foreach($games as $game){
-			$this->fixg($game->id);
-		}
-	}
-	public function fixg($gameid){
-		$game = BGame::where('id', $gameid)->first();
-		$user = User::find($game['winner_id']);
-		$items = json_decode($game->won_items, true);
-		foreach ($items as $item) {
-			if (isset($item['classid'])) {
-				$returnItems[] = $item['classid'];
-			}
-		}
-		$value = [
-			'appId' => 730,
-			'steamid' => $user->steamid64,
-			'accessToken' => $user->accessToken,
-			'items' => $returnItems,
-			'game' => $gameid
-		];
-		$this->redis->rpush('send.offers.list', json_encode($value));
-		if ( $game->status != 3) {
-			\DB::table('games')->where('id', '=', $gameid)->update(['status' => 3]);
-		}
-	}
+            $this->fixg($game->id);
+        }
+    }
+    public function fixg($gameid){
+        $game = BGame::where('id', $gameid)->first();
+        $user = User::find($game['winner_id']);
+        $items = json_decode($game->won_items, true);
+        foreach ($items as $item) {
+            if (isset($item['classid'])) {
+                $returnItems[] = $item['classid'];
+            }
+        }
+        $value = [
+            'appId' => 730,
+            'steamid' => $user->steamid64,
+            'accessToken' => $user->accessToken,
+            'items' => $returnItems,
+            'game' => $gameid
+        ];
+        $this->redis->rpush('send.offers.list', json_encode($value));
+        if ( $game->status != 3) {
+            \DB::table('games')->where('id', '=', $gameid)->update(['status' => 3]);
+        }
+    }
     public function newGame(){
         $rand_number = "0.";
         $firstrand = mt_rand(20, 80);

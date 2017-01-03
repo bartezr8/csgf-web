@@ -21,20 +21,20 @@ class DiceController extends Controller {
             'message' => $message
         ]));
     }
-	public function index(){
+    public function index(){
         parent::setTitle('КОСТИ | ');
         $gamestats = \DB::table('dice')->orderBy('id', 'desc')->limit(13)->get();
-		$games = [];
-		foreach ($gamestats as $game){
-			$user = User::find($game->user_id);
-			$games[] = [
+        $games = [];
+        foreach ($gamestats as $game){
+            $user = User::find($game->user_id);
+            $games[] = [
                 'avatar' => $user->avatar,
                 'username' => $user->username,
                 'win' => $game->win
             ];
-		}
-		return view('pages.dice', compact('games'));
-	}
+        }
+        return view('pages.dice', compact('games'));
+    }
     public function bet(Request $request){
         $bet_sum = $request->get('sum');
         $bet_value = $request->get('value');

@@ -31,14 +31,14 @@ class ChatController extends Controller
         }
         $userid = $this->user->steamid64;
         $admin = $this->user->is_admin;
-		$moder = $this->user->is_moderator;
-		$vip = 0;
-		if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
+        $moder = $this->user->is_moderator;
+        $vip = 0;
+        if (strpos(strtolower(' '.$this->user->username),  strtolower(config('app.sitename'))) != false) $vip = 1;
         $username = htmlspecialchars($this->user->username);
         $avatar = $this->user->avatar;
         $time = date('H:i', time());
         $messages = strtolower($this->_validateMessage($request));
-		function object_to_array($data){
+        function object_to_array($data){
             if (is_array($data) || is_object($data)) {
                 $result = array();
                 foreach ($data as $key => $value) {
@@ -48,9 +48,9 @@ class ChatController extends Controller
             }
             return $data;
         }
-		$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
+        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
         $words = object_to_array(json_decode($words));
-		$messages = mb_strtolower($messages);
+        $messages = mb_strtolower($messages);
         foreach ($words as $key => $value) {
             $messages = str_ireplace($key, $value, $messages);
         }
@@ -65,39 +65,39 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
         }
-		$data = $this->redis->rpop(self::CHAT_CHANNEL);
-		if(!is_null($data)){
-			$data = json_decode($data, true);
-			if($data['userid'] == $userid){
-				$data['messages'] = $data['messages'] . ' ' . htmlspecialchars($messages);
-				$this->redis->rpush(self::CHAT_CHANNEL, json_encode($data));
-			} else{
-				$returnValue = [
-					'userid' => $userid, 
-					'avatar' => $avatar, 
-					'time' => $time, 
-					'messages' => htmlspecialchars($messages), 
-					'username' => $username, 
-					'admin' => $admin, 
-					'vip' => $vip, 
-					'moder' => $moder
-				];
-				$this->redis->rpush(self::CHAT_CHANNEL, json_encode($data));
-				$this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
-			}
-		} else {
-			$returnValue = [
-				'userid' => $userid, 
-				'avatar' => $avatar, 
-				'time' => $time, 
-				'messages' => htmlspecialchars($messages), 
-				'username' => $username, 
-				'admin' => $admin, 
-				'vip' => $vip, 
-				'moder' => $moder
-			];
-			$this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
-		}
+        $data = $this->redis->rpop(self::CHAT_CHANNEL);
+        if(!is_null($data)){
+            $data = json_decode($data, true);
+            if($data['userid'] == $userid){
+                $data['messages'] = $data['messages'] . ' ' . htmlspecialchars($messages);
+                $this->redis->rpush(self::CHAT_CHANNEL, json_encode($data));
+            } else{
+                $returnValue = [
+                    'userid' => $userid, 
+                    'avatar' => $avatar, 
+                    'time' => $time, 
+                    'messages' => htmlspecialchars($messages), 
+                    'username' => $username, 
+                    'admin' => $admin, 
+                    'vip' => $vip, 
+                    'moder' => $moder
+                ];
+                $this->redis->rpush(self::CHAT_CHANNEL, json_encode($data));
+                $this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
+            }
+        } else {
+            $returnValue = [
+                'userid' => $userid, 
+                'avatar' => $avatar, 
+                'time' => $time, 
+                'messages' => htmlspecialchars($messages), 
+                'username' => $username, 
+                'admin' => $admin, 
+                'vip' => $vip, 
+                'moder' => $moder
+            ];
+            $this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
+        }
         $this->redis->publish(self::NEW_MSG_CHANNEL, json_encode(['status' => 'success']));
         return response()->json(['message' => 'Ваше сообщение успешно отправлено !', 'status' => 'success']);
     }
@@ -123,10 +123,10 @@ class ChatController extends Controller
         return $a;
     }
     public function chat(Request $request){
-		$returnValue = [];
+        $returnValue = [];
         $max = $this->redis->llen(self::CHAT_CHANNEL);
-		$min = 0;
-		if ($max > config('mod_game.chat_history_length')) $min = $max - config('mod_game.chat_history_length');
+        $min = 0;
+        if ($max > config('mod_game.chat_history_length')) $min = $max - config('mod_game.chat_history_length');
         $value = $this->redis->lrange(self::CHAT_CHANNEL, $min, $max);
         $i = 0;
         foreach ($value as $key => $newchat[$i]) {
@@ -134,42 +134,42 @@ class ChatController extends Controller
             $a['username'] = htmlspecialchars($a['username']);
             $a["messages"]  = self::replaceSmile($a["messages"]);
             $returnValue[$i] = [
-				'id' => $min + $i,
+                'id' => $min + $i,
                 'userid' => $a['userid'],
                 'avatar' => $a['avatar'],
                 'time' => $a['time'],
                 'messages' => $a['messages'],
                 'username' => $a['username'],
-				'moder' => $a['moder'],
-				'vip' => $a['vip'],
+                'moder' => $a['moder'],
+                'vip' => $a['vip'],
                 'admin' => $a['admin']
-			];
+            ];
             $i++;
         }
         return $returnValue;
     }
-	
+    
     public function delmsg(Request $request){
-		$id = $request->get('id');
+        $id = $request->get('id');
         $value = $this->redis->lrange(self::CHAT_CHANNEL, $id, $id);
-		$i = 0;
+        $i = 0;
         foreach ($value as $key => $newchat) {
             $a = json_decode($newchat, true);
-			$msg = $newchat;
-			$userid = $a['userid'];
-			$i++;
+            $msg = $newchat;
+            $userid = $a['userid'];
+            $i++;
         }
-		if($i > 0){
-			if ($userid == $this->user->steamid64 || $this->user->is_admin == 1 || $this->user->is_moderator == 1 ){
-				$this->redis->lrem(self::CHAT_CHANNEL, -1, $msg);
-				$this->redis->publish(self::NEW_MSG_CHANNEL, json_encode(1));
-				return response()->json(['message' => 'Сообщение успешно удалено', 'status' => 'success']);
-			} else {
-				return response()->json(['message' => 'Вы не можете удалять чужие сообщения', 'status' => 'error']);
-			}
-		} else {
-			return response()->json(['message' => 'Сообщение не существует', 'status' => 'error']);
-		}
+        if($i > 0){
+            if ($userid == $this->user->steamid64 || $this->user->is_admin == 1 || $this->user->is_moderator == 1 ){
+                $this->redis->lrem(self::CHAT_CHANNEL, -1, $msg);
+                $this->redis->publish(self::NEW_MSG_CHANNEL, json_encode(1));
+                return response()->json(['message' => 'Сообщение успешно удалено', 'status' => 'success']);
+            } else {
+                return response()->json(['message' => 'Вы не можете удалять чужие сообщения', 'status' => 'error']);
+            }
+        } else {
+            return response()->json(['message' => 'Сообщение не существует', 'status' => 'error']);
+        }
     }
 
     private function _responseMessageToSite($message, $userid){

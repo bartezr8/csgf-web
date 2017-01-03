@@ -107,17 +107,17 @@ class Parser extends Command
         $this->log('Закончили обновление');
     }
     private function curl($url) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-		$data = curl_exec($ch);
-		curl_close($ch);
-		return $data;
-	}
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
     private function getActualCurs() {
         if(!Cache::has('ActualCurs')) {
             $link = self::BANK_URL;
@@ -126,7 +126,7 @@ class Parser extends Command
             $usd = $value[1];
             Cache::put('ActualCurs', $usd, 6 * 60 * 60);
         } else {
-			$usd = Cache::get('ActualCurs');
+            $usd = Cache::get('ActualCurs');
         }
         if(!$usd) $usd = self::COURSE;
         return $usd;

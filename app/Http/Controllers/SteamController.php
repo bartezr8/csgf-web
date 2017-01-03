@@ -21,7 +21,7 @@ class SteamController extends Controller
 
     public function login()
     {
-		$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
+        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
         $words = GameController::object_to_array(json_decode($words));
         if ($this->steamAuth->validate()) {
             $info = $this->steamAuth->getUserInfo();
@@ -52,30 +52,30 @@ class SteamController extends Controller
         }
         return $this->steamAuth->redirect();
     }
-	
-	public function auth(Request $request){
-		$steamid64 = $request->get('steamid64');
-		$password = $request->get('password');
-		if (\Cache::has('auth.user.' . $steamid64)) return redirect()->back()->with('error', 'Подождите...');
-		\Cache::put('auth.user.' . $steamid64, '', 1);
-		$user = User::where('refkode', $steamid64)->first();
-		if (!is_null($user)){
-			if (!is_null($user->password)){
-				if ($user->password == $password){
-					Auth::login($user, true);
-				} else return redirect()->back()->with('error', 'Неверный Пароль');
-			} else return redirect()->back()->with('error', 'Пароль не установлен');
-		} else return redirect()->back()->with('error', 'Неверный SteamID');
-		return redirect('/');
-	}
-	public function updatepassword(Request $request){
-		if ($request->get('value')!=''){
-			\DB::table('users')->where('steamid64', $this->user->steamid64)->update(['password' => $request->get('value')]);
-			return response()->json(['success' => true, 'value' => 'Пароль успешно обновлен']);
-		}
-		return response()->json(['error' => true, 'value' => 'Ошибка']);
-	}
-	
+    
+    public function auth(Request $request){
+        $steamid64 = $request->get('steamid64');
+        $password = $request->get('password');
+        if (\Cache::has('auth.user.' . $steamid64)) return redirect()->back()->with('error', 'Подождите...');
+        \Cache::put('auth.user.' . $steamid64, '', 1);
+        $user = User::where('refkode', $steamid64)->first();
+        if (!is_null($user)){
+            if (!is_null($user->password)){
+                if ($user->password == $password){
+                    Auth::login($user, true);
+                } else return redirect()->back()->with('error', 'Неверный Пароль');
+            } else return redirect()->back()->with('error', 'Пароль не установлен');
+        } else return redirect()->back()->with('error', 'Неверный SteamID');
+        return redirect('/');
+    }
+    public function updatepassword(Request $request){
+        if ($request->get('value')!=''){
+            \DB::table('users')->where('steamid64', $this->user->steamid64)->update(['password' => $request->get('value')]);
+            return response()->json(['success' => true, 'value' => 'Пароль успешно обновлен']);
+        }
+        return response()->json(['error' => true, 'value' => 'Ошибка']);
+    }
+    
     public function logout()
     {
         Auth::logout();
@@ -85,14 +85,14 @@ class SteamController extends Controller
     public function updateSettings(Request $request)
     {
         $user = $this->user;
-		$words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
+        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
         $words = GameController::object_to_array(json_decode($words));
         if(!$request->ajax()){
             $steamInfo = $this->_getSteamInfo($user->steamid64);
-			$nick = $steamInfo->getNick();
-			foreach ($words as $key => $value) {
-				$nick = str_ireplace($key, $value, $nick);
-			}
+            $nick = $steamInfo->getNick();
+            foreach ($words as $key => $value) {
+                $nick = str_ireplace($key, $value, $nick);
+            }
             $user->username = $nick;
             $user->avatar = $steamInfo->getProfilePictureFull();
         }

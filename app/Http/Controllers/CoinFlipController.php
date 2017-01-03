@@ -11,7 +11,7 @@ use DB;
 use Storage;
 
 class CoinFlipController extends Controller {
-	public function index(){
+    public function index(){
         parent::setTitle('МОНЕТКА | ');
         $games = DB::table('coin')->where('status', 0)->get();
         $coingames = [];
@@ -24,8 +24,8 @@ class CoinFlipController extends Controller {
                 'sum' => $game->money
             ];
         }
-		return view('pages.coin', compact('coingames'));
-	}
+        return view('pages.coin', compact('coingames'));
+    }
     private function _responseMessageToSite($message, $userid)
     {
         return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
@@ -63,7 +63,7 @@ class CoinFlipController extends Controller {
         User::slchange($this->user->id, $game->money / 100 * config('mod_game.slimit'));
         $this->redis->publish('coin_scroll', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
-	}
+    }
     public function nbet(Request $request){
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
         $sum = floor($request->get('sum')*100)/100;
@@ -84,5 +84,5 @@ class CoinFlipController extends Controller {
         User::slchange($this->user->id, $sum / 100 * config('mod_game.slimit'));
         $this->redis->publish('coin_new', json_encode($returnValue));
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
-	}
+    }
 }
