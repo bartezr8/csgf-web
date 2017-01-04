@@ -9,20 +9,11 @@ use Illuminate\Support\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Storage;
-
 class GiveOutController extends Controller {
     public function out_index()
     {
-        $display = DB::table('gifts')->where('sold', 1)->orderBy('id', 'desc')->limit(20)->get();
+        $display = DB::table('gifts')->where('sold', 1)->orderBy('sold_at', 'desc')->limit(10)->get();
         return view('pages.out', compact('display'));
-    }
-    private function _responseMessageToSite($message, $userid)
-    {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
     }
     public function checkWinners(Request $request)
     {
@@ -38,8 +29,29 @@ class GiveOutController extends Controller {
             $users[] = $user;
         }
         if(count($users) > 0){
-            DB::table('gifts')->where('game_type', '<', 4)->get();
+            $giftsdb = DB::table('gifts')->where('game_type', '<', 4)->where('sold', 0)->get();
+            if(count($giftsdb) > 0){
+                $gifts = []; foreach($giftsdb ad $gift) $gifts[] = $gift;
+                $gift = $gifts[rand(0, (count($gifts) - 1))];
+                $user = $user[rand(0, (count($user) - 1))];
+                DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
+                $value = [
+                    'steamid' => $user->steamid64,
+                    'game_name' => $gift->game_name,
+                    'store_price' => $gift->store_price,
+                    'user_ava' => $user->avatar
+                ];
+                $this->redis->publish('gifts', json_encode($value));
+            }
         }
     }
-    
+    public function receiveGift()
+    {
+        $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
+        if(!is_null($gift)){
+            return redirect($gift->gift_link);
+        } else {
+            return redirect('/');
+        }
+    }
 }
