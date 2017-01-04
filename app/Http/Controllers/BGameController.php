@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 use Log;
 use Auth;
 use App\BBet;
@@ -214,7 +215,7 @@ class BGameController extends Controller
         return $game;
     }
     public function checkBrokenGames(){
-        $games = \DB::table('games')->where('status_prize', 2)->get();
+        $games = DB::table('games')->where('status_prize', 2)->get();
         foreach($games as $game){
             $this->fixg($game->id);
         }
@@ -237,7 +238,7 @@ class BGameController extends Controller
         ];
         $this->redis->rpush('send.offers.list', json_encode($value));
         if ( $game->status != 3) {
-            \DB::table('games')->where('id', '=', $gameid)->update(['status' => 3]);
+            DB::table('games')->where('id', '=', $gameid)->update(['status' => 3]);
         }
     }
     public function newGame(){

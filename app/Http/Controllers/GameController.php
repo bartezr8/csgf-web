@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 use Log;
 use Auth;
 use App\Bet;
@@ -136,9 +137,9 @@ class GameController extends Controller
     }
     public function dec()
     {
-        $sumtd = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->sum('price');
-        $sumfw = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->sum('price');
-        $sumfr = \DB::table('games')->where('status', Game::STATUS_FINISHED)->sum('price');
+        $sumtd = DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->sum('price');
+        $sumfw = DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->sum('price');
+        $sumfr = DB::table('games')->where('status', Game::STATUS_FINISHED)->sum('price');
         $echo = 'Разыграно сегодня: ' . $sumtd . ' | Комиссия: ~' . ($sumtd * 0.09) . '<br> Разыграно за неделю: ' . $sumfw . ' | Комиссия: ~' . ($sumfw * 0.09) . '<br> Разыграно всего: ' . $sumfr . ' | Комиссия: ~' . ($sumfr * 0.09);
         return $echo;
     }
@@ -235,7 +236,7 @@ class GameController extends Controller
                 }
                 $this->game->rand_number = $this->game->rand_number."".  rand($min, $max);
             }
-            \DB::table('winner_tickets')->truncate();
+            DB::table('winner_tickets')->truncate();
         }
         $winningBet = Bet::where('game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
         $this->game->winner_id      = $winningBet->user_id;
@@ -313,7 +314,7 @@ class GameController extends Controller
         User::mchange($user->id, $cardSum);
         $this->redis->publish(self::LOG_CHANNEL, json_encode('Победил: '. $user->username . ' | Шанс на победу: '.$chance . ' | Комиссия: '.$tempPrice));
         if (config('mod_game.bonus_bot')) {
-            $bonusdrop = \DB::table('bonus_items')->first();
+            $bonusdrop = DB::table('bonus_items')->first();
             $botid = false;
             if(is_null($bonusdrop)){
                 $bonusItemsPrice =  round(($this->game->price / 100),2);
@@ -331,7 +332,7 @@ class GameController extends Controller
                 $bonusitem = json_decode($bonusdrop->item, true);
                 $bonusItemsPrice = $bonusdrop->price;
                 $botid = $bonusdrop->bot_id;
-                \DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
+                DB::table('bonus_items')->where('id', $bonusdrop->id)->delete();
             }
             $bonusitems[] = $bonusitem;
             $bonus = User::where('steamid64', config('mod_game.bonus_bot_steamid64'))->first();
@@ -434,7 +435,7 @@ class GameController extends Controller
     public function fixRequest(Request $request){
         $gameid = $request->get('game_id'); $count = 0;
         if ($gameid == '*'){
-            $games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
+            $games = DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
             foreach($games as $game){
                 $count = self::fixBotBets($game->id);
             }
@@ -444,7 +445,7 @@ class GameController extends Controller
         return redirect('/admin');
     }
     public function checkBrokenGames(Request $request){
-        $games = \DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
+        $games = DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
         $count = 0;
         foreach($games as $game){
             $count = self::fixBotBets($game->id);
@@ -489,7 +490,7 @@ class GameController extends Controller
     public function newGame(){
         \Cache::put('new_game', 'new_game', 5);
         
-        $rand = \DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
+        $rand = DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
         if(is_null($rand)) {
             $rand_number = "0.";
             $firstrand = mt_rand(20, 80);
@@ -514,7 +515,7 @@ class GameController extends Controller
                 $rand = $rand . "" . rand($min, $max);
             }
             $rand_number = $rand;
-            \DB::table('winner_rands')->truncate();
+            DB::table('winner_rands')->truncate();
         }
         
         $game = Game::create(['rand_number' => $rand_number]);
@@ -642,7 +643,7 @@ class GameController extends Controller
                     continue;
                 }
                 if($newBet['message'] == 'bonus'){
-                    foreach ($newBet['items'] as $item) \DB::table('bonus_items')->insert(['item' => json_encode($item),'price' => $item['price'],'bot_id' => $newBet['botid']]);
+                    foreach ($newBet['items'] as $item) DB::table('bonus_items')->insert(['item' => json_encode($item),'price' => $item['price'],'bot_id' => $newBet['botid']]);
                     $this->redis->lrem('bets.list', 0, $newBetJson);
                     continue;
                 }
@@ -757,9 +758,9 @@ class GameController extends Controller
                 $this->redis->publish(self::LOG_CHANNEL, json_encode('Ставка: '.$newBet['price'].' р. | '.$user->username));
                 $bettemp = $bet;
                 $cc = '';
-                $lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
+                $lastbets = DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
                 foreach ($lastbets as $lastbet) {
-                    $lastuser =  \DB::table('users')->where('id', $lastbet->user_id)->first();
+                    $lastuser =  DB::table('users')->where('id', $lastbet->user_id)->first();
                     $bet = $lastbet;
                     $bet->user = $lastuser;
                     $bet->game = $this->game;
@@ -858,9 +859,9 @@ class GameController extends Controller
             $chances = $this->_getChancesOfGame($this->game);
             $bettemp = $bet;
             $cc = '';
-            $lastbets = \DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
+            $lastbets = DB::table('bets')->where('game_id', $this->game->id)->orderBy('id')->get();
             foreach ($lastbets as $lastbet) {
-                $lastuser =  \DB::table('users')->where('id', $lastbet->user_id)->first();
+                $lastuser =  DB::table('users')->where('id', $lastbet->user_id)->first();
                 $bet = $lastbet;
                 $bet->user = $lastuser;
                 $bet->game = $this->game;
@@ -933,7 +934,7 @@ class GameController extends Controller
         return $chances;
     }
     public static function getLastBet(){
-        return \DB::table('bets')->max('id');
+        return DB::table('bets')->max('id');
     }
     public static function _getUserChanceOfGame($user, $game)
     {
@@ -1001,7 +1002,7 @@ class GameController extends Controller
         return response()->json($my_comission);
     }
     public function lw(){
-        $lastgame = \DB::table('games')->where('id', \DB::table('games')->max('id'))->first();
+        $lastgame = DB::table('games')->where('id', DB::table('games')->max('id'))->first();
         if (!is_null($lastgame)){
             if ($lastgame->status == Game::STATUS_FINISHED) {
                 $user = User::where('id', $lastgame->winner_id)->first();
@@ -1012,7 +1013,7 @@ class GameController extends Controller
                     'chance' => self::_getUserChanceOfGame($user, $lastgame)
                 ];
             } else {
-                $lastgame = \DB::table('games')->where('id', (\DB::table('games')->max('id')) - 1)->first();
+                $lastgame = DB::table('games')->where('id', (\DB::table('games')->max('id')) - 1)->first();
                 if (!is_null($lastgame)){
                     $user = User::where('id', $lastgame->winner_id)->first();
                     unset($user->password);
@@ -1051,8 +1052,8 @@ class GameController extends Controller
     public function mlfv(){
         $u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
         $mlfv = ['user' => $u,'price' => '???','chance' => '???'];
-        $mlfgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->min('chance');
-        $mlfgame = \DB::table('games')->where('chance', $mlfgame)->orderBy('price', 'desc')->first();
+        $mlfgame = DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today()->subWeek())->min('chance');
+        $mlfgame = DB::table('games')->where('chance', $mlfgame)->orderBy('price', 'desc')->first();
         if (!is_null($mlfgame)){
             $u = User::where('id', $mlfgame->winner_id)->first();
             unset($u->password);
@@ -1063,8 +1064,8 @@ class GameController extends Controller
     public function mltd(){
         $u = ['avatar' => '/assets/img/blank.jpg','username' => 'Пока не выбран','steamid64' => ''];
         $mltd = ['user' => $u,'price' => '???','chance' => '???'];
-        $mltdgame = \DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->min('chance');
-        $mltdgame = \DB::table('games')->where('chance', $mltdgame)->orderBy('price', 'desc')->first();
+        $mltdgame = DB::table('games')->where('status', Game::STATUS_FINISHED)->where('created_at', '>=', Carbon::today())->min('chance');
+        $mltdgame = DB::table('games')->where('chance', $mltdgame)->orderBy('price', 'desc')->first();
         if (!is_null($mltdgame)){
             $u = User::where('id', $mltdgame->winner_id)->first();
             unset($u->password);
