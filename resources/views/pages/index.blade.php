@@ -271,4 +271,42 @@
         });
     }
 </script>
+<div style="display: none;">
+    <div class="box-modal affiliate-program" id="giftModal">
+        <div class="box-modal-head">
+            <div class="box-modal_close arcticmodal-close"></div>
+        </div>
+        <div class="box-modal-content">
+            <div class="content-block">
+                <div class="title-block">
+                    <h2>Ваш подарок</h2>
+                </div>
+            </div>
+            <div class="b-modal-cards" style="border: none; width: 609px; border-radius: 0px;" id="cardDepositModal">
+                <div class="box-modal-container">
+                    <div class="box-modal-content">
+                        <div class="add-balance-block">
+                            <div class="balance-item" id="game_name">
+                                {{ $game_name }}
+                            </div>
+                            <span class="icon-arrow-right"></span>
+                            <div class="balance-item">
+                                <span id="game_price">
+                                    {{ $game_price }}
+                                </span>
+                            </div>
+                            <span class="icon-arrow-right"></span>
+                            <a class="btn-buy" href="/gifts/receive" target="_blank" style="float: none;" id="depUrl">Забрать</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if($have_gift)
+<script>
+    $('#giftModal').arcticmodal(); 
+</script>
+@endif
 @endsection
