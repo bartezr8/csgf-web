@@ -22,6 +22,7 @@ class CreateGiftsTable extends Migration {
 			$table->float('buy_price');
 			$table->boolean('sold');
 			$table->integer('game_type');
+            $table->dateTime('sold_at')->default('0000-00-00 00:00:00');
 		});
 	}
 
