@@ -121,8 +121,20 @@ class GameController extends Controller
         if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
         $chances = json_encode($this->_getChancesOfGame($game));
         if (!is_null($this->user)) $user_items = $this->user->itemsCountByGame($game);
+        $gifts = []; $giftsdb = DB::table('gifts')->where('sold', 1)->orderBy('sold_at', 'desc')->limit(10)->get();
+        foreach($giftsdb as $gift){$user = User::find($gift->user_id);$gifts[] = ['avatar' => $user->avatar,'game' => $gift->game_name,'price' => $gift->store_price];}
+        $gifts = (object)$gifts; 
+        $have_gift = false;
+        if(!Auth::guest()){
+            $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
+            if(!is_null($gift)){
+                $have_gift = true;
+                $game_name = $gift->game_name;
+                $game_price = $gift->game_price;
+            }
+        }
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items'));
+        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'have_gift', 'game_name', 'game_price'));
     }
     public function getLastGame()
     {

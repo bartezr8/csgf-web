@@ -10,10 +10,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class GiveOutController extends Controller {
-    public function out_index()
+    public function gift_admin()
     {
-        $display = DB::table('gifts')->where('sold', 1)->orderBy('sold_at', 'desc')->limit(10)->get();
-        return view('pages.out', compact('display'));
+        $gifts = DB::table('gifts')->get();
+        return view('pages.out', compact('gifts'));
     }
     public function checkWinners(Request $request)
     {
@@ -49,9 +49,10 @@ class GiveOutController extends Controller {
     {
         $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
         if(!is_null($gift)){
+            $gift->received = 1;
+            $gift->save();
             return redirect($gift->gift_link);
-        } else {
-            return redirect('/');
         }
+        return redirect('/');
     }
 }
