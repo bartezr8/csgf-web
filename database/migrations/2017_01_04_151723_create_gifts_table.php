@@ -15,7 +15,7 @@ class CreateGiftsTable extends Migration {
 		Schema::create('gifts', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('user_id')->unsigned()->nullable
+			$table->integer('user_id')->unsigned()->nullable();
             $table->text('game_name', 65535);
 			$table->text('game_link', 65535);
 			$table->text('gift_link', 65535);
@@ -24,7 +24,7 @@ class CreateGiftsTable extends Migration {
 			$table->boolean('sold');
 			$table->integer('game_type');
             $table->dateTime('sold_at')->default('0000-00-00 00:00:00');
-		});
+		}); 
 	}
 
 
