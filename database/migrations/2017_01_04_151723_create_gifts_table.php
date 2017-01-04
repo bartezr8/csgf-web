@@ -15,7 +15,8 @@ class CreateGiftsTable extends Migration {
 		Schema::create('gifts', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('user_id')->unsigned()->nullable();
+			$table->integer('user_id')->unsigned()->nullable
+            $table->text('game_name', 65535);
 			$table->text('game_link', 65535);
 			$table->text('gift_link', 65535);
 			$table->float('store_price');

@@ -209,7 +209,6 @@ class GameController extends Controller
                 $chance = 0;
             }
         }
-        
         $game->chance = $chance;
         $game->save();
         return;

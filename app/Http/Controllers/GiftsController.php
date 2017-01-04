@@ -14,7 +14,7 @@ use Storage;
 class GiveOutController extends Controller {
     public function out_index()
     {
-        $display = DB::table('razda4a')->where('status', 2)->orderBy('id', 'desc')->limit(20)->get();
+        $display = DB::table('gifts')->where('sold', 1)->orderBy('id', 'desc')->limit(20)->get();
         return view('pages.out', compact('display'));
     }
     private function _responseMessageToSite($message, $userid)
@@ -32,10 +32,13 @@ class GiveOutController extends Controller {
             if(in_array($user,$users)) continue;
             $lastBet = $user->lastBet();
             if(is_null($lastBet)) continue;
-            if ((Carbon::parse($lastBet->created_at)->timestamp + 600) > Carbon::now()->timestamp) $users[] = $user;
+            if((Carbon::parse($lastBet->created_at)->timestamp + 600) < Carbon::now()->timestamp) continue;
+            $lastGift = DB::table('gifts')->where('user_id', $user)->first();
+            if(!is_null($lastGift)) continue;
+            $users[] = $user;
         }
         if(count($users) > 0){
-            
+            DB::table('gifts')->where('game_type', '<', 4)->get();
         }
     }
     
