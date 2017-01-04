@@ -125,6 +125,8 @@ class GameController extends Controller
         foreach($giftsdb as $gift){$user = User::find($gift->user_id);$gifts[] = ['avatar' => $user->avatar,'game' => $gift->game_name,'price' => $gift->store_price];}
         $gifts = (object)$gifts; 
         $have_gift = false;
+        $game_name = '';
+        $game_price = 0;
         if(!Auth::guest()){
             $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
             if(!is_null($gift)){
