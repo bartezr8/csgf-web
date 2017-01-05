@@ -10,6 +10,8 @@
     <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ЕСЛИ ХОТИТЕ <b>ПОДДЕРЖАТЬ РУЛЕТКУ</b>: НА ЭТОЙ СТРАНИЦЕ В ЯНДЕКСЕ НАЙДИТЕ НАШУ РУЛЕТКУ И ОТКРОЙТЕ!!!</div>
     <a href="{{ route('rand_url') }}" target="_blank">КЛИК СЮДА</a>
 </div>
+
+@if(config('mod_game.gifts'))
 <div class="buy-cards-container" style="padding-top: 10px;">
     <div class="buy-cards-block" style="text-align:center;">
         <div style="float: left; display: inline-block">
@@ -37,6 +39,7 @@
         }
     });
 </script>
+@endif
 <div class="panel-winner" id="panel-winner" style="/*display: none;*/">
     <div class="lw">
         <div class="lw-text">Последний победитель</div>

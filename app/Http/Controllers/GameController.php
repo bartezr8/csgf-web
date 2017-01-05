@@ -122,6 +122,7 @@ class GameController extends Controller
         if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
         $chances = json_encode($this->_getChancesOfGame($game));
         if (!is_null($this->user)) $user_items = $this->user->itemsCountByGame($game);
+        
         $gifts = []; $giftsdb = DB::table('gifts')->where('sold', 1)->orderBy('sold_at', 'desc')->limit(10)->get();
         foreach($giftsdb as $gift){$user = User::find($gift->user_id);$gifts[] = ['avatar' => $user->avatar,'game' => $gift->game_name,'price' => $gift->store_price];}
         $gifts = (object)$gifts; 
