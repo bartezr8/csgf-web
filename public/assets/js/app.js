@@ -538,7 +538,7 @@ if(START /*&& onpage*/) {
                 }
             });
         })
-        .on('view_bet', function() {
+        .on('view_bet', function(data) {
             updateSocketIO();
             data = JSON.parse(data);
             console.log(data);
