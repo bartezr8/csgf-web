@@ -58,6 +58,8 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 /* GIFT ROUTES */
 Route::group(['middleware' => 'auth'], function () {
     get('/gifts/receive', ['as' => 'receiveGift', 'uses' => 'GiftsController@receiveGift']);
+    get('/gifts/admin', ['as' => 'gift_admin', 'uses' => 'GiftsController@gift_admin', 'middleware' => 'access:admin']);
+    get('/gifts/admin/select', ['as' => 'selectGiftWinner', 'uses' => 'GiftsController@selectGiftWinner', 'middleware' => 'access:admin']);
 });
 
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {

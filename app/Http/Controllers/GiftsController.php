@@ -12,8 +12,9 @@ use App\Http\Controllers\Controller;
 class GiftsController extends Controller {
     public function gift_admin()
     {
+        parent::setTitle('ПУ гифтами | ');
         $gifts = DB::table('gifts')->get();
-        return view('pages.out', compact('gifts'));
+        return view('pages.gifts', compact('gifts'));
     }
     public function checkWinners(Request $request)
     {
@@ -29,7 +30,7 @@ class GiftsController extends Controller {
             $users[] = $user;
         }
         if(count($users) > 0){
-            $giftsdb = DB::table('gifts')->where('game_type', '<', 4)->where('sold', 0)->get();
+            $giftsdb = DB::table('gifts')->where('game_type', '<', 3)->where('sold', 0)->get();
             if(count($giftsdb) > 0){
                 $gifts = []; foreach($giftsdb as $gift) $gifts[] = $gift;
                 $gift = $gifts[rand(0, (count($gifts) - 1))];
@@ -53,5 +54,20 @@ class GiftsController extends Controller {
             return redirect($gift->gift_link);
         }
         return redirect('/');
+    }
+    public function selectGiftWinner(Request $request)
+    {
+        $user = User::find($request->get('user'));
+        $gift = DB::table('gifts')->where('id', $request->get('id'))->first();
+        if(is_null($user) || is_null($gift)) return redirect('/gifts/admin');
+        DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
+        $value = [
+            'steamid' => $user->steamid64,
+            'game_name' => $gift->game_name,
+            'store_price' => $gift->store_price,
+            'user_ava' => $user->avatar
+        ];
+        $this->redis->publish('gifts', json_encode($value));
+        return redirect('/gifts/admin');
     }
 }
