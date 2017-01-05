@@ -538,6 +538,16 @@ if(START /*&& onpage*/) {
                 }
             });
         })
+        .on('view_bet', function() {
+            updateSocketIO();
+            data = JSON.parse(data);
+            if(data.steamid == USER_ID) {
+                $('#view_deposits').html(data.html);
+                setTimeout(function() {
+                    $('#view_deposits').html('');
+                }, 7000);
+            }
+        })
         .on('forceClose', function() {
             updateSocketIO();
             $('.forceClose').removeClass('msgs-not-visible');
