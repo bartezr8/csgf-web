@@ -24,10 +24,10 @@ use Storage;
 
 class BGameController extends Controller
 {
-    const SEND_OFFERS_LIST = 'send.offers.list';
-    const NEW_BET_CHANNEL = 'newDeposit';
-    const BET_DECLINE_CHANNEL = 'depositDecline';
-    const INFO_CHANNEL = 'msgChannel';
+    const SEND_OFFERS_LIST = 'bich.send.offers.list';
+    const NEW_BET_CHANNEL = 'bich.newDeposit';
+    const BET_DECLINE_CHANNEL = 'bich.depositDecline';
+    const INFO_CHANNEL = 'bich.msgChannel';
     const SHOW_WINNERS = 'show.winners';
     const LOG_CHANNEL = 'app_log';
     const QUEUE_CHANNEL = 'queue';
@@ -61,7 +61,7 @@ class BGameController extends Controller
     }
     public function deposit()
     {
-        return redirect(config('mod_bich.bot'));
+        return redirect(config('mod_bich.trade'));
     }
     private function _parseItems(&$items, &$missing = false, &$price = false)
     {
