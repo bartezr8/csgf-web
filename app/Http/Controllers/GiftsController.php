@@ -31,7 +31,7 @@ class GiftsController extends Controller {
         if(count($users) > 0){
             $giftsdb = DB::table('gifts')->where('game_type', '<', 4)->where('sold', 0)->get();
             if(count($giftsdb) > 0){
-                $gifts = []; foreach($giftsdb ad $gift) $gifts[] = $gift;
+                $gifts = []; foreach($giftsdb as $gift) $gifts[] = $gift;
                 $gift = $gifts[rand(0, (count($gifts) - 1))];
                 $user = $user[rand(0, (count($user) - 1))];
                 DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
