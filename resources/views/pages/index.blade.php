@@ -262,6 +262,7 @@
         </div>
     </div>
 </div>
+<div id="view_deposits"></div>
 <div id="deposits">
     @foreach($bets as $bet)
         @include('includes.bet')

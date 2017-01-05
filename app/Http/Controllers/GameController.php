@@ -34,6 +34,7 @@ class GameController extends Controller
     const SHOW_WINNERS = 'show.winners';
     const LOG_CHANNEL = 'app_log';
     const QUEUE_CHANNEL = 'queue';
+    const VIEW_BET_CHANNEL = 'view_bet';
     public $game;
 
     protected $lastTicket = 0;
@@ -632,6 +633,13 @@ class GameController extends Controller
                 'success' => true
             ];
             $this->_responseMessageToSite('Обмен №' . $offer->offerid . ' на ' . $total_price . 'р. принимается', $user->steamid64);
+            $bet = (object)['user' => $user,'items' => json_encode($items),'itemsCount' => count($items),'price' => $total_price,'from' => 0,'to' => 0,'msg' => $offer->message,'vip' => false];
+            $value = [
+                'html' => view('includes.bet', compact('bet'))->render(),
+                'steamid' => $user->steamid64
+            ];
+            $this->redis->publish(VIEW_BET_CHANNEL, json_encode($value));
+            
             $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
             $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
         }
@@ -783,7 +791,7 @@ class GameController extends Controller
                 $chances = $this->_getChancesOfGame($this->game);
                 $returnValue = [
                     'betId' => $bet->id,
-                    'userId' => $user->steam64,
+                    'userId' => $user->steamid64,
                     'cc' => $cc,
                     'html' => view('includes.bet', compact('bet'))->render(),
                     'itemsCount' => $this->game->items,
