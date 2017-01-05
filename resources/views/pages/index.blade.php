@@ -265,7 +265,10 @@
         </div>
     </div>
 </div>
-<div id="view_deposits"></div>
+<div id="vd" style="display:none;border-bottom: 1px solid #2D4455;">
+    <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> СОЗДАНИЕ КОМНАТЫ</b></div>
+    <div id="view_deposits"></div>
+</div>
 <div id="deposits">
     @foreach($bets as $bet)
         @include('includes.bet')
