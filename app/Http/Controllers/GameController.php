@@ -634,7 +634,7 @@ class GameController extends Controller
                 'success' => true
             ];
             $this->_responseMessageToSite('Обмен №' . $offer->offerid . ' на ' . $total_price . 'р. принимается', $user->steamid64);
-            $bet = (object)['user' => $user,'items' => json_encode($items),'itemsCount' => count($items),'price' => $total_price,'from' => 0,'to' => 0,'msg' => $offer->message,'vip' => false];
+            $bet = (object)['id' => 0, 'user' => $user,'items' => json_encode($items),'itemsCount' => count($items),'price' => $total_price,'from' => 0,'to' => 0,'msg' => $offer->message,'vip' => false];
             $value = [
                 'html' => view('includes.bet', compact('bet'))->render(),
                 'steamid' => $user->steamid64
