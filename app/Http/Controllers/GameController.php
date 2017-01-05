@@ -124,13 +124,13 @@ class GameController extends Controller
         $gifts = []; $giftsdb = DB::table('gifts')->where('sold', 1)->orderBy('sold_at', 'desc')->limit(10)->get();
         foreach($giftsdb as $gift){$user = User::find($gift->user_id);$gifts[] = ['avatar' => $user->avatar,'game' => $gift->game_name,'price' => $gift->store_price];}
         $gifts = (object)$gifts; 
-        $have_gift = false;
+        $have_gift = 'false';
         $game_name = '';
         $store_price = 0;
         if(!Auth::guest()){
             $gift = DB::table('gifts')->where('user_id', $this->user->id)->where('received', 0)->first();
             if(!is_null($gift)){
-                $have_gift = true;
+                $have_gift = 'true';
                 $game_name = $gift->game_name;
                 $store_price = $gift->store_price;
             }
