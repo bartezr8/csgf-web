@@ -541,11 +541,15 @@ if(START /*&& onpage*/) {
         .on('view_bet', function() {
             updateSocketIO();
             data = JSON.parse(data);
+            console.log(data);
             if(data.steamid == USER_ID) {
+                $('#view_deposits').hide();
                 $('#view_deposits').html(data.html);
+                $('#view_deposits').slideDown();
                 setTimeout(function() {
                     $('#view_deposits').html('');
-                }, 7000);
+                    $('#view_deposits').slideUp();
+                }, 5000);
             }
         })
         .on('forceClose', function() {
