@@ -639,7 +639,7 @@ class GameController extends Controller
                 'html' => view('includes.bet', compact('bet'))->render(),
                 'steamid' => $user->steamid64
             ];
-            $this->redis->publish(VIEW_BET_CHANNEL, json_encode($value));
+            $this->redis->publish(self::VIEW_BET_CHANNEL, json_encode($value));
             
             $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
             $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
