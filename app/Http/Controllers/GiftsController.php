@@ -48,7 +48,7 @@ class GiftsController extends Controller {
     }
     public function receiveGift()
     {
-        $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
+        $gift = DB::table('gifts')->where('user_id', $this->user->id)->where('received', 0)->first();
         if(!is_null($gift)){
             DB::table('gifts')->where('id', $gift->id)->update(['received' => 1]);
             return redirect($gift->gift_link);
