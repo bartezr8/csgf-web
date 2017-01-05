@@ -301,7 +301,7 @@
                                 </span>
                             </div>
                             <span class="icon-arrow-right"></span>
-                            <a class="btn-buy" href="/gifts/receive" target="_blank" style="float: none;" id="depUrl">Забрать</a>
+                            <a class="btn-gift" href="/gifts/receive" target="_blank" style="float: none;" id="depUrl">Забрать</a>
                         </div>
                     </div>
                 </div>

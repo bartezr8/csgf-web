@@ -55,6 +55,15 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/out/check', ['as' => 'checkUsers', 'uses' => 'GiveOutController@checkUsers']);
 });
 
+/* GIFT ROUTES */
+Route::group(['middleware' => 'auth'], function () {
+    get('/gifts/receive', ['as' => 'receiveGift', 'uses' => 'GiftsController@receiveGift']);
+});
+
+Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
+    post('/gifts/check', ['as' => 'checkWinners', 'uses' => 'GiftsController@checkWinners']);
+});
+
 /* SCRIPT ROUTES */
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);

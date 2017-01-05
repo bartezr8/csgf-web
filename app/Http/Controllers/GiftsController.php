@@ -9,7 +9,7 @@ use Illuminate\Support\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class GiveOutController extends Controller {
+class GiftsController extends Controller {
     public function gift_admin()
     {
         $gifts = DB::table('gifts')->get();
