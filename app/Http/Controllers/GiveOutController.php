@@ -57,7 +57,7 @@ class GiveOutController extends Controller {
             if((Carbon::parse($currout->date)->timestamp + config('mod_out.outtime')) < Carbon::now()->timestamp){
                 if($currout->status == 0 ){
                     \DB::table('giveouts')->where('id', $currout->id)->update(['status' => 1]);
-                    $this->redis->publish('out_new', $this->user->avatar);
+                    $this->redis->publish('out_new', json_encode($this->user->avatar));
                 }
                 $currout->status = 1;
                 $currout->left = (Carbon::parse($currout->date)->timestamp + config('mod_out.outtime') - Carbon::now()->timestamp);

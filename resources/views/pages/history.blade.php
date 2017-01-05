@@ -32,11 +32,11 @@
             <div class="right-block" style="background: none; width: 220px;">
                 <div class="publ right-content">
                     @if($game->status_prize == \App\Game::STATUS_PRIZE_WAIT_TO_SENT)
-                      <span title="Отправка предметов" class="prize-status status-waiting">Отправка выигрыша</span>
+                      <span class="prize-status status-waiting">Отправка выигрыша</span>
                     @elseif($game->status_prize == \App\Game::STATUS_PRIZE_SEND)
-                      <span title="Выигрыш отправлен" class="prize-status status-success">Выигрыш отправлен</span>
+                      <span class="prize-status status-success">Выигрыш отправлен</span>
                     @else
-                      <div title="{{ $game->msg }}" class="prize-status status-error">Ошибка отправки выигрыша</div>
+                      <div class="prize-status status-error">Ошибка отправки выигрыша</div>
                     @endif
                 </div>
             </div>

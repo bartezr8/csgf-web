@@ -46,7 +46,7 @@ $(function() {
 });
 $(document).ready(function() {
     
-    if(have_gift && checkUrl('/')) $('#giftModal').arcticmodal(); 
+    if(checkUrl('/')) if(have_gift) $('#giftModal').arcticmodal(); 
     
     $('.profile-balance').tooltip({
         html: true,
@@ -715,9 +715,27 @@ if(START /*&& onpage*/) {
                 $('#errorBlock').slideDown();
             }
         })
+        .on('gifts', function(data) {
+            updateSocketIO();
+            data = JSON.parse(data);
+            $('#last-gout-block').prepend('<img class="giftwinner" title="' + data.game_name + ' | ' + data.store_price + '"  style="border: 1px solid rgb(47, 84, 99); height: 42px; width: 42px; margin: 5px;" src="' + data.user_ava + '" class="scale-in">');
+            $('.giftwinner').tooltip({
+                html: true,trigger: 'hover',delay: {show: 500,hide: 500},
+                title: function() {
+                    var text = $(this).data('old-title');
+                    return '<div class="tooltip-title"><span>' + text + '</span></div>';
+                }
+            });
+            if(data.steamid == USER_ID) {
+                $('#game_name').text(data.game_name);
+                $('#store_price').text(data.store_price);
+                $('#giftModal').arcticmodal(); 
+            }
+        })
     }
     if(checkUrl('/out')) {
         socket.on('out_new', function(data) {
+            data = JSON.parse(data);
             updateSocketIO();
             $('#last-gout-block').prepend('<img style="border: 1px solid rgb(47, 84, 99); height: 42px; width: 42px; margin: 5px;" src="' + data + '" class="scale-in">');
         })

@@ -10,6 +10,33 @@
     <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ЕСЛИ ХОТИТЕ <b>ПОДДЕРЖАТЬ РУЛЕТКУ</b>: НА ЭТОЙ СТРАНИЦЕ В ЯНДЕКСЕ НАЙДИТЕ НАШУ РУЛЕТКУ И ОТКРОЙТЕ!!!</div>
     <a href="{{ route('rand_url') }}" target="_blank">КЛИК СЮДА</a>
 </div>
+<div class="buy-cards-container" style="padding-top: 10px;">
+    <div class="buy-cards-block" style="text-align:center;">
+        <div style="float: left; display: inline-block">
+            <div class="buy-card-item" style="float: left; margin-top: 7px;">
+                <span class="cards-price-currency">Подарки<br>получили</span>
+            </div>
+            <span class="icon-arrow-right"style="float: left;"></span>
+            <div class="last-gout-block" id="last-gout-block" style="float: left; display: block; overflow: hidden; width: 738px; height: 52px;">
+                @if($gifts != NULL )
+                    @forelse($gifts as $gift)
+                        <img class="giftwinner" title="{{ $gift['game'] }} | {{ $gift['price'] }}"  style="border: 1px solid rgb(47, 84, 99); height: 42px; width: 42px; margin: 5px;" src="{{ $gift['avatar'] }}" class="scale-in">
+                    @empty
+                    @endforelse
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.giftwinner').tooltip({
+        html: true,trigger: 'hover',delay: {show: 500,hide: 500},
+        title: function() {
+            var text = $(this).data('old-title');
+            return '<div class="tooltip-title"><span>' + text + '</span></div>';
+        }
+    });
+</script>
 <div class="panel-winner" id="panel-winner" style="/*display: none;*/">
     <div class="lw">
         <div class="lw-text">Последний победитель</div>
