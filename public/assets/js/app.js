@@ -45,6 +45,9 @@ $(function() {
     });
 });
 $(document).ready(function() {
+    
+    if(have_gift && checkUrl('/')) $('#giftModal').arcticmodal(); 
+    
     $('.profile-balance').tooltip({
         html: true,
         trigger: 'hover',
@@ -56,6 +59,7 @@ $(document).ready(function() {
             return '<div class="tooltip-title"><span>Пополнить баланс</span></div>';
         }
     });
+    
     sound_status = true;
     if($.cookie('sound_status') == 'false') {
         $('.sound_off').hide();

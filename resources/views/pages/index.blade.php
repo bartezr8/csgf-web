@@ -1,5 +1,10 @@
 @extends('layout')
 @section('content')
+
+<script>
+    var have_gift = {{ $have_gift }};
+</script>
+
 <link href="{{ $asset('assets/css/ref.css') }}" rel="stylesheet">
 <div class="advert-banner">
     <div style="display: inline-block;"><b>ВНИМАНИЕ!</b> ЕСЛИ ХОТИТЕ <b>ПОДДЕРЖАТЬ РУЛЕТКУ</b>: НА ЭТОЙ СТРАНИЦЕ В ЯНДЕКСЕ НАЙДИТЕ НАШУ РУЛЕТКУ И ОТКРОЙТЕ!!!</div>
@@ -304,9 +309,4 @@
         </div>
     </div>
 </div>
-@if($have_gift)
-<script>
-    $('#giftModal').arcticmodal(); 
-</script>
-@endif
 @endsection
