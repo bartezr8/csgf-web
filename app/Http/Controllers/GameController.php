@@ -126,17 +126,17 @@ class GameController extends Controller
         $gifts = (object)$gifts; 
         $have_gift = false;
         $game_name = '';
-        $game_price = 0;
+        $store_price = 0;
         if(!Auth::guest()){
-            $gift = DB::table('gifts')->where('user_id', $this->user->id)->first();
+            $gift = DB::table('gifts')->where('user_id', $this->user->id)->where('received', 0)->first();
             if(!is_null($gift)){
                 $have_gift = true;
                 $game_name = $gift->game_name;
-                $game_price = $gift->game_price;
+                $store_price = $gift->store_price;
             }
         }
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'have_gift', 'game_name', 'game_price'));
+        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'have_gift', 'game_name', 'store_price'));
     }
     public function getLastGame()
     {

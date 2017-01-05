@@ -291,8 +291,8 @@
                             </div>
                             <span class="icon-arrow-right"></span>
                             <div class="balance-item">
-                                <span id="game_price">
-                                    {{ $game_price }}
+                                <span id="store_price">
+                                    {{ $store_price }}
                                 </span>
                             </div>
                             <span class="icon-arrow-right"></span>
