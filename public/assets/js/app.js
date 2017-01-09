@@ -543,7 +543,6 @@ if(START /*&& onpage*/) {
             data = JSON.parse(data);
             console.log(data);
             if(data.steamid == USER_ID) {
-                $('#vd').hide();
                 $('#view_deposits').html(data.html);
                 $('#vd').slideDown();
                 setTimeout(function() {
