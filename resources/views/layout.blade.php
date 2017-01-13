@@ -23,6 +23,7 @@
         <script>
             var USER_ID = '{{ $u->steamid64 }}',
                 SM_ID = '{{ $u->steamid64 }}',
+                MAX_ITEMS = "{{ config('mod_game.game_items') }}",
                 IS_MODER = '{{ $u->is_moderator }}',
                 IS_ADMIN = '{{ $u->is_admin }}';
                 USER_BALANCE = {{ $u->money }},
@@ -85,7 +86,7 @@
     </body>
     @include('includes.modals')
     <script src="{{ $asset('assets/js/snowstorm.js') }}"></script>
-    <script src="{{ $asset('assets/js/app2.js') }}"></script>
+    <script src="{{ $asset('assets/js/app.js') }}"></script>
     <!--script src="{{ $asset('assets/js/chat.js') }}"></script-->
     <script>
         @if(!Auth::guest())

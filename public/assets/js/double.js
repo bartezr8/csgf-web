@@ -33,7 +33,7 @@ if(START) {
         $('#gameTimer .countSeconds').text('35');
         $('.item-bar').css('width', '0%');
         $('#double_txt').text('');
-        var audio = new Audio('/assets/sounds/newgamestartm.mp3');
+        var audio = new Audio('/assets/sounds/newgame.mp3');
         if(sound_status) audio.play();
         $('#barContainer').slideUp();
         sld = false;
@@ -44,7 +44,7 @@ if(START) {
             sld = true;
         }
         $('.item-bar').css('width', ((35 - time) / 35) * 100 + '%');
-        var audio_scroll = new Audio('/assets/sounds/scr.mp3');
+        var audio_scroll = new Audio('/assets/sounds/timer.mp3');
         var audio_notice = new Audio('/assets/sounds/notice.mp3');
         $('#gameTimer .countMinutes').text(lpad(Math.floor(time / 60), 2));
         $('#gameTimer .countSeconds').text(lpad(time - Math.floor(time / 60) * 60, 2));
@@ -74,7 +74,7 @@ if(START) {
             var scrollmar = (-1125 * 10) + scrollmarg;
             var easetype = 'easeOutCirc';
             if(data.showSlider) {
-                var audio = new Audio('/assets/sounds/rollscrollskoniks.mp3');
+                var audio = new Audio('/assets/sounds/scroll.mp3');
                 if(sound_status) audio.play();
                 $('#DoubleCarousel').animate({
                     marginLeft: scrollmar
