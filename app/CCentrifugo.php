@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Centrifugo\Centrifugo;
 class CCentrifugo{
     
     private $centrifugo;
