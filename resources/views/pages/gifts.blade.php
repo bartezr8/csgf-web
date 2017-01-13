@@ -16,7 +16,6 @@
                     <input type="text" name="id" cols="50" style="width: 333px" cols="50" placeholder="Gift ID" maxlength="18" autocomplete="off">
                     <input type="submit" style="width: 333px" value="Назначить победителя">
                 </div>
-                <input type="hidden" name="_token" value="{{csrf_token()}}"/>
             </form>
         </div>
         <br>

@@ -31,21 +31,18 @@
                 <input type="text" name="game_id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 218px" value="Переотправить Игру">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/fixtic" method="POST">
             <div style="width: 333px" class="nSend">
                 <input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="Номер игры" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 218px" value="Починить билеты">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/ctime" method="POST">
             <div style="width: 333px" class="nSend">
                 <input type="text" name="time" cols="50" style="width: 115px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 218px" value="Назначить время">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
     </div>
     <div class="support" >
@@ -53,20 +50,17 @@
             <div style="width: 333px" class="nSend">
                 <input type="submit" style="width: 333px" name="mute" value="Обновить Ники">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/clearredis" method="GET">
             <div style="width: 333px" class="nSend">
                 <input type="submit" style="width: 333px" name="mute" value="Очистить редис ">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/updateShop" method="POST">
             <div style="width: 333px" class="nSend">
                 <input type="text" name="id" cols="50" style="width: 115px" cols="50" placeholder="#бота" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 218px" value="Инвентарь бота (шоп)">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
     </div>
     <div class="support" >
@@ -75,15 +69,13 @@
                 <input type="text" name="id" cols="50" style="width: 185px" cols="50" placeholder="Номер билета" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 148px" value="Подкрутить">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/winnerr" method="POST">
             <div style="width: 666px" class="nSend">
                 <input type="text" name="id" cols="50" style="width: 333px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
                 <input type="submit" style="width: 333px" value="Назначить число раунда">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
-        </form>    
+        </form>
     </div>
     <div class="support" >
         <form action="/api/vk/sendText" method="POST">
@@ -91,7 +83,6 @@
                 <input type="text" name="text" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
                 <input type="submit" style="width: 148px" value="Разослать">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
     </div>
     <div class="support" >
@@ -100,7 +91,6 @@
                 <input type="text" name="id" cols="50" style="width: 185px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 148px" value="Очистить магазин">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/shop/admin/updateDep" method="GET">
             <div style="width: 666px" class="nSend">
@@ -108,7 +98,6 @@
                 <input type="text" name="status" cols="50" style="width: 185px" cols="50" placeholder="статус" maxlength="18" autocomplete="off">
                 <input type="submit" style="width: 148px" value="Обновить депозит">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>    
     </div>
     @else
@@ -117,19 +106,16 @@
             <div style="width: 333px" class="nSend">
                 <input type="submit" style="width: 333px" name="mute" value="Обновить Ники">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/clearchat" method="POST">
             <div style="width: 333px" class="nSend">
                 <input type="submit" style="width: 333px" name="mute" value="Очистить чат ">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
         <form action="/updateShop" method="POST">
             <div style="width: 333px" class="nSend">
                 <input type="submit" style="width: 333px" name="mute" value="Обновить магазин">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
     </div>
     @endif

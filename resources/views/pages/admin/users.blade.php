@@ -4,20 +4,20 @@
 <title>  {{ $title = \App\Http\Controllers\AdminController::TITLE_UP }}</title>
 
 <link href="{{ $asset('assets/css/admin.css') }}" rel="stylesheet">
-    <div class="admin-container">
-        <div class="admin-top">
-            <div class="logotype active">
-            </div>
-            <div class="admin-menu">
-                <ul id="headNav" class="list-reset">
-                    <li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
-                    <li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
-                    <li class="faq"><a href="/admin/am/"><img src="/assets/img/tp.png" alt=""> Антимат</a></li>
-                    <li class="faq"><a href="/shop/admin/"><img src="/assets/img/php.png" alt=""> История обменов</a></li>
-                </ul>
-            </div>
+<div class="admin-container">
+    <div class="admin-top">
+        <div class="logotype active">
+        </div>
+        <div class="admin-menu">
+            <ul id="headNav" class="list-reset">
+                <li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
+                <li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
+                <li class="faq"><a href="/admin/am/"><img src="/assets/img/tp.png" alt=""> Антимат</a></li>
+                <li class="faq"><a href="/shop/admin/"><img src="/assets/img/php.png" alt=""> История обменов</a></li>
+            </ul>
         </div>
     </div>
+</div>
 <div class="content">
     <div class="title-block">
         <h2 style="color: #ffffff;">

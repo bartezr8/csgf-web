@@ -543,12 +543,11 @@ if(START /*&& onpage*/) {
             data = JSON.parse(data);
             console.log(data);
             if(data.steamid == USER_ID) {
-                $('#view_deposits').hide();
                 $('#view_deposits').html(data.html);
-                $('#view_deposits').slideDown();
+                $('#vd').slideDown();
                 setTimeout(function() {
                     $('#view_deposits').html('');
-                    $('#view_deposits').slideUp();
+                    $('#vd').slideUp();
                 }, 5000);
             }
         })

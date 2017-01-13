@@ -7,8 +7,11 @@
         <meta name="keywords" content="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo, халява, от 1 рубля, рефералка, дабл, луты, steam" />
         <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+<<<<<<< HEAD
         <meta name="csrf-token" content="{!!  csrf_token()   !!}">
         <meta name="ctoken" content="{{ $ctoken }}">
+=======
+>>>>>>> 2214c2c56cb8028083fdaea11a83f78e3a6ac8b1
         <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
         <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
         <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
