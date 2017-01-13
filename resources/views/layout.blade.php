@@ -8,6 +8,7 @@
         <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="csrf-token" content="{!!  csrf_token()   !!}">
+        <meta name="ctoken" content="{{ $ctoken }}">
         <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
         <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
         <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
@@ -17,6 +18,7 @@
         <link href="{{ $asset('assets/css/fonts.css') }}" rel="stylesheet">
         <script src="{{ $asset('assets/js/main.js') }}" ></script>
         <script src="{{ $asset('assets/js/vendor.js') }}" ></script>
+        <script src="{{ $asset('assets/js/centrifuge.js') }}" ></script>
         <script src="{{ $asset('assets/js/jquery-ui.js') }}" ></script>
         <script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
         <script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>

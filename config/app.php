@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'debug' => false,//env('APP_DEBUG', false),
+    'debug' => true,//env('APP_DEBUG', false),
     
      /*
     |--------------------------------------------------------------------------
@@ -159,6 +159,7 @@ return [
 
         Way\Generators\GeneratorsServiceProvider::class,
         Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+        //Centrifugo\Centrifugo::class,
         
         Invisnik\LaravelSteamAuth\SteamServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,

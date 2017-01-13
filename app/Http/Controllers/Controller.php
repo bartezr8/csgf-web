@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Auth;
 use LRedis;
+use App\User;
+use App\CCentrifugo;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -19,11 +21,14 @@ abstract class Controller extends BaseController
     public function __construct()
     {
         $this->setTitle('Title not stated');
-        if(Auth::check())
-        {
+        if(Auth::check()){
             $this->user = Auth::user();
-            view()->share('u', $this->user);
+        } else {
+            $this->user = User::find(0);
         }
+        view()->share('u', $this->user);
+        $token = CCentrifugo::generateClientToken($this->user->steamid64, time(), '');
+        view()->share('ctoken', $token);
         $this->redis = LRedis::connection();
         view()->share('steam_status', $this->getSteamStatus());
     }
