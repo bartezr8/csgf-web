@@ -50,9 +50,7 @@
                 <input type="text" name="mone"  style=" margin-left: 180px;" cols="50" pattern="^[ 0-9]+$" placeholder="СУММА" maxlength="4" autocomplete="off">
                 <input type="submit" style="margin-left: 180px;" name="submit" value="Перевести средства">
             </div>
-            <input type="hidden" name="_token" value="{{csrf_token()}}"/>
         </form>
-
     </div>
     <br>
     <div class="title-block">
