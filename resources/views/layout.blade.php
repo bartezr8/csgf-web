@@ -7,7 +7,6 @@
         <meta name="keywords" content="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo, халява, от 1 рубля, рефералка, дабл, луты, steam" />
         <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="ctoken" content="{{ $ctoken }}">
         <link rel="icon" type="image/png" href="{{ $asset('favicon.png') }}"/>
         <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
         <link href="{{ $asset('assets/css/chat.css') }}" rel="stylesheet">
@@ -22,34 +21,18 @@
         <script src="{{ $asset('assets/js/jquery.cookie.js') }}" ></script>
         <script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
         <script>
-            var SITE_URL = "{{ config('app.url') }}";
-            var APPS_SECURE = "env('APPS_SECURE', false)";
-            var APPS_FCONNS = "env('APPS_FCONNS', false)";
-            var USER_BALANCE = 0;
-            @if(!Auth::guest())
-                var avatar = '{{ $u->avatar }}';
-                const USER_ID = '{{ $u->steamid64 }}';
-                const IS_MODER = '{{ $u->is_moderator }}';
-                const IS_ADMIN = '{{ $u->is_admin }}';
-                USER_BALANCE = {{ $u->money }};
-            @else 
-                var avatar = "{{ $asset('assets/img/blank.jpg') }}";
-                const USER_ID = '76561197960265728';
-                const IS_MODER = 0;
-                const IS_ADMIN = 0;
-            @endif
-            var START = true;
-            var LOAD = false;
-            var CONNECT = false;
-            var socket = io.connect( SITE_URL , {path:'/csgf-app', secure: APPS_SECURE, 'force new connection': APPS_FCONNS });
-            socket.on('connect', function() {
-                socket.emit('steamid64', USER_ID);
-                CONNECT = true;
-            }).on('disconnect', function() {});
+            var USER_ID = '{{ $u->steamid64 }}',
+                SM_ID = '{{ $u->steamid64 }}',
+                IS_MODER = '{{ $u->is_moderator }}',
+                IS_ADMIN = '{{ $u->is_admin }}';
+                USER_BALANCE = {{ $u->money }},
+                CENT_TIKEN = "{{ $ctoken }}",
+                CENT_TIME = "{{ $ctime }}",
+                LOAD = false;
         </script>
     </head>
     <body> 
-        <a href="http://csgf.ru" style="opacity: 0;float: left;width: 0px;" target="_blank">Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля</a>
+        <a href="{{ config('app.url') }}" style="opacity: 0;float: left;width: 0px;" target="_blank">Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля</a>
         <div id="page-background" style='background: url("/assets/img/background.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
         <div id="page-preloader">
             <div id="page-background" style='background: url("/assets/img/background.png") repeat !important; position: fixed; width: 100%; height: 100%;'></div>
@@ -102,8 +85,8 @@
     </body>
     @include('includes.modals')
     <script src="{{ $asset('assets/js/snowstorm.js') }}"></script>
-    <script src="{{ $asset('assets/js/app.js') }}"></script>
-    <script src="{{ $asset('assets/js/chat.js') }}"></script>
+    <script src="{{ $asset('assets/js/app2.js') }}"></script>
+    <!--script src="{{ $asset('assets/js/chat.js') }}"></script-->
     <script>
         @if(!Auth::guest())
             function updateBalance() {

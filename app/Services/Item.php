@@ -1,4 +1,5 @@
-<?php namespace App\Services;
+<?php 
+namespace App\Services;
 
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\SteamController;

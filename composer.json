@@ -22,7 +22,6 @@
         "symfony/dom-crawler": "2.7.*",
         "way/generators": "dev-feature/laravel-five-stable",
         "xethron/migrations-generator": "^2.0",
-        "oleh-ozimok/php-centrifugo": "dev-master"
     },
     "autoload": {
         "classmap": [
@@ -39,10 +38,6 @@
         "migrations-generator": {
             "type": "vcs",
             "url": "https://github.com/jamisonvalenta/Laravel-4-Generators.git"
-        },
-        "php-centrifugo": {
-            "type": "vcs",
-            "url": "https://github.com/oleh-ozimok/php-centrifugo"
         }
     }
 }

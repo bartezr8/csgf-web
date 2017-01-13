@@ -24,11 +24,13 @@ abstract class Controller extends BaseController
         if(Auth::check()){
             $this->user = Auth::user();
         } else {
-            $this->user = User::find(0);
+            $this->user = User::find(1);
         }
         view()->share('u', $this->user);
-        $token = CCentrifugo::generateClientToken($this->user->steamid64, time(), '');
+        $time = time();
+        $token = CCentrifugo::generateClientToken($this->user->steamid64, $time, '');
         view()->share('ctoken', $token);
+        view()->share('ctime', $time);
         $this->redis = LRedis::connection();
         view()->share('steam_status', $this->getSteamStatus());
     }

@@ -22,6 +22,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\CCentrifugo;
 
 use Storage;
 
@@ -811,6 +812,7 @@ class GameController extends Controller
         return $this->_responseSuccess();
     }
     public function addTicket(Request $request){
+        CCentrifugo::publish('notification' , ['message' => 'Hello, world!']);
         if (\Cache::has('new_game')) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте.', 'type' => 'error']);
         $totalItems = $this->user->itemsCountByGame($this->game);
