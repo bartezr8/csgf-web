@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\CCentrifugo;
 use Storage;
 
 class BGameController extends Controller
@@ -418,10 +418,8 @@ class BGameController extends Controller
     }
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(self::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
+    }
     }private function _responseSuccess(){
         return response()->json(['success' => true]);
     }

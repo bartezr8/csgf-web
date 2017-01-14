@@ -9,16 +9,13 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Services\GDonate\GDonate;
 use App\Services\GDonate\GDonateEvent;
-
+use App\CCentrifugo;
 class DonateController extends Controller
 {
 
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
     
     public function Donate(Request $request)

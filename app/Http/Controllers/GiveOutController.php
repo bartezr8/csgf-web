@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\CCentrifugo;
 use Storage;
 
 class GiveOutController extends Controller {
@@ -22,10 +22,7 @@ class GiveOutController extends Controller {
     }
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
     public function startOut(){
         if (\Cache::has('out.user.' . $this->user->id)) return response()->json(['text' => 'Подождите...', 'type' => 'error']);

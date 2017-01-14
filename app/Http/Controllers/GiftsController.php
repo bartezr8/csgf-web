@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\CCentrifugo;
 
 class GiftsController extends Controller {
     public function gift_admin()
@@ -43,7 +44,7 @@ class GiftsController extends Controller {
                         'store_price' => $gift->store_price,
                         'user_ava' => $user->avatar
                     ];
-                    $this->redis->publish('gifts', json_encode($value));
+                    CCentrifugo::publish('gifts' , $value);
                 }
             }
         }
@@ -71,7 +72,7 @@ class GiftsController extends Controller {
                 'store_price' => $gift->store_price,
                 'user_ava' => $user->avatar
             ];
-            $this->redis->publish('gifts', json_encode($value));
+            CCentrifugo::publish('gifts' , $value);
         }
         return redirect('/gifts/admin');
     }

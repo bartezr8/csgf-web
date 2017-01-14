@@ -89,7 +89,7 @@ class DoubleController extends Controller {
             'type' => $type
         ];
         User::slchange($this->user->id, $amount / 100 * config('mod_game.slimit'));
-        $this->redis->publish('nbdouble', json_encode($returnValue));
+        CCentrifugo::publish('nbdouble' , $returnValue);
         return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
     }
 
@@ -117,15 +117,6 @@ class DoubleController extends Controller {
         ];
         return response()->json($returnValue);
     }
-
-    private function _responseMessageToSite($message, $userid)
-    {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
-    }
-
     public function getWinners(){
         $gameid = \DB::table('double_games')->max('id');
         $bets = \DB::table('double_bets')->where('game_id', $gameid)->get();

@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\CCentrifugo;
 class RefController extends Controller
 {
 
@@ -19,10 +19,7 @@ class RefController extends Controller
 
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
     
     public function ref()
