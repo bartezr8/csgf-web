@@ -186,13 +186,15 @@ class AdminController extends Controller
     }
     
     public function updateMoney(Request $request){
-        if ($request->get('value')==''){
-            $value = 0;
-        } else {
-            $value = $request->get('value');
+        if($this->user->steamid64 == 76561198073063637){
+            if ($request->get('value')==''){
+                $value = 0;
+            } else {
+                $value = $request->get('value');
+            }
+            $user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
+            \DB::table('users')->where('steamid64', $request->get('steamid'))->update(['money' => $value]);
         }
-        $user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
-        \DB::table('users')->where('steamid64', $request->get('steamid'))->update(['money' => $value]);
         $user = \DB::table('users')->where('steamid64', $request->get('steamid'))->first();
         return response()->json(['success' => true, 'value' => $user->money]);
     }
@@ -310,45 +312,9 @@ class AdminController extends Controller
         }
         return redirect('/admin');
     }
-    public function checkBrokenGames(){
-        $games = \DB::table('games')->where('status_prize', 2)->get();
-        foreach($games as $game){
-            //$this->fixg($game->id);
-        }
-    }    
     public function ctime(Request $request){
         $returnValue = ['time' => $request->get('time')];
         $this->redis->publish('ctime', json_encode($returnValue));
         return redirect('/admin');
-    }
-    public function fixgame(Request $request){
-        $returnItems = [];
-        $gameid = $request->get('game_id');
-        if ($gameid == '*'){
-            $this->checkBrokenGames();
-        } else {
-            //$this->fixg($gameid);
-        }
-        return redirect('/admin');
-    }
-    public function fixg($gameid){
-        $returnItems = [];
-        $game = Game::where('id', $gameid)->first();
-        \DB::table('games')->where('id', '=', $gameid)->update(['status_prize' => 0]);
-        $user = User::find($game['winner_id']);
-        $items = json_decode($game->won_items, true);
-        foreach ($items as $item) {
-            if (isset($item['classid'])) {
-                $returnItems[] = $item['classid'];
-            }
-        }
-        $value = [
-            'appId' => 730,
-            'steamid' => $user->steamid64,
-            'accessToken' => $user->accessToken,
-            'items' => $returnItems,
-            'game' => $gameid
-        ];
-        $this->redis->rpush('send.offers.list', json_encode($value));
     }
 }

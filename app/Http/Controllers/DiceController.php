@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\User;
 use Carbon\Carbon;
+use App\CCentrifugo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Cache;
 use App\Http\Requests;
@@ -14,13 +15,6 @@ class DiceController extends Controller {
     
     const AMSUM = 25;
     
-    private function _responseMessageToSite($message, $userid)
-    {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
-    }
     public function index(){
         parent::setTitle('КОСТИ | ');
         $gamestats = \DB::table('dice')->orderBy('id', 'desc')->limit(13)->get();
@@ -91,7 +85,7 @@ class DiceController extends Controller {
             'username' => $this->user->username,
             'win' => $win
         ];
-        $this->redis->publish('dice', json_encode($returnValue));
+        CCentrifugo::publish('dice' , $returnValue);
         \DB::table('dice')->insert(['user_id' => $this->user->id, 'money' => $bet_sum, 'bet_v' => $bet_value, 'value' => $roll, 'am' => $am, 'win' => $win ]);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success','value' => $roll]);
     }

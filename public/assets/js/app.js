@@ -322,14 +322,14 @@ function updateChatScroll() {
     }
     if(chatPrompt.length) chatHeight = chatHeight - chatPrompt.innerHeight();
     chatScroll.css({'height': chatHeight});
-}
+} 
 function delete_message(id) {
     $.ajax({
         url: '/delmsg',
         type: 'POST',
         dataType: 'json',
         data: {
-            id: id
+            id: $('.chatMessage').index($('#chat_msg_' + id))
         },
         success: function(data) {
             $.notify(data.message, {
@@ -369,7 +369,19 @@ function update_chat() {
     });
 }
 function delMsg(message){
-    $('#chat_msg_' + message.id).remove();
+    $('.chatMessage').eq(message.id).remove();
+}
+function coin_bet( id ) {
+    $.post('/coin/bet', {
+        id: id
+    },
+    function(data) {
+        if(data.type == 'success'){
+            USER_BALANCE = num(num(USER_BALANCE) - num($("#cointable #coin_" + id + " #sum").text()));
+            $('.userBalance').text(USER_BALANCE);
+        }
+        return $.notify(data.text, data.type);
+    });
 }
 function addMsg(message){
     if(message && message.length > 0) {
@@ -413,7 +425,878 @@ function addMsg(message){
         $("#chatScroll").perfectScrollbar('update');
     }
 }
+var lastMsg = '';
+var lastMsgTime = '';
 $(function() {
+    CSGF.init();
+    if(checkUrl('/coin')) window.coin_tpl = _.template($('#coin-template').html());
+    if(checkUrl('/dice')){
+        window.dice = ({
+            _dice: $('#dice'),
+            _lastGames: $('#DiceCarousel'),
+            
+            moving: false,
+
+            addLastGame: function(data) {
+                if (this._lastGames.children().length >= 13) this._lastGames.children().last().remove();
+                this._lastGames.prepend('<li class="fade-in-right" style="height: 70px;display: block;float: left;margin-right: 7px;"><img style="opacity: 0.8;width: 70px;height: 70px;border-radius: 3px;" id="" src="' + data.avatar + '"><div class="chance" id="div_winner_112">' + num(data.win) + '</div></li>')
+            },
+            diceRoll: function(i, again) {
+                var rotateXnow = this._dice.data('rotatex');
+                var rotateYnow = this._dice.data('rotatey');
+                again = again || 3;
+
+                if (again > 1) {
+                    rotateXnow = rotateXnow + 270;
+                    rotateYnow = rotateYnow + 270;
+                    this._dice
+                        .css("transform", "rotateX(" + rotateXnow + "deg) rotateY(" + rotateYnow + "deg)")
+                        .data('rotatex', rotateXnow)
+                        .data('rotatey', rotateYnow);
+                    setTimeout(this.diceRoll.bind(this), 500, i, again - 1);
+                } else {
+                    var rotate = {
+                        1: {x: 270, y: 0, n: 6},
+                        2: {x: 0, y: 0, n: 4},
+                        3: {x: 0, y: 270, n: 5},
+                        4: {x: 0, y: 180, n: 2},
+                        5: {x: 0, y: 90, n: 3},
+                        6: {x: 90, y: 180, n: 1}
+                    };
+
+                    var rotateX = Math.ceil(rotateXnow / 360) * 360 + (parseInt(rotate[i].x));
+                    var rotateY = Math.ceil(rotateYnow / 360) * 360 + (parseInt(rotate[i].y));
+                    this._dice
+                        .css("transform", "rotateX(" + rotateX + "deg) rotateY(" + rotateY + "deg)")
+                        .data('rotatex', rotateX)
+                        .data('rotatey', rotateY);
+                    setTimeout(this.restart.bind(this), 600);
+                }
+            },
+            roll: function(number) {
+                this.moving = true;
+                this.diceRoll(number);
+            },
+            bet: function(value) {
+                if (this.moving) return;
+                var sum = 0;
+                if (!isNaN($('.amount').val())) sum = num($('.amount').val());
+                if (sum <= 0) return $.notify('Укажите сумму ставки', 'error');
+                $.post('/dice/bet', {
+                    sum: sum,
+                    value: value
+                }, function(data) {
+                    if(data.type == 'success') {
+                        USER_BALANCE = num(num(USER_BALANCE) - num(sum));
+                        $('.userBalance').text(USER_BALANCE);
+                        dice.roll(data.value);
+                    }
+                    return $.notify(data.text, data.type);
+                });
+            },
+            restart: function() {
+                this.moving = false;
+                updateBalance();
+            }
+        });
+        $('.dice-colors').on('click', 'button', function() {
+            dice.bet($(this).data('value'));
+        });
+        $('.buttons').on('click', '.balance-button', function() {
+            var input = $('.amount');
+            switch ($(this).data('action')) {
+                case 'clear':
+                    input.val('');
+                    break;
+                case 'min':
+                    input.val('0.01');
+                    break;
+                case 'max':
+                    $.post('/getBalance', function (data) {input.val(data)});
+                    break;
+                case '+1':
+                    if (isNaN(num(input.val()))) input.val(0);
+                    input.val(num(input.val()) + 1);
+                    break;
+                case '+10':
+                    if (isNaN(num(input.val()))) input.val(0);
+                    input.val(num(input.val()) + 10);
+                    break;
+                case '+100':
+                    if (isNaN(num(input.val()))) input.val(0);
+                    input.val(num(input.val()) + 100);
+                    break;
+                case '1/2':
+                    if (isNaN(input.val())) input.val(0);
+                    input.val(num(num(input.val()) / 2));
+                    break;
+                case 'x2':
+                    if (isNaN(input.val())) input.val(0);
+                    input.val(num(num(input.val()) * 2));
+                    break;
+            }
+        });
+    }
+    if(checkUrl('/shop/deposit')){
+        window.shop = ({
+            shop_loader: '<div id="inventory_load" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div style="text-align: center;margin-top: 5px;">Обновляем список предметов!</div>',
+            item_tpl: _.template($('#item-template').html()),
+            shop_items: {},
+            shop_items_Holder: $('#items-list'),
+            shop_cart: {},
+            shop_cart_price: 0,
+            shop_cart_Holder: $('#cart-list'),
+            shiftPress: false,
+            parce_item: function(zipItem){
+                var i = 0;
+                zipItem = {
+                    id: zipItem[i++],
+                    count: zipItem[i++],
+                    name: zipItem[i++],
+                    priceCent: zipItem[i++],
+                    classid: zipItem[i++],
+                    exterior: zipItem[i++],
+                    rarity: zipItem[i++],
+                    rarity_text: zipItem[i++],
+                    ids: zipItem[i++],
+                    shortexterior: '',
+                };
+                if (zipItem.exterior == 'Прямо с завода') {
+                    zipItem.shortexterior = 'FN';
+                } else if (zipItem.exterior == 'Немного поношенное') {
+                    zipItem.shortexterior = 'MW';
+                } else if (zipItem.exterior == 'После полевых испытаний') {
+                    zipItem.shortexterior = 'FT';
+                    zipItem.exterior = 'После полевых';
+                } else if (zipItem.exterior == 'Поношенное') {
+                    zipItem.shortexterior = 'WW';
+                } else if (zipItem.exterior == 'Закаленное в боях') {
+                    zipItem.shortexterior = 'BS';
+                } else if (zipItem.exterior == null) {
+                    zipItem.shortexterior = '*';
+                    zipItem.exterior = 'Не покрашено';
+                } else {
+                    zipItem.shortexterior = '*';
+                    zipItem.exterior = 'Не покрашено';
+                }
+                if(zipItem.name.length > 35) {
+                    zipItem.name = zipItem.name.substr(0, 34) + '...'
+                }
+                if(zipItem.exterior !== null) {
+                    if (zipItem.exterior.length > 19) {
+                        zipItem.exterior = zipItem.exterior.substr(0, 16) + '...'
+                    }
+                }
+                var item_obj = {
+                    id: zipItem.id,
+                    name: zipItem.name,
+                    price: num(zipItem.priceCent),
+                    classid: zipItem.classid,
+                    shortexterior: zipItem.shortexterior,
+                    count: zipItem.count,
+                    exterior_all: zipItem.exterior,
+                    filter_rarity: zipItem.rarity,
+                    rarity_all: zipItem.rarity_text,
+                    className: zipItem.rarity,
+                    ids: zipItem.ids
+                };
+                item_obj.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + item_obj.classid + '/101fx100f';
+                item_obj.el = $(this.item_tpl(item_obj));
+                return item_obj;
+            },
+            draw_items: function(){
+                this.shop_items_Holder.children().replaceWith('');
+                var items_list = makeArray(this.shop_items);
+                var raritys = [], exteriors = []; 
+                items_list.forEach(function (item) {
+                    if(raritys.indexOf(item.rarity_all) == -1) raritys.push(item.rarity_all);
+                    if(exteriors.indexOf(item.exterior_all) == -1) exteriors.push(item.exterior_all);
+                });
+                $('#rarity_all').children().replaceWith('');
+                $('#rarity_all').append('<option value="">Все раритетности</option>');
+                raritys.forEach(function(item){
+                    $('#rarity_all').append('<option value="' + item + '">' + item + '</option>');
+                });
+                $('#exterior_all').children().replaceWith('');
+                $('#exterior_all').append('<option value="">Любое качество</option>');
+                exteriors.forEach(function(item){
+                    $('#exterior_all').append('<option value="' + item + '">' + item + '</option>');
+                });
+                $('#items-total').text(_.reduce(items_list, function (memo, num) {
+                    return memo + num.count;
+                }, 0));
+                $('#filter-total').text(_.reduce(items_list, function (memo, num) {
+                    return memo + num.count;
+                }, 0));
+                if($('#sort_all').val() == 'desc'){
+                    items_list.sort(function (a, b) {
+                        return b.price - a.price
+                    });
+                } else {
+                    items_list.sort(function (b, a) {
+                        return b.price - a.price
+                    });
+                }
+                items_list.forEach(function (item) {
+                    item.el = $(shop.item_tpl(item));
+                    shop.shop_items_Holder.append(item.el);
+                });
+                this.show_items();
+            },
+            draw_cart: function(){
+                this.shop_cart_Holder.children().replaceWith('');
+                var items_list = makeArray(this.shop_cart);
+                items_list.sort(function (a, b) {
+                    return b.price - a.price
+                });
+                var count = 0;
+                var price = 0;
+                items_list.forEach(function (item) {
+                    if(item.count > 0) {
+                        item.el = $(shop.item_tpl(item));
+                        shop.shop_cart_Holder.append(item.el);
+                        count += item.count;
+                        price += item.price * item.count;
+                    }
+                });
+                this.shop_cart_price = price;
+                $('#cart-total').text(count);
+                $('#cart-total-price').text(num(price));
+            },
+            show_items: function(){
+                var args = [];
+                var items_list = makeArray(shop.shop_items);
+                ['exterior_all', 'rarity_all'].forEach(function(sel) {
+                    var sorter = $('#' + sel).val();
+                    if (sorter) {
+                        var p = _.filter(items_list, function (item) {
+                            var _exterior = item[sel];
+                            return _exterior == sorter;
+                        });
+                        p = _.pluck(p, 'id');
+                        args.push(p);
+                    }
+                });
+                
+                var from = parseFloat($('#priceFrom').val()) || 0;
+                var to = parseFloat($('#priceTo').val()) || 10e10;
+                if (to < from) to = 10e10;
+                var p = _.filter(items_list, function (item) {
+                    var _price = num(item.price);
+                    return _price >= from && _price <= to;
+                });
+                p = _.pluck(p, 'id');
+                args.push(p);
+                var text = $('#searchInput').val().trim();
+                text = text.replace('|', '\\|');
+                var p = _.filter(items_list, function (item) {
+                    return (new RegExp(text, 'i').test(item.name));
+                });
+                p = _.pluck(p, 'id');
+                args.push(p);
+                if(args.length){
+                    var allItems = shop.shop_items_Holder.children('.deposit-item');
+                    var s = _.intersection.apply(null, args);
+                    var count = 0;
+                    allItems.addClass('hidden');
+                    s.forEach(function (id) {
+                        if (shop.shop_items[id].count > 0){
+                            shop.shop_items[id].el.removeClass('hidden');
+                            count += shop.shop_items[id].count;
+                        }
+                    });
+                    $('#filter-total').text(count);
+                } else {
+                    allItems.removeClass('hidden');
+                }
+            },
+            clear_items: function(){
+                this.shop_items = {};
+                this.shop_cart = {};
+                this.shop_cart_price = 0;
+                this.shop_items_Holder.children().replaceWith('');
+                this.shop_cart_Holder.children().replaceWith('');
+                this.shop_items_Holder.html('');
+                $('#items-total').text(0);
+                $('#filter-total').text(0);
+                $('#cart-total').text(0);
+                $('#cart-total-price').text(0);
+            },
+            load_items: function(){
+                this.shop_items_Holder.html(shop.shop_loader);
+                $.ajax({
+                    url: '/shop/myinventory',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (!data.list.length){
+                            shop.shop_items_Holder.html('<div style="text-align: center">Инвентарь пуст!</div>');
+                            return;
+                        }
+                        data.list.forEach(function (zipItem) {
+                            var item = shop.parce_item(zipItem);
+                            shop.shop_items[item.id] = item;
+                        });
+                        shop.draw_items();
+                    },
+                    error: function () {
+                        shop.clear_items();
+                        shop.shop_items_Holder.html('<div style="text-align: center">Инвентарь пуст!</div>');
+                    }
+                });
+            },
+            new_item: function(zipItem){
+                var item = new Object();
+                item.id = zipItem.id;
+                item.name = zipItem.name;
+                item.price = zipItem.price;
+                item.classid = zipItem.classid;
+                item.shortexterior = zipItem.shortexterior;
+                item.count = zipItem.count;
+                item.exterior_all = zipItem.exterior_all;
+                item.filter_rarity = zipItem.filter_rarity;
+                item.rarity_all = zipItem.rarity_all;
+                item.className = zipItem.className;
+                item.ids = zipItem.ids;
+                item.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + zipItem.classid + '/101fx100f';
+                return item;
+            },
+            buy_item: function(id){
+                if(is_null(shop.shop_items[id])) return $.notify("Предмет не существует", { className: "error" });
+                if(shop.shop_items[id].count <= 0) return $.notify("Предмет отсутствует", { className: "error" });
+                var price = 0;
+                if(shop.shiftPress){
+                    price = shop.shop_items[id].price * shop.shop_items[id].count;
+                } else {
+                    price = shop.shop_items[id].price;
+                }
+                if(is_null(shop.shop_cart[id])){
+                    var item = shop.new_item(shop.shop_items[id]);
+                    if(!shop.shiftPress) item.count = 1;
+                    shop.shop_cart[id] = item;
+                } else {
+                    if(shop.shiftPress){
+                        shop.shop_cart[id].count += shop.shop_items[id].count;
+                    } else {
+                        shop.shop_cart[id].count += 1;
+                    }
+                }
+                if(shop.shiftPress){
+                    shop.shop_items[id].count = 0;
+                } else {
+                    shop.shop_items[id].count -= 1;
+                }
+                this.show_cart();
+            },
+            sell_cart: function(id){
+                if(is_null(shop.shop_cart[id])) return $.notify("Предмет не существует", { className: "error" });
+                if(shop.shop_cart[id].count <= 0) return;
+                if(shop.shiftPress){
+                    shop.shop_items[id].count += shop.shop_cart[id].count;
+                    shop.shop_cart[id].count = 0;
+                } else {
+                    shop.shop_cart[id].count -= 1;
+                    shop.shop_items[id].count += 1;
+                }
+                this.show_cart();
+            },
+            show_cart: function(){
+                this.draw_cart();
+                this.draw_items();
+            },
+            sell_cart_all: function(){
+                var items_list = makeArray(this.shop_cart);
+                items_list.forEach(function (item) {
+                    shop.shiftPress = true;
+                    shop.sell_cart(item.id);
+                    shop.shiftPress = false;
+                });
+            },
+            get_cart: function(){
+                $.notify("Отправляем обмен", {className: "success"});
+                var items_list = makeArray(this.shop_cart);
+                var senditems = '';
+                items_list.forEach(function (item) {
+                    if(item.count > 0){
+                        for (var i = 0; i < item.count; i++) {
+                            senditems += item.ids[i] + ',';
+                        }
+                    }
+                });
+                $.ajax({
+                    url: '/shop/sellitems',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        classids: senditems
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $('#depTradeCode').text(data.msg);
+                            $("#depUrl").attr("href", "https://steamcommunity.com/tradeoffer/" + data.tradeid);
+                            $('#depModal').arcticmodal(); 
+                        } else {
+                            if (data.msg) $.notify(data.msg, {className: "error"});
+                        }
+                        shop.sell_cart_all();
+                    },
+                    error: function () {
+                        $.notify("Произошла ошибка. Попробуйте еще раз", {
+                            className: "error"
+                        });
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#items-list .deposit-item', function () {
+            shop.buy_item($(this).data('id'));
+        });
+        $(document).on('click', '#cart-list .deposit-item', function () {
+            shop.sell_cart($(this).data('id'));
+        });
+        $(document).on('click', '#get-cart', function () { shop.get_cart() });
+        $(document).on('change', '#exterior_all', shop.show_items);
+        $(document).on('change', '#rarity_all', shop.show_items);
+        $(document).on('change', '#sort_all', function(){shop.draw_items()});
+        $('#searchInput, #priceFrom, #priceTo').keyup(shop.show_items);
+        $(document).on('click', '.btn-inv', function () {
+            shop.clear_items();
+            shop.shop_items_Holder.html(shop.shop_loader);
+            $.ajax({
+                url: '/shop/inv_update',
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    shop.load_items();
+                },
+                error: function () {
+                    $.notify("Произошла ошибка. Попробуйте еще раз", {
+                        className: "error"
+                    });
+                }
+            });
+        });
+        document.onkeyup = function checkKeycode(event){
+            if(!event) var event = window.event;
+            var keyShift = event.shiftKey;
+            if(keyShift){
+            shop.shiftPress = true;
+            } else {
+            shop.shiftPress = false;
+            }
+        }
+        document.onkeydown = function checkKeycode(event){
+            if(!event) var event = window.event;
+            var keyShift = event.shiftKey;
+            if(keyShift){
+                shop.shiftPress = true;
+            } else {
+                shop.shiftPress = false;
+            }
+        }
+        function is_null(data){
+            if (data == null) return true;
+            return false;
+        }
+        function makeArray(object){
+            var array = $.map(object, function(value, index) {
+                return [value];
+            });
+            return array;
+        }
+        shop.load_items();
+    }
+    if(checkUrl('/shop')){
+        window.shop = ({
+            shop_loader: '<div id="inventory_load" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div style="text-align: center;margin-top: 5px;">Обновляем список предметов!</div>',
+            item_tpl: _.template($('#item-template').html()),
+            shop_items: {},
+            shop_items_Holder: $('#items-list'),
+            shop_cart_sliden: false,
+            shop_cart: {},
+            shop_cart_price: 0,
+            shop_cart_Holder: $('#cart-list'),
+            shiftPress: false,
+            parce_item: function(zipItem){
+                var i = 0;
+                zipItem = {
+                    id: zipItem[i++],
+                    count: zipItem[i++],
+                    name: zipItem[i++],
+                    priceCent: zipItem[i++],
+                    classid: zipItem[i++],
+                    exterior: zipItem[i++],
+                    rarity: zipItem[i++],
+                    rarity_text: zipItem[i++],
+                    shortexterior: '',
+                };
+                if (zipItem.exterior == 'Прямо с завода') {
+                    zipItem.shortexterior = 'FN';
+                } else if (zipItem.exterior == 'Немного поношенное') {
+                    zipItem.shortexterior = 'MW';
+                } else if (zipItem.exterior == 'После полевых испытаний') {
+                    zipItem.shortexterior = 'FT';
+                    zipItem.exterior = 'После полевых';
+                } else if (zipItem.exterior == 'Поношенное') {
+                    zipItem.shortexterior = 'WW';
+                } else if (zipItem.exterior == 'Закаленное в боях') {
+                    zipItem.shortexterior = 'BS';
+                } else if (zipItem.exterior == null) {
+                    zipItem.shortexterior = '*';
+                    zipItem.exterior = 'Не покрашено';
+                } else {
+                    zipItem.shortexterior = '*';
+                    zipItem.exterior = 'Не покрашено';
+                }
+                if(zipItem.name.length > 35) {
+                    zipItem.name = zipItem.name.substr(0, 34) + '...'
+                }
+                if(zipItem.exterior !== null) {
+                    if (zipItem.exterior.length > 19) {
+                        zipItem.exterior = zipItem.exterior.substr(0, 16) + '...'
+                    }
+                }
+                var item_obj = {
+                    id: zipItem.classid,
+                    name: zipItem.name,
+                    price: num(zipItem.priceCent),
+                    classid: zipItem.classid,
+                    shortexterior: zipItem.shortexterior,
+                    count: zipItem.count,
+                    exterior_all: zipItem.exterior,
+                    filter_rarity: zipItem.rarity,
+                    rarity_all: zipItem.rarity_text,
+                    className: zipItem.rarity
+                };
+                item_obj.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + item_obj.classid + '/101fx100f';
+                item_obj.el = $(this.item_tpl(item_obj));
+                return item_obj;
+            },
+            draw_items: function(){
+                this.shop_items_Holder.children().replaceWith('');
+                var items_list = makeArray(this.shop_items);
+                var raritys = [], exteriors = [], temp_exterior = $('#exterior_all').val(), temp_rarity = $('#rarity_all').val();
+                items_list.forEach(function (item) {
+                    if(raritys.indexOf(item.rarity_all) == -1) raritys.push(item.rarity_all);
+                    if(exteriors.indexOf(item.exterior_all) == -1) exteriors.push(item.exterior_all);
+                });
+                $('#rarity_all').children().replaceWith('');
+                $('#rarity_all').append('<option value="">Все раритетности</option>');
+                $('#exterior_all').children().replaceWith('');
+                $('#exterior_all').append('<option value="">Любое качество</option>');
+                raritys.forEach(function(item){
+                    $('#rarity_all').append('<option value="' + item + '">' + item + '</option>');
+                });
+                exteriors.forEach(function(item){
+                    $('#exterior_all').append('<option value="' + item + '">' + item + '</option>');
+                });
+                $('#exterior_all').val(temp_exterior);$('#rarity_all').val(temp_rarity);
+                $('#items-total').text(_.reduce(items_list, function (memo, num) {
+                    return memo + num.count;
+                }, 0));
+                $('#filter-total').text(_.reduce(items_list, function (memo, num) {
+                    return memo + num.count;
+                }, 0));
+                if($('#sort_all').val() == 'desc'){
+                    items_list.sort(function (a, b) {
+                        return b.price - a.price
+                    });
+                } else {
+                    items_list.sort(function (b, a) {
+                        return b.price - a.price
+                    });
+                }
+                items_list.forEach(function (item) {
+                    item.el = $(shop.item_tpl(item));
+                    shop.shop_items_Holder.append(item.el);
+                });
+                this.show_items();
+            },
+            draw_cart: function(){
+                this.shop_cart_Holder.children().replaceWith('');
+                var items_list = makeArray(this.shop_cart);
+                items_list.sort(function (a, b) {
+                    return b.price - a.price
+                });
+                var count = 0;
+                var price = 0;
+                items_list.forEach(function (item) {
+                    if(item.count > 0) {
+                        item.el = $(shop.item_tpl(item));
+                        shop.shop_cart_Holder.append(item.el);
+                        count += item.count;
+                        price += item.price * item.count;
+                    }
+                });
+                this.shop_cart_price = price;
+                $('#cart-total').text(count);
+                $('#cart-total-price').text(num(price));
+            },
+            show_items: function(){
+                var args = [];
+                var items_list = makeArray(shop.shop_items);
+                ['exterior_all', 'rarity_all'].forEach(function(sel) {
+                    var sorter = $('#' + sel).val();
+                    if (sorter) {
+                        var p = _.filter(items_list, function (item) {
+                            var _exterior = item[sel];
+                            return _exterior == sorter;
+                        });
+                        p = _.pluck(p, 'id');
+                        args.push(p);
+                    }
+                });
+                var from = parseFloat($('#priceFrom').val()) || 0;
+                var to = parseFloat($('#priceTo').val()) || 10e10;
+                if (to < from) to = 10e10;
+                var p = _.filter(items_list, function (item) {
+                    var _price = num(item.price);
+                    return _price >= from && _price <= to;
+                });
+                p = _.pluck(p, 'id');
+                args.push(p);
+                var text = $('#searchInput').val().trim();
+                text = text.replace('|', '\\|');
+                var p = _.filter(items_list, function (item) {
+                    return (new RegExp(text, 'i').test(item.name));
+                });
+                p = _.pluck(p, 'id');
+                args.push(p);
+                if(args.length){
+                    var allItems = shop.shop_items_Holder.children('.deposit-item');
+                    var s = _.intersection.apply(null, args);
+                    var count = 0;
+                    allItems.addClass('hidden');
+                    s.forEach(function (id) {
+                        if (shop.shop_items[id].count > 0){
+                            shop.shop_items[id].el.removeClass('hidden');
+                            count += shop.shop_items[id].count;
+                        }
+                    });
+                    $('#filter-total').text(count);
+                } else {
+                    allItems.removeClass('hidden');
+                }
+            },
+            clear_items: function(){
+                this.shop_items = {};
+                this.shop_cart = {};
+                this.shop_cart_price = 0;
+                this.shop_items_Holder.children().replaceWith('');
+                this.shop_cart_Holder.children().replaceWith('');
+                this.shop_items_Holder.html('');
+                $('#items-total').text(0);
+                $('#filter-total').text(0);
+                $('#cart-total').text(0);
+                $('#cart-total-price').text(0);
+            },
+            load_items: function(){
+                this.shop_items_Holder.html(shop.shop_loader);
+                $.ajax({
+                    url: '/shop/items',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (!data.list.length){
+                            shop.clear_items();
+                            shop.shop_items_Holder.html('<div style="text-align: center">Магазин пуст! Попробуйте позже!</div>');
+                            return;
+                        }
+                        data.list.forEach(function (zipItem) {
+                            var item = shop.parce_item(zipItem);
+                            shop.shop_items[item.id] = item;
+                        });
+                        shop.draw_items();
+                    },
+                    error: function () {
+                        shop.clear_items();
+                        shop.shop_items_Holder.html('<div style="text-align: center">Магазин пуст! Попробуйте позже!</div>');
+                    }
+                });
+            },
+            add_new_items: function(data){
+                //data = JSON.parse(data);
+                if (!data.list.length) return;
+                data.list.forEach(function (zipItem) {
+                    var item = shop.parce_item(zipItem);
+                    if(!is_null(shop.shop_items[item.id])){
+                        shop.shop_items[item.id].count = item.count;
+                    } else {
+                        shop.shop_items[item.id] = item;
+                    }
+                });
+                this.draw_items();
+            },
+            dell_items: function(data){
+                //data = JSON.parse(data);
+                data.list.forEach(function (id) {
+                    if(!is_null(shop.shop_items[id])){
+                        if(shop.shop_items[id].count > 0){
+                            shop.shop_items[id].count -= 1;
+                        } else {
+                            if(!is_null(shop.shop_cart[id])){
+                                if(shop.shop_cart[id].count > 0){
+                                    shop.shop_cart[id].count -= 1;
+                                }
+                            }
+                        }
+                    }
+                });
+                this.show_cart();
+            },
+            new_item: function(zipItem){
+                var item = new Object();
+                item.id = zipItem.id;
+                item.name = zipItem.name;
+                item.price = zipItem.price;
+                item.classid = zipItem.classid;
+                item.shortexterior = zipItem.shortexterior;
+                item.count = zipItem.count;
+                item.exterior_all = zipItem.exterior_all;
+                item.filter_rarity = zipItem.filter_rarity;
+                item.rarity_all = zipItem.rarity_all;
+                item.className = zipItem.className;
+                item.image = 'https://steamcommunity-a.akamaihd.net/economy/image/class/730/' + zipItem.classid + '/101fx100f';
+                return item;
+            },
+            buy_item: function(id){
+                if(is_null(shop.shop_items[id])) return $.notify("Предмет не существует", { className: "error" });
+                if(shop.shop_items[id].count <= 0) return $.notify("Предмет отсутствует", { className: "error" });
+                var price = 0;
+                if(shop.shiftPress){
+                    price = shop.shop_items[id].price * shop.shop_items[id].count;
+                } else {
+                    price = shop.shop_items[id].price;
+                }
+                if((price + shop.shop_cart_price) > USER_BALANCE) return $.notify("У вас недостаточно средств", { className: "error" });
+                
+                if(is_null(shop.shop_cart[id])){
+                    var item = shop.new_item(shop.shop_items[id]);
+                    if(!shop.shiftPress) item.count = 1;
+                    shop.shop_cart[id] = item;
+                } else {
+                    if(shop.shiftPress){
+                        shop.shop_cart[id].count += shop.shop_items[id].count;
+                    } else {
+                        shop.shop_cart[id].count += 1;
+                    }
+                }
+                if(shop.shiftPress){
+                    shop.shop_items[id].count = 0;
+                } else {
+                    shop.shop_items[id].count -= 1;
+                }
+                this.show_cart();
+            },
+            sell_cart: function(id){
+                if(is_null(shop.shop_cart[id])) return $.notify("Предмет не существует", { className: "error" });
+                if(shop.shop_cart[id].count <= 0) return;
+                if(shop.shiftPress){
+                    shop.shop_items[id].count += shop.shop_cart[id].count;
+                    shop.shop_cart[id].count = 0;
+                } else {
+                    shop.shop_cart[id].count -= 1;
+                    shop.shop_items[id].count += 1;
+                }
+                this.show_cart();
+            },
+            show_cart: function(){
+                this.draw_cart();
+                this.draw_items();
+            },
+            sell_cart_all: function(){
+                var items_list = makeArray(this.shop_cart);
+                items_list.forEach(function (item) {
+                    shop.shiftPress = true;
+                    shop.sell_cart(item.id);
+                    shop.shiftPress = false;
+                });
+            },
+            get_cart: function(){
+                $.notify('Проверяем ваш запрос', {className: "success"});
+                var senditems = [];
+                var items_list = makeArray(this.shop_cart);
+                items_list.forEach(function (item) {
+                    if(item.count > 0) {
+                        for (var i = 0; i < item.count; i++) {
+                            senditems.push(item.id);
+                        }
+                    }
+                });
+                $.ajax({
+                    url: '/shop/getcart',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        classids: senditems
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $.notify(data.msg, {className: "success"});
+                            updateBalance();
+                            updateSlimit();
+                        } else {
+                            if (data.msg) $.notify(data.msg, {className: "error"});
+                        }
+                        shop.sell_cart_all();
+                    },
+                    error: function () {
+                        $.notify("Произошла ошибка. Попробуйте еще раз", {
+                            className: "error"
+                        });
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#items-list .deposit-item', function () {
+            shop.buy_item($(this).data('id'));
+        });
+        $(document).on('click', '#cart-list .deposit-item', function () {
+            shop.sell_cart($(this).data('id'));
+        });
+        $(document).on('click', '#get-cart', function () { shop.get_cart() });
+        $(document).on('change', '#exterior_all', shop.show_items);
+        $(document).on('change', '#rarity_all', shop.show_items);
+        $(document).on('change', '#sort_all', function(){shop.draw_items()});
+        $('#searchInput, #priceFrom, #priceTo').keyup(shop.show_items);
+        document.onkeyup = function checkKeycode(event){
+            if(!event) var event = window.event;
+            var keyShift = event.shiftKey;
+            if(keyShift){
+                shop.shiftPress = true;
+            } else {
+                shop.shiftPress = false;
+            }
+        }
+        $(document).on('click', '#card_block', function () { 
+            shop.shop_cart_sliden = !shop.shop_cart_sliden;
+            if(shop.shop_cart_sliden){
+                shop.shop_cart_Holder.slideDown();
+            } else {
+                shop.shop_cart_Holder.slideUp();
+            }
+        });
+        document.onkeydown = function checkKeycode(event){
+            if(!event) var event = window.event;
+            var keyShift = event.shiftKey;
+            if(keyShift){
+                shop.shiftPress = true;
+            } else {
+                shop.shiftPress = false;
+            }
+        }
+        function is_null(data){
+            if (data == null) return true;
+            return false;
+        }
+        function makeArray(object){
+            var array = $.map(object, function(value, index) {
+                return [value];
+            });
+            return array;
+        }
+        shop.load_items();
+    }
     $('#chatInput').keypress(function(e) {
         if(!e.shiftKey && e.which == 13) {
             sendMessage($(this).val());
@@ -428,14 +1311,11 @@ $(function() {
     $('#chatRules').click(function() {
         $('#chatRulesModal').arcticmodal();
     });
-});
-var lastMsg = '';
-var lastMsgTime = '';
-$(function() {
     toggleChat();
     update_chat();
-});
-$(function() {
+    updateChatScroll();
+    updateScrollbar();
+    updateBackground();
     $(window).scroll(function() {
         var scrollHeight = Math.max(
             document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -469,6 +1349,17 @@ $(function() {
         $('body,html').animate({
             scrollTop: scrollHeight
         }, 800);
+    });
+});
+$(document).on('click', '#coin_bet', function () {
+    $.post('/coin/nbet', {
+        sum: $('#coin_sum').val()
+    }, function(data) {
+        if(data.type == 'success'){
+            USER_BALANCE = num(num(USER_BALANCE) - num($('#coin_sum').val()));
+            $('.userBalance').text(USER_BALANCE);
+        }
+        return $.notify(data.text, data.type);
     });
 });
 $(document).ready(function() {
@@ -603,7 +1494,6 @@ $(document).ready(function() {
     $('[data-toggle="popover"]').popover({
         "container": "body"
     });
-    CSGF.init();
     $('.close-this-msg').click(function (e) {
         $(this).parent('.msg-wrap').slideUp();
     });
@@ -775,10 +1665,6 @@ var declineTimeout,
     timerStatus = true,
     ngtimerStatus = true,
     onlineList = [];
-    
-updateScrollbar();
-updateBackground();
-
 var centrifuge = new Centrifuge({
     url: 'ws://beta.mh00.net:8000/connection/websocket',
     user: USER_ID,
@@ -1091,11 +1977,75 @@ if(checkUrl('/')) {
             $('#giftModal').arcticmodal(); 
         }
     });
-    centrifuge.subscribe("news", function(message) {
+    
+}
+if(checkUrl('/coin')) {
+    centrifuge.subscribe("coin_new", function(message) {
         var data = message.data;
+        var audio = new Audio('/assets/sounds/coin/coinnew.ogg');
+        if(sound_status) audio.play();
+        $('#cointable').append($(coin_tpl(data)));
     });
-    centrifuge.subscribe("news", function(message) {
+    centrifuge.subscribe("coin_scroll", function(message) {
         var data = message.data;
+        var audio = new Audio('/assets/sounds/coin/coinplay.ogg');
+        if(sound_status) audio.play();
+        $("#cointable #coin_" + data.id + " #second #user-name").text(data.name);
+        $("#cointable #coin_" + data.id + " #second #user-ava").attr("src", data.ava);
+        $("#cointable #coin_" + data.id + " #f1 .front #user-ava").attr("src", data.ava);
+        $("#cointable #coin_" + data.id + " button").fadeOut();
+        setTimeout(function(){
+            $("#cointable #coin_" + data.id + " #f1").fadeIn(), setTimeout(function() {
+                $("#cointable #coin_" + data.id + " #f1").addClass('flip');
+            }, 500);
+            setTimeout(function(){
+                $("#cointable #coin_" + data.id + " #f2 .back #user-ava").attr("src", data.ava);
+                $("#cointable #coin_" + data.id + " #f2").fadeIn(), setTimeout(function() {
+                    $("#cointable #coin_" + data.id + " #f2").addClass('flip');
+                }, 500);
+                setTimeout(function(){
+                    $("#cointable #coin_" + data.id + " #f3 .front #user-ava").attr("src", data.lava);
+                    $("#cointable #coin_" + data.id + " #f3 .back #user-ava").attr("src", data.wava);
+                    $("#cointable #coin_" + data.id + " #f3").fadeIn(), setTimeout(function() {
+                        $("#cointable #coin_" + data.id + " #f3").addClass('flip');
+                        setTimeout(function() {
+                            if(data.wava == data.ava){
+                                $("#cointable #coin_" + data.id + " #second #user-name").css('color', '#d1ff78');
+                            } else {
+                                $("#cointable #coin_" + data.id + " #first #user-name").css('color', '#d1ff78');
+                            }
+                            if(USER_ID == data.user_id){
+                                USER_BALANCE = num(num(USER_BALANCE) + num(num(num($("#cointable #coin_" + data.id + " #sum").text()) * 2)*0.9));
+                                $('.userBalance').text(USER_BALANCE);
+                            }
+                        }, 5000);
+                    }, 500);
+                    setTimeout(function() {
+                        $("#cointable #coin_" + data.id).fadeOut(), setTimeout(function() {
+                            $("#cointable #coin_" + data.id).remove();
+                        }, 500);
+                    }, 10000);
+                }, 1000);
+            }, 1000);
+        }, 500);
+    });
+}
+if(checkUrl('/dice')){
+    centrifuge.subscribe("dice", function(message) {
+        var data = message.data;
+        setTimeout(function(){
+            dice.addLastGame(data);
+        }, 1500);
+    });
+}
+if(checkUrl('/shop')){
+    centrifuge.subscribe("addShop", function(message) {
+        var data = message.data;
+        shop.add_new_items(data);
+    });
+    centrifuge.subscribe("delShop", function(message) {
+        var data = message.data;
+        shop.dell_items(data);
     });
 }
 if(checkUrl('/out')) {

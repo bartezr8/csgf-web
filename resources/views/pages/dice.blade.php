@@ -3,7 +3,6 @@
 @section('content')
 <title>  {{ $title = 'КОСТИ | ' }}</title>
 <link href="{{ $asset('assets/css/dice.css') }}" rel="stylesheet">
-<script src="{{ $asset('assets/js/dice.js') }}"></script>
 <div class="content">
     <div class="title-block">
         <h2 style="color: #ffffff;">Кости</h2>

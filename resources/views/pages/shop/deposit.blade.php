@@ -2,8 +2,6 @@
 
 @section('content')
     <link rel="stylesheet" href="{{ $asset('assets/css/shop.css') }}"/>
-    <script src="{{ $asset('assets/js/deposit.js') }}"></script>
-
     <div class="title-block">
         <h2>
             Депозит

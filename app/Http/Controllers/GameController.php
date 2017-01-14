@@ -640,7 +640,7 @@ class GameController extends Controller
                 'html' => view('includes.bet', compact('bet'))->render(),
                 'steamid' => $user->steamid64
             ];
-            $this->redis->publish(self::VIEW_BET_CHANNEL, json_encode($value));
+            CCentrifugo::publish(self::VIEW_BET_CHANNEL.'#'.$user->steamid64, $value);
             
             $this->redis->rpush('b'.$botid.'_checked.list', json_encode($returnValue));
             $this->redis->lrem('b'.$botid.'_check.list', 0, $offerJson);
@@ -804,6 +804,7 @@ class GameController extends Controller
                     'chances' => $chances
                 ];
                 $this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
+                CCentrifugo::publish(self::NEW_BET_CHANNEL, $returnValue);
             } else {
                 $this->redis->lrem('bets.list', 0, $newBetJson);
                 $this->_responseMessageToSite('Вы забанены на сайте.', $user->steamid64);
@@ -812,7 +813,6 @@ class GameController extends Controller
         return $this->_responseSuccess();
     }
     public function addTicket(Request $request){
-        CCentrifugo::publish('notification' , ['message' => 'Hello, world!']);
         if (\Cache::has('new_game')) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте.', 'type' => 'error']);
         $totalItems = $this->user->itemsCountByGame($this->game);
@@ -905,6 +905,7 @@ class GameController extends Controller
                 'chances' => $chances
             ];
             $this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
+            CCentrifugo::publish(self::NEW_BET_CHANNEL, $returnValue);
             return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
         }
     }
@@ -978,18 +979,12 @@ class GameController extends Controller
 
     private function _responseErrorToSite($message, $user, $channel)
     {
-        return $this->redis->publish($channel, json_encode([
-            'user' => $user,
-            'msg' => $message
-        ]));
+        CCentrifugo::publish($channel, ['user' => $user,'msg' => $message]);
     }
 
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(self::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
 
     private function _responseSuccess(){

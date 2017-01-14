@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+use DB;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Cache;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use DB;
+use App\CCentrifugo;
 use Storage;
 
 class CoinFlipController extends Controller {
@@ -26,14 +27,6 @@ class CoinFlipController extends Controller {
         }
         return view('pages.coin', compact('coingames'));
     }
-    private function _responseMessageToSite($message, $userid)
-    {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
-    }
-    
     public function bet(Request $request){
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте', 'type' => 'error']);
         $game = DB::table('coin')->where('id', $request->get('id'))->first();
@@ -61,7 +54,7 @@ class CoinFlipController extends Controller {
             'user_id' => $winner->steamid64
         ];
         User::slchange($this->user->id, $game->money / 100 * config('mod_game.slimit'));
-        $this->redis->publish('coin_scroll', json_encode($returnValue));
+        CCentrifugo::publish('coin_scroll' , $returnValue);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
     }
     public function nbet(Request $request){
@@ -82,7 +75,7 @@ class CoinFlipController extends Controller {
             'sum' => $sum
         ];
         User::slchange($this->user->id, $sum / 100 * config('mod_game.slimit'));
-        $this->redis->publish('coin_new', json_encode($returnValue));
+        CCentrifugo::publish('coin_new' , $returnValue);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
     }
 }

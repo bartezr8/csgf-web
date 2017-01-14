@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Cache;
 use App\Http\Requests;
+use App\CCentrifugo;
 use App\Http\Controllers\Controller;
 
 class ShopController extends Controller {
@@ -25,10 +26,7 @@ class ShopController extends Controller {
 
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
     public function index(){
         parent::setTitle('Магазин | ');
@@ -167,7 +165,7 @@ class ShopController extends Controller {
             $newitem->rarity
         ];
         $returnValue = ['list' => $returnValue, 'off' => false];
-        $this->redis->publish('addShop', json_encode($returnValue));
+        CCentrifugo::publish('addShop' , $returnValue);
     }
     public function _parseItems($items)
     {
@@ -213,7 +211,7 @@ class ShopController extends Controller {
                 }
             }
             $returnValue = ['list' => $returnValue, 'off' => false];
-            $this->redis->publish('addShop', json_encode($returnValue));
+            CCentrifugo::publish('addShop' , $returnValue);
             $this->redis->lrem('s'.$bot_id.'_'.self::NEW_ITEMS_CHANNEL, 1, $jsonItem);
         }        
         return response()->json(['success' => true]);
@@ -223,7 +221,7 @@ class ShopController extends Controller {
         $items = DB::table('shop')->where('bot_id', '=', $bot_id)->get();
         $delitems = []; foreach ($items as $item){ $delitems[] = $item->classid; }
         $returnValue = ['list' => $delitems, 'off' => false];
-        $this->redis->publish('delShop', json_encode($returnValue));
+        CCentrifugo::publish('delShop' , $returnValue);
         DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
@@ -240,7 +238,7 @@ class ShopController extends Controller {
                 }
             }
             $returnValue = ['list' => $returnValue, 'off' => false]; 
-            $this->redis->publish('addShop', json_encode($returnValue));
+            CCentrifugo::publish('addShop' , $returnValue);
         }
         return response()->json(['success' => true]);
     }
@@ -290,7 +288,7 @@ class ShopController extends Controller {
             }
         }
         $returnValue = ['list' => $delitems, 'off' => false];
-        $this->redis->publish('delShop', json_encode($returnValue));
+        CCentrifugo::publish('delShop' , $returnValue);
         DB::table('deposits')->insertGetId([
             'user_id' => $this->user->id, 
             'date' => Carbon::now()->toDateTimeString(),
@@ -347,7 +345,7 @@ class ShopController extends Controller {
                             }
                         }
                         $returnValue = ['list' => $returnValue, 'off' => false];
-                        $this->redis->publish('addShop', json_encode($returnValue));
+                        CCentrifugo::publish('addShop' , $returnValue);
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                         DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
                         $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);

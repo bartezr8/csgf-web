@@ -87,7 +87,6 @@
     @include('includes.modals')
     <script src="{{ $asset('assets/js/snowstorm.js') }}"></script>
     <script src="{{ $asset('assets/js/app.js') }}"></script>
-    <!--script src="{{ $asset('assets/js/chat.js') }}"></script-->
     <script>
         @if(!Auth::guest())
             function updateBalance() {

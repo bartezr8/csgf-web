@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\CCentrifugo;
 use Storage;
 
 class SendController extends Controller {
@@ -15,10 +15,7 @@ class SendController extends Controller {
     
     private function _responseMessageToSite($message, $userid)
     {
-        return $this->redis->publish(GameController::INFO_CHANNEL, json_encode([
-            'steamid' => $userid,
-            'message' => $message
-        ]));
+        CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
     public function sendlist(Request $request){
         $perevod = \DB::table('perevod')->where('money_id_from', $this->user->steamid64)->orWhere('money_id_to',$this->user->steamid64)->get();
