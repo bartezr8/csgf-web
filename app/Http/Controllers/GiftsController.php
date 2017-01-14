@@ -20,11 +20,14 @@ class GiftsController extends Controller {
     public function checkWinners(Request $request)
     {
         if(config('mod_game.gifts')){
-            $ids = $request->get('users'); $users = [];
-            foreach($ids as $id){
-                $user = User::find($id);
-                if(in_array($user,$users)) continue;
-                $lastBet = $user->lastBet();
+            $users = [];
+            $online = CCentrifugo::presence('online')->getBody()['data'];
+            foreach ($online as $data){
+                CCentrifugo::publish('test' , $data);
+                if($data['user'] == config('mod_game.bonus_bot_steamid64')) continue;
+                $user = User::where('steamid64', $data['user'])->first();
+                if(in_array($user, $users)) continue;
+                $lastBet = \DB::table('bets')->where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
                 if(is_null($lastBet)) continue;
                 if((Carbon::parse($lastBet->created_at)->timestamp + 600) < Carbon::now()->timestamp) continue;
                 $lastGift = DB::table('gifts')->where('user_id', $user)->first();
@@ -36,7 +39,7 @@ class GiftsController extends Controller {
                 if(count($giftsdb) > 0){
                     $gifts = []; foreach($giftsdb as $gift) $gifts[] = $gift;
                     $gift = $gifts[rand(0, (count($gifts) - 1))];
-                    $user = $user[rand(0, (count($user) - 1))];
+                    $user = $users[rand(0, (count($user) - 1))];
                     DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
                     $value = [
                         'steamid' => $user->steamid64,

@@ -229,13 +229,13 @@
     width: 32px;
 }
 #lastGames {
-	margin-left: 4px;
-    float: left;
-    height: 32px;
-    width: 397px;
+	margin-left: 25px;
+	float: left;
+	height: 32px;
+	width: 376px;
 	overflow: hidden;
-    background-repeat: no-repeat;
-    background-size: cover;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 .redg {
 	margin-left: 3px;

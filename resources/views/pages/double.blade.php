@@ -72,7 +72,8 @@
         @if(!Auth::guest())
         <div class="form-group" style="margin-top: 20px;">
             <form>
-                <center style="padding-bottom: 40px;">
+                <center id="dbuttons" style="padding-bottom: 40px;">
+                    <span class="icon-arrow-right" style="left: 0px;top: 396px;position: absolute;"></span>
                     <div id="lastGames">
                         @foreach($games as $i)
                             @if ($i->type == 1)

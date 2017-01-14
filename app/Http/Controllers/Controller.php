@@ -33,6 +33,7 @@ abstract class Controller extends BaseController
         view()->share('ctime', $time);
         $this->redis = LRedis::connection();
         view()->share('steam_status', $this->getSteamStatus());
+        $this->redis->publish('new_user', $this->user->steamid64);
     }
 
     public function  __destruct()

@@ -7,7 +7,7 @@ return [
     'game_items' => 200,            // Всего предметов за игру
     'game_min_price' => 1,          // Игра от суммы
     'game_low_chanse' => 6,         // Шансы на лоу (чем больше цифра - меньше шансы)
-    'players_to_start' => 2,        // Игра от кол-ва игроков
+    'players_to_start' => 1,        // Игра от кол-ва игроков
     'max_items_per_trade' => 50,    // Предметов за трейд
     
     'chat_history_length' => 25,    // Длина чата.    

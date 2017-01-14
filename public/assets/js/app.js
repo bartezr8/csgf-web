@@ -15,6 +15,51 @@ function n2w(n, w) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function updateData(message){
+    var data = message.data;
+    $('#lw').addClass("flip");
+    $('#mltd').addClass("flip");
+    $('#mlf').addClass("flip");
+    setTimeout(function() {
+        $('#lw-name').html('<a href="/user/' + data.lw.user.steamid64 + '" class="color-yellow">' + data.lw.user.username + '</a>');
+        $('#lw-avatar').html('<a href="/user/' + data.lw.user.steamid64 + '"><img src="' + data.lw.user.avatar + '" alt="" title="" /></a>');
+        $('#lw-chance').html('Шанс: <span class="down-text">' + data.lw.chance + '%</span>');
+        $('#lw-money').html('Сумма выигрыша: <span class="down-text">' + data.lw.price + ' Р</span>');
+        $('#mltd-name').html('<a href="/user/' + data.mltd.user.steamid64 + '" class="color-yellow">' + data.mltd.user.username + '</a>');
+        $('#mltd-avatar').html('<a href="/user/' + data.mltd.user.steamid64 + '"><img src="' + data.mltd.user.avatar + '" alt="" title="" /></a>');
+        $('#mltd-chance').html('Шанс: <span class="down-text">' + data.mltd.chance + '%</span>');
+        $('#mltd-money').html('Сумма выигрыша: <span class="down-text">' + data.mltd.price + ' Р</span>');
+        $('#mlf-name').html('<a href="/user/' + data.mlfv.user.steamid64 + '" class="color-yellow">' + data.mlfv.user.username + '</a>');
+        $('#mlf-avatar').html('<a href="/user/' + data.mlfv.user.steamid64 + '"><img src="' + data.mlfv.user.avatar + '" alt="" title="" /></a>');
+        $('#mlf-chance').html('Шанс: <span class="down-text">' + data.mlfv.chance + '%</span>');
+        $('#mlf-money').html('Сумма выигрыша: <span class="down-text">' + data.mlfv.price + ' Р</span>');
+        setTimeout(function() {
+            $('#lw').removeClass("flip");
+            $('#mltd').removeClass("flip");
+            $('#mlf').removeClass("flip");
+        }, 300);
+    }, 925);
+    setTimeout(function() {
+        var last = Math.abs(data.last);
+        $(".stats-last-href").attr("href", "/game/" + last);
+        $(".stats-last").addClass("num_anim");
+        $(".stats-total").addClass("num_anim");
+        $(".stats-max").addClass("num_anim");
+        $(".stats-uToday").addClass("num_anim");
+        setTimeout(function() {
+            $(".stats-last").text(last);
+            $(".stats-total").text(data.total);
+            $(".stats-max").text(data.max);
+            $(".stats-uToday").text(data.today);
+            setTimeout(function() {
+                $(".stats-last").removeClass("num_anim");
+                $(".stats-total").removeClass("num_anim");
+                $(".stats-max").removeClass("num_anim");
+                $(".stats-uToday").removeClass("num_anim");
+            }, 250);
+        }, 750);
+    }, 300);
+}
 function fillWinnerInfo(data) {
     data = data || {
         winner: {}
@@ -39,7 +84,7 @@ function fillWinnerInfo(data) {
     $('#winnerInfo #winnerLink').attr('href', '/user/' + obj.winner.id);
     $('#winnerInfo #winnerChance').text('(ШАНС: ' + obj.winner.chance.toFixed(2) + '%)');
     $('#winnerInfo #winnerSum').text(obj.totalPrice);
-    updateChatScroll();
+    updateChatMargin();
 }
 function sortByChance(arrayPtr) {
     var temp = [],
@@ -98,6 +143,93 @@ function updateUsers(){
         }
     });
 }
+function toggleChat() {
+    var mainContainer = $('.main-container'),
+        dadContainer = $('.dad-container'),
+        chatBody = $('#chatBody'),
+        chatHeader = $('#chatHeader'),
+        chatClose = $('#chatClose'),
+        chatContainer = $('#chatContainer'),
+        chatScroll = $('#chatScroll'),
+        viewPortHeight = $(window).innerHeight(),
+        viewPortWidth = $(window).innerWidth();
+    chatContainer.css({"height": viewPortHeight});
+    $(window).resize(function () {
+        viewPortHeight = $(window).innerHeight();
+        chatContainer.css({"height": viewPortHeight});
+    });
+    $('body').append(chatHeader);
+    if (getCookie('chat') !== '0') {
+        mainContainer.addClass('with-chat').find('.dad-container').addClass('with-chat');
+        chatContainer.show();
+    } else {
+        chatHeader.fadeIn();
+    }
+    var timerChatCheck = setInterval(updateChatMargin, 1000);
+    chatScroll.perfectScrollbar();
+    chatClose.on('click', function (e) {
+        e.preventDefault();
+        document.cookie = "chat=0";
+        chatContainer.animate({width: 'toggle'}, 400, function () {
+            $('meta[name=viewport]').attr('content', 'width=1050');
+            mainContainer.toggleClass('with-chat').find('.dad-container').toggleClass('with-chat');
+            chatHeader.fadeIn();
+        });
+    });
+    chatHeader.on('click', function (e) {
+        e.preventDefault();
+        $(this).fadeOut();
+        document.cookie = "chat=1";
+        mainContainer.removeClass('big-padding');
+        $('meta[name=viewport]').attr('content', 'width=1280');
+        mainContainer.toggleClass('with-chat').find('.dad-container').toggleClass('with-chat');
+        chatContainer.animate({width: 'toggle'}, 400);
+    });
+    $(window).bind('scroll.chatScroll', function () {
+        var dadHeight = dadContainer.innerHeight(),
+            chatContHeight = chatContainer.innerHeight(),
+            scrollTop = $(this).scrollTop();
+
+        if (dadHeight > chatContHeight) {
+            chatContainer.css({
+                "margin-top": scrollTop
+            });
+        }
+    });
+    if (viewPortWidth < 1360) {
+        chatClose.trigger('click');
+    }
+}
+function updateChatMargin() {
+    var chatScroll = $('#chatScroll'),
+        windowHeight = $(window).innerHeight(),
+        chatInput = $('#chatInput'),
+        chatForm = $('.chat-form'),
+        chatNotLogged = $('#notLoggedIn'),
+        chatPrompt = $('.chat-prompt'),
+        dadCont = $('.dad-container'),
+        dadContHeight = dadCont.innerHeight(),
+        chatContainer = $('#chatContainer'),
+        chatHeight = windowHeight;
+
+    if (chatInput.length) {
+        chatHeight = chatHeight - chatForm.innerHeight() - 18;
+    } else {
+        chatHeight = chatHeight - chatNotLogged.innerHeight() - 15;
+    }
+    if (chatPrompt.length) {
+        chatHeight = chatHeight - chatPrompt.innerHeight();
+    }
+    chatScroll.css({'height': chatHeight});
+    if (dadContHeight <= windowHeight) {
+        chatContainer.css({"margin-top": 0});
+    } else {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        chatContainer.css({
+            "margin-top": scrollTop
+        });
+    }
+}
 function loadMyInventory() {
     $('thead').hide();
     $.ajax({
@@ -140,8 +272,7 @@ function loadMyInventory() {
     });
 }
 function mulAndShuffle(arr, k) {
-    var
-        res = [],
+    var res = [],
         len = arr.length,
         total = k * len,
         rand, prev;
@@ -217,112 +348,12 @@ function getMenuPosition(mouse, direction, scrollDir) {
 function add_smile(smile) {
     $('#chatInput').val($('#chatInput').val() + smile);
 }
-function updateChatMargin() {
-    var dadCont = $('.dad-container'),
-        dadContHeight = dadCont.innerHeight(),
-        windowHeight = $(window).innerHeight();
-    if(dadContHeight <= windowHeight) $('#chatContainer').css({"margin-top": 0});
-}
-function toggleChat() {
-    //Config variable
-    var mainContainer = $('.main-container'),
-        dadContainer = $('.dad-container'),
-        chatBody = $('#chatBody'),
-        chatHeader = $('#chatHeader'),
-        chatClose = $('#chatClose'),
-        chatContainer = $('#chatContainer'),
-        chatScroll = $('#chatScroll'),
-        viewPortHeight = $(window).innerHeight(),
-        viewPortWidth = $(window).innerWidth();
-    chatContainer.css({
-        "height": viewPortHeight
-    });
-    $(window).resize(function() {
-        viewPortHeight = $(window).innerHeight();
-        chatContainer.css({
-            "height": viewPortHeight
-        });
-    });
-    $('body').append(chatHeader);
-    if(getCookie('chat') !== '0') {
-        mainContainer.addClass('with-chat').find('.dad-container').addClass('with-chat');
-        chatContainer.show();
-    } else {
-        chatHeader.fadeIn();
-    }
-    setTimeout(updateChatScroll, 0);
-    var timerChatCheck = setInterval(updateChatScroll, 1000);
-    chatScroll.perfectScrollbar();
-    chatClose.on('click', function(e) {
-        e.preventDefault();
-        document.cookie = "chat=0";
-        chatContainer.animate({
-            width: 'toggle'
-        }, 400, function() {
-            $('meta[name=viewport]').attr('content', 'width=1050');
-            mainContainer.toggleClass('with-chat').find('.dad-container').toggleClass('with-chat');
-            chatHeader.fadeIn();
-        });
-    });
-    //Open chat
-    chatHeader.on('click', function(e) {
-        e.preventDefault();
-        $(this).fadeOut();
-        document.cookie = "chat=1";
-        mainContainer.removeClass('big-padding');
-        //Change viewport
-        $('meta[name=viewport]').attr('content', 'width=1280');
-        mainContainer
-            .toggleClass('with-chat')
-            .find('.dad-container')
-            .toggleClass('with-chat');
-        chatContainer.animate({
-            width: 'toggle'
-        }, 400);
-    });
-    //Scroll event, emulation fixed block;
-    $(window).bind('scroll.chatScroll', function() {
-        var dadHeight = dadContainer.innerHeight(),
-            chatContHeight = chatContainer.innerHeight(),
-            scrollTop = $(this).scrollTop();
-        if(dadHeight > chatContHeight) {
-            chatContainer.css({
-                "margin-top": scrollTop
-            });
-        } else {
-            chatContainer.css({
-                "margin-top": 0
-            });
-        }
-        updateChatScroll();
-    });
-    //If user screen size < 1360 hidden chat
-    if(viewPortWidth < 1360) {
-        chatClose.trigger('click');
-    }
-}
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
-function updateChatScroll() {
-    var chatScroll = $('#chatScroll'),
-        windowHeight = $(window).innerHeight(),
-        chatInput = $('#chatInput'),
-        chatForm = $('.chat-form'),
-        chatNotLogged = $('#notLoggedIn'),
-        chatPrompt = $('.chat-prompt'),
-        chatHeight = windowHeight;
-    if(chatInput.length) {
-        chatHeight = chatHeight - chatForm.innerHeight() - 18;
-    } else {
-        chatHeight = chatHeight - chatNotLogged.innerHeight() - 15;
-    }
-    if(chatPrompt.length) chatHeight = chatHeight - chatPrompt.innerHeight();
-    chatScroll.css({'height': chatHeight});
-} 
 function delete_message(id) {
     $.ajax({
         url: '/delmsg',
@@ -342,7 +373,6 @@ function delete_message(id) {
             $.notify("Произошла ошибка. Попробуйте еще раз", {
                 className: "error"
             });
-            //update_chat();
         }
     });
     return;
@@ -571,9 +601,7 @@ $(function() {
         window.dice = ({
             _dice: $('#dice'),
             _lastGames: $('#DiceCarousel'),
-            
             moving: false,
-
             addLastGame: function(data) {
                 if (this._lastGames.children().length >= 13) this._lastGames.children().last().remove();
                 this._lastGames.prepend('<li class="fade-in-right" style="height: 70px;display: block;float: left;margin-right: 7px;"><img style="opacity: 0.8;width: 70px;height: 70px;border-radius: 3px;" id="" src="' + data.avatar + '"><div class="chance" id="div_winner_112">' + num(data.win) + '</div></li>')
@@ -1448,11 +1476,6 @@ $(function() {
     $('#chatRules').click(function() {
         $('#chatRulesModal').arcticmodal();
     });
-    toggleChat();
-    update_chat();
-    updateChatScroll();
-    updateScrollbar();
-    updateBackground();
     $(window).scroll(function() {
         var scrollHeight = Math.max(
             document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -1487,19 +1510,6 @@ $(function() {
             scrollTop: scrollHeight
         }, 800);
     });
-});
-$(document).on('click', '#coin_bet', function () {
-    $.post('/coin/nbet', {
-        sum: $('#coin_sum').val()
-    }, function(data) {
-        if(data.type == 'success'){
-            USER_BALANCE = num(num(USER_BALANCE) - num($('#coin_sum').val()));
-            $('.userBalance').text(USER_BALANCE);
-        }
-        return $.notify(data.text, data.type);
-    });
-});
-$(document).ready(function() {
     $(document).on("contextmenu", ".chatMessage", function(e) {
         if(e.ctrlKey) return;
         e.preventDefault();
@@ -1746,6 +1756,22 @@ $(document).ready(function() {
             return $.notify('Укажите сумму', 'error');
         }
     });
+    update_chat();
+    toggleChat();
+    updateChatMargin();
+    updateBackground();
+    updateScrollbar();
+});
+$(document).on('click', '#coin_bet', function () {
+    $.post('/coin/nbet', {
+        sum: $('#coin_sum').val()
+    }, function(data) {
+        if(data.type == 'success'){
+            USER_BALANCE = num(num(USER_BALANCE) - num($('#coin_sum').val()));
+            $('.userBalance').text(USER_BALANCE);
+        }
+        return $.notify(data.text, data.type);
+    });
 });
 $(document).on('click', '.vote', function() {
     var that = $(this);
@@ -1809,56 +1835,19 @@ var centrifuge = new Centrifuge({
     token: CENT_TIKEN
 });
 centrifuge.connect();
-centrifuge.on('connect', function(context) {
-    console.log('WebSocket conneted');
-});
+centrifuge.on('connect', function(context) {});
 centrifuge.subscribe("test", function(message) {
     console.log(message);
 });
 centrifuge.subscribe("update", function(message) {
-    var data = message.data;
-    $('#lw').addClass("flip");
-    $('#mltd').addClass("flip");
-    $('#mlf').addClass("flip");
-    setTimeout(function() {
-        $('#lw-name').html('<a href="/user/' + data.lw.user.steamid64 + '" class="color-yellow">' + data.lw.user.username + '</a>');
-        $('#lw-avatar').html('<a href="/user/' + data.lw.user.steamid64 + '"><img src="' + data.lw.user.avatar + '" alt="" title="" /></a>');
-        $('#lw-chance').html('Шанс: <span class="down-text">' + data.lw.chance + '%</span>');
-        $('#lw-money').html('Сумма выигрыша: <span class="down-text">' + data.lw.price + ' Р</span>');
-        $('#mltd-name').html('<a href="/user/' + data.mltd.user.steamid64 + '" class="color-yellow">' + data.mltd.user.username + '</a>');
-        $('#mltd-avatar').html('<a href="/user/' + data.mltd.user.steamid64 + '"><img src="' + data.mltd.user.avatar + '" alt="" title="" /></a>');
-        $('#mltd-chance').html('Шанс: <span class="down-text">' + data.mltd.chance + '%</span>');
-        $('#mltd-money').html('Сумма выигрыша: <span class="down-text">' + data.mltd.price + ' Р</span>');
-        $('#mlf-name').html('<a href="/user/' + data.mlfv.user.steamid64 + '" class="color-yellow">' + data.mlfv.user.username + '</a>');
-        $('#mlf-avatar').html('<a href="/user/' + data.mlfv.user.steamid64 + '"><img src="' + data.mlfv.user.avatar + '" alt="" title="" /></a>');
-        $('#mlf-chance').html('Шанс: <span class="down-text">' + data.mlfv.chance + '%</span>');
-        $('#mlf-money').html('Сумма выигрыша: <span class="down-text">' + data.mlfv.price + ' Р</span>');
-        setTimeout(function() {
-            $('#lw').removeClass("flip");
-            $('#mltd').removeClass("flip");
-            $('#mlf').removeClass("flip");
-        }, 300);
-    }, 800);
-    setTimeout(function() {
-        var last = Math.abs(data.last);
-        $(".stats-last-href").attr("href", "/game/" + last);
-        $(".stats-last").addClass("num_anim");
-        $(".stats-total").addClass("num_anim");
-        $(".stats-max").addClass("num_anim");
-        $(".stats-uToday").addClass("num_anim");
-        setTimeout(function() {
-            $(".stats-last").text(last);
-            $(".stats-total").text(data.total);
-            $(".stats-max").text(data.max);
-            $(".stats-uToday").text(data.today);
-            setTimeout(function() {
-                $(".stats-last").removeClass("num_anim");
-                $(".stats-total").removeClass("num_anim");
-                $(".stats-max").removeClass("num_anim");
-                $(".stats-uToday").removeClass("num_anim");
-            }, 250);
-        }, 750);
-    }, 300);
+    updateData(message);
+});
+var fupdate = false;
+centrifuge.subscribe("update#" + USER_ID, function(message) {
+    if( !fupdate ){
+        updateData(message);
+        fupdate = true;
+    }
 });
 centrifuge.subscribe("status", function(message) {
     var data = message.data;
@@ -1870,12 +1859,12 @@ centrifuge.subscribe("status", function(message) {
 });
 centrifuge.subscribe("chat_add", function(message) {
     var data = message.data;
-    updateChatScroll();
+    updateChatMargin();
     addMsg(data);
 });
 centrifuge.subscribe("chat_del", function(message) {
     var data = message.data;
-    updateChatScroll();
+    updateChatMargin();
     delMsg(data);
 });
 if(USER_ID != 76561197960265728) {
@@ -1951,7 +1940,7 @@ if(checkUrl('/')) {
                 return '<div class="tooltip-title"><span>' + text + '</span></div>';
             }
         });
-        updateChatScroll();
+        updateChatMargin();
         updateBackground();
     });
     if(USER_ID != 76561197960265728) {
@@ -2085,7 +2074,7 @@ if(checkUrl('/')) {
         $('#roundStartBlock #date').html(data.created_at);
         ngtimerStatus = true;
         updateBackground();
-        updateChatScroll();
+        updateChatMargin();
     });
     centrifuge.subscribe("depositDecline", function(message) {
         var data = message.data;
@@ -2229,12 +2218,14 @@ if(checkUrl('/double')) {
         var audio = new Audio('/assets/sounds/newgame.mp3');
         if(sound_status) audio.play();
         $('#barContainer').slideUp();
+        $('#dbuttons').slideDown();
         sld = false;
     });
     centrifuge.subscribe("dbtimer", function(message) {
         var time = message.data;
         if(!sld) {
             $('#barContainer').slideDown();
+            $('#dbuttons').slideUp();
             sld = true;
         }
         $('.item-bar').css('width', ((35 - time) / 35) * 100 + '%');
@@ -2348,7 +2339,10 @@ if(checkUrl('/double')) {
     });
 }
 var conline = centrifuge.subscribe("online", function(message) {
-}).on("join", function(message) {
+    var data = message.data;
+    $('#count_online').html(data);
+});
+/*.on("join", function(message) {
     this.presence().then(function(message) {
         var online = $.map(message.data, function(value, index) {return [value];});
         console.log('Online: ' + online.length);
@@ -2361,4 +2355,4 @@ var conline = centrifuge.subscribe("online", function(message) {
 }).presence().then(function(message) {
     var online = $.map(message.data, function(value, index) {return [value];});
     console.log('Online: ' + online.length);
-}, function(err) {});
+}, function(err) {});*/

@@ -66,7 +66,7 @@ class DoubleController extends Controller {
         $thisgame = \DB::table('double_games')->where('id', $gameid)->first();
         if (is_null($thisgame)){ seld::newGame(); $thisgame = \DB::table('double_games')->where('id', $gameid)->first(); }
         if ($thisgame->status > 1) return response()->json(['success' => false, 'msg' => 'Дождитесь следующей игры']);
-        if (count($bets)>=5) return response()->json(['success' => false, 'msg' => 'Максимум 5 ставок за игру']);
+        //if (count($bets)>=5) return response()->json(['success' => false, 'msg' => 'Максимум 5 ставок за игру']);
         if ($amount < 1) return response()->json(['success' => false, 'msg' => 'Минимальная ставка 1 руб.']);
         if(!User::mchange($this->user->id, -$amount)) return response()->json(['success' => false, 'msg' => 'Недостаточно средств']);
         $bet = \DB::table('double_bets')->insertGetId(['user_id' => $this->user->id, 'game_id' => $gameid, 'price' => $amount, 'type' => $type]);
@@ -89,6 +89,7 @@ class DoubleController extends Controller {
             'type' => $type
         ];
         User::slchange($this->user->id, $amount / 100 * config('mod_game.slimit'));
+        $this->redis->publish('nbdouble', json_encode($returnValue));
         CCentrifugo::publish('nbdouble' , $returnValue);
         return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
     }

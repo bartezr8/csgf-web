@@ -503,9 +503,7 @@ class GameController extends Controller
         return count($bot_bets_e);
     }
 
-    public function newGame(){
-        \Cache::put('new_game', 'new_game', 5);
-        
+    public function newGame(){        
         $rand = DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
         if(is_null($rand)) {
             $rand_number = "0.";
@@ -648,7 +646,6 @@ class GameController extends Controller
         return response()->json(['success' => true]);
     }
     public function newBet(){
-        if (\Cache::has('new_game')) return $this->_responseSuccess();
         $data = $this->redis->lrange('bets.list', 0, -1);
         foreach ($data as $newBetJson) {
             $newBet = json_decode($newBetJson, true);
@@ -813,7 +810,6 @@ class GameController extends Controller
         return $this->_responseSuccess();
     }
     public function addTicket(Request $request){
-        if (\Cache::has('new_game')) return response()->json(['text' => 'Подождите...', 'type' => 'error']);
         if ($this->user->ban != 0) return response()->json(['text' => 'Вы забанены на сайте.', 'type' => 'error']);
         $totalItems = $this->user->itemsCountByGame($this->game);
         if ($totalItems > config('mod_game.max_items') || (1 + $totalItems) > config('mod_game.max_items')) return response()->json(['text' => 'Максимальное кол-во предметов для депозита - ' . config('mod_game.max_items'), 'type' => 'error']);

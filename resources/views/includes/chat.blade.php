@@ -1,14 +1,13 @@
 <!-- Chat -->
-    <div id="chatHeader" style="display: none;">Чат</div>
     <div id="chatContainer" class="chat-with-prompt" style="display: none;box-shadow: 0 0 10px #1E2127;">
         <span id="chatClose" class="chat-close"></span>
         <div id="chatHeader">Чат</div>
-        <div class="chat-prompt" id="chat-prompt">
-            <div class="chat-prompt-top">Чат сайта:</div>
+        <div class="chat-prompt" id="chat-prompt" style="font-size: 16px;font-weight: 600;text-shadow: 0 2px 2px rgba(0, 0, 0, 0.26);">
+            <div class="chat-prompt-top"><span class="title">ONLINE:</span> <span style="color: #00fdff" id="count_online">0</span></div>
             <div class="chat-prompt-mid">
                 <div style="margin-top:7px;margin-bottom: 9px;text-align: -webkit-auto;border-bottom: 1px solid #2D4455;">
                     <ul>
-                        <li style="list-style: none;"><span class="title">В очереди:</span> <span style="color: #8bb629" id="count_trades">0</span> <span class="title">трейдов</span></li>
+                        <li style="list-style: none;"><span class="title">В очереди:</span> <span style="color: #00fdff" id="count_trades">0</span> <span class="title">трейдов</span></li>
                     </ul>
                 </div>
             </div>
