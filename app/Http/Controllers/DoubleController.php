@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Http\Requests;
 use Illuminate\Support\Cache;
 use App\Http\Controllers\Controller;
-
+use App\CCentrifugo;
 use Storage;
 
 class DoubleController extends Controller {
