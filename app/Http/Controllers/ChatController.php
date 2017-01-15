@@ -62,7 +62,8 @@ class ChatController extends Controller
             'vip' => $vip, 
             'moder' => $moder
         ];
-        $this->redis->set('chat_id', $id++);
+        $id++;
+        $this->redis->set('chat_id', $id);
         $this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
         $llen = $this->redis->llen(self::CHAT_CHANNEL);
         if($llen > config('mod_game.chat_history_length')) $this->redis->lpop(self::CHAT_CHANNEL);
