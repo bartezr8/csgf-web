@@ -49,10 +49,8 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
         }
-        $id = $this->redis->get('chat_id');
-        if(is_null($id) || $id == '') $id = 31;
         $returnValue = [
-            'id' => $id,
+            'id' => rand(50,5000),
             'userid' => $userid, 
             'avatar' => $avatar, 
             'time' => $time, 
@@ -62,8 +60,6 @@ class ChatController extends Controller
             'vip' => $vip, 
             'moder' => $moder
         ];
-        $id++;
-        $this->redis->set('chat_id', $id);
         $this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
         $llen = $this->redis->llen(self::CHAT_CHANNEL);
         if($llen > config('mod_game.chat_history_length')) $this->redis->lpop(self::CHAT_CHANNEL);
