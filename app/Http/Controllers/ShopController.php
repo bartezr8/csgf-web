@@ -17,12 +17,12 @@ use App\Http\Controllers\Controller;
 
 class ShopController extends Controller {
     // REDIS каналы
-    const NEW_ITEMS_CHANNEL =                 'items.to.sale';
-    const GIVE_ITEMS_CHANNEL =                 'items.to.give';
-    const CHECK_ITEMS_CHANNEL =             'items.to.check';
-    const STATUS_ITEMS_CHANNEL =            'items.to.status';
-    const DECLINE_ITEMS_CHANNEL =           'shop.decline.list';
-    const DEPOSIT_RESULT_CHANNEL =          'offers.deposit.result';
+    const NEW_ITEMS_CHANNEL =       'items.to.sale';
+    const GIVE_ITEMS_CHANNEL =      'items.to.give';
+    const CHECK_ITEMS_CHANNEL =     'items.to.check';
+    const STATUS_ITEMS_CHANNEL =    'items.to.status';
+    const DECLINE_ITEMS_CHANNEL =   'shop.decline.list';
+    const DEPOSIT_RESULT_CHANNEL =  'offers.deposit.result';
 
     private function _responseMessageToSite($message, $userid)
     {
@@ -108,6 +108,53 @@ class ShopController extends Controller {
         }
         return response()->json(['list' => $returnValue, 'off' => false]);
     }
+    public static function checkSales(){
+        $sales = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->get();
+        $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('status', 0)->where('sale', 0)->where('price', '>', 10)->where('price', '<', 200)->orderBy('id', 'asc')->limit(8-count($sales))->get();
+        foreach($items as $item){
+            $item->sale = 1;
+            $item->save();
+            $sale = ['id' => $item->id, 'name' => $item->name, 'price' => round($item->price*0.9,2), 'oldprice' => $item->price, 'classid' => $item->classid, 'className' => Shop::getClassRarity($item->rarity) ];
+            $returnValue = view('includes.sale', compact('sale'))->render();
+            CCentrifugo::publish('addSale' , [ 'html' => $returnValue]);
+        }
+        return;
+    }
+    public function buySale(Request $request){
+        $id = $request->get('id');
+        $item = Shop::find($id);
+        if (!config('mod_shop.shop')) return response()->json(['success' => false, 'msg' => 'Магазин отключен']);
+        if ($this->user->ban != 0) return response()->json(['success' => false, 'msg' => 'Вы забанены на сайте']);
+        if (is_null($item)) return response()->json(['success' => false, 'msg' => 'Предмет не найден!']);
+        if ($item->sale != 1) return response()->json(['success' => false, 'msg' => 'Скидка не действует на этот предмет']);
+        $games = count($this->user->games());
+        if(($games < config('mod_shop.games_need_count')) && config('mod_shop.games_need')) return response()->json(['success' => false, 'msg' => 'У вас должно быть больше '.config('mod_shop.games_need_count').' игр для совершения покупок']);
+        $itemsum = round($item->price * 0.9,2);
+        if (( $this->user->slimit < $itemsum ) && !$this->user->is_admin) return response()->json(['success' => false, 'msg' => 'Ваш лимит '.$this->user->slimit.'р.']);
+        if(!User::mchange($this->user->id, -$itemsum)) return response()->json(['success' => false, 'msg' => 'У вас недостаточно средств!']);
+        User::slchange($this->user->id, -$itemsum);
+        $delitems = [$item->classid]; $senditems = []; 
+
+        $item->status = Shop::ITEM_STATUS_SOLD;
+        $item->buyer_id = $this->user->id;
+        $item->buy_at = Carbon::now();
+        $item->save();
+        $senditems[] = $item;                                
+
+        $this->sendItem($senditems, $item->bot_id);
+
+        $returnValue = ['list' => $delitems, 'off' => false];
+        CCentrifugo::publish('delShop' , $returnValue);
+        CCentrifugo::publish('delSale' , ['id' => $item->id]);
+        DB::table('deposits')->insertGetId([
+            'user_id' => $this->user->id, 
+            'date' => Carbon::now()->toDateTimeString(),
+            'price' => $itemsum,
+            'type' => 1
+        ]);
+        self::checkSales();
+        return response()->json(['success' => true, 'msg' => 'Предмет будет отправлен в течение 1 мин.']);
+    }
     public function setItemStatus(Request $request)
     {
         $bot_id = $request->get('bot_id');
@@ -125,7 +172,11 @@ class ShopController extends Controller {
                     $item->save();
                     if ($status == Shop::ITEM_STATUS_ERROR_TO_SEND || $status == Shop::ITEM_STATUS_RETURNED || $status == Shop::ITEM_STATUS_NOT_FOUND){
                         if($status != Shop::ITEM_STATUS_NOT_FOUND) self::makeNew($item);
-                        $total_price += $item->price;
+                        if($item->sale == 1) {
+                            $total_price += round($item->price * 0.9,2);
+                        } else {
+                            $total_price += $item->price;
+                        }
                     }
                     $user_id = $item->buyer_id;
                 }
