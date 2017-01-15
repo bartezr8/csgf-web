@@ -10,7 +10,7 @@ return [
     'players_to_start' => 2,        // Игра от кол-ва игроков
     'max_items_per_trade' => 50,    // Предметов за трейд
     
-    'chat_history_length' => 25,    // Длина чата.    
+    'chat_history_length' => 50,    // Длина чата.    
     'slimit' => 5,                  // Процент начислений на вывод
     'slimit_default' => 5,          // Изначальный лимит
 
