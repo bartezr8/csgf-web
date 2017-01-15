@@ -50,8 +50,10 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
         }
-        $lastID = $this->redis->get('chat_last') || 0;
-        $this->redis->set('chat_last', $lastID);
+        $lastID = json_decode($this->redis->get('chat_last'));
+        if(is_null($lastID)) $lastID = 0;
+        if($lastID == '') $lastID = 0;
+        $this->redis->set('chat_last', json_encode($lastID));
         $returnValue = [
             'id' => $lastID,
             'userid' => $userid, 
