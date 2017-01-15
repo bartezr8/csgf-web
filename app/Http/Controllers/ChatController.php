@@ -18,6 +18,7 @@ class ChatController extends Controller
 
     public function __construct(){
         parent::__construct();
+        $this->redis = LRedis::connection();
     }
     
     public function add_message(Request $request){
@@ -49,8 +50,10 @@ class ChatController extends Controller
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
         }
+        $lastID = $this->redis->get('chat_last') || 0;
+        $this->redis->set('chat_last', $lastID);
         $returnValue = [
-            'id' => rand(50,5000),
+            'id' => $lastID,
             'userid' => $userid, 
             'avatar' => $avatar, 
             'time' => $time, 
@@ -94,7 +97,7 @@ class ChatController extends Controller
             $a['username'] = htmlspecialchars($a['username']);
             $a["messages"] = self::replaceSmile($a["messages"]);
             $returnValue[$i] = [
-                'id' => $i,
+                'id' => $a['id'],
                 'userid' => $a['userid'],
                 'avatar' => $a['avatar'],
                 'time' => $a['time'],
