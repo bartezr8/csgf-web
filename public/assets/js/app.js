@@ -400,6 +400,10 @@ function update_chat() {
 }
 function delMsg(message){
     $('.chatMessage').eq(message.id).remove();
+    var a = $("#chatScroll")[0];
+    var isScrollDown = Math.abs((a.offsetHeight + a.scrollTop) - a.scrollHeight) < 5;
+    if(isScrollDown) a.scrollTop = a.scrollHeight;
+    $("#chatScroll").perfectScrollbar('update');
 }
 function coin_bet( id ) {
     $.post('/coin/bet', {
