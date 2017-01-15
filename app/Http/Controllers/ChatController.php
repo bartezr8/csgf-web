@@ -50,7 +50,7 @@ class ChatController extends Controller
             }
         }
         $id = $this->redis->get('chat_id');
-        if(is_null($id)) $id = 31;
+        if(is_null($id) || $id == '') $id = 31;
         $returnValue = [
             'id' => $id,
             'userid' => $userid, 
