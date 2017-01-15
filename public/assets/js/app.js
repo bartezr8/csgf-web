@@ -395,6 +395,7 @@ function update_chat() {
         cache: false,
         success: function(message) {
             addMsg(message);
+            $("#chatScroll").scrollTop($("#chatScroll").prop("scrollHeight"));
         }
     });
 }
