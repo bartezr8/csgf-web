@@ -48,17 +48,20 @@ class ChatController extends Controller
                 $this->redis->del(self::CHAT_CHANNEL);
                 return response()->json(['message' => 'Вы отчистили чат !', 'status' => 'success']);
             }
-        }        
+        }
+        $id = $this->redis->get('chat_id');
         $returnValue = [
+            'id' => $this->redis->get('chat_id');
             'userid' => $userid, 
             'avatar' => $avatar, 
             'time' => $time, 
-            'messages' => htmlspecialchars($messages), 
-            'username' => $username, 
+            'messages' => self::replaceSmile(htmlspecialchars($messages)), 
+            'username' => htmlspecialchars($username), 
             'admin' => $admin, 
             'vip' => $vip, 
             'moder' => $moder
         ];
+        $this->redis->set('chat_id', $id++);
         $this->redis->rpush(self::CHAT_CHANNEL, json_encode($returnValue));
         $llen = $this->redis->llen(self::CHAT_CHANNEL);
         if($llen > config('mod_game.chat_history_length')) $this->redis->lpop(self::CHAT_CHANNEL);
@@ -91,7 +94,7 @@ class ChatController extends Controller
         foreach ($value as $key => $newchat[$i]) {
             $a = json_decode($newchat[$i], true);
             $a['username'] = htmlspecialchars($a['username']);
-            $a["messages"]  = self::replaceSmile($a["messages"]);
+            $a["messages"] = self::replaceSmile($a["messages"]);
             $returnValue[$i] = [
                 'id' => $i,
                 'userid' => $a['userid'],

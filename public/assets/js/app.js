@@ -2223,14 +2223,12 @@ if(checkUrl('/double')) {
         var audio = new Audio('/assets/sounds/newgame.mp3');
         if(sound_status) audio.play();
         $('#barContainer').slideUp();
-        $('#dbuttons').slideDown();
         sld = false;
     });
     centrifuge.subscribe("dbtimer", function(message) {
         var time = message.data;
         if(!sld) {
             $('#barContainer').slideDown();
-            $('#dbuttons').slideUp();
             sld = true;
         }
         $('.item-bar').css('width', ((35 - time) / 35) * 100 + '%');
