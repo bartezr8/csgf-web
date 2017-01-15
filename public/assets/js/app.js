@@ -360,7 +360,7 @@ function delete_message(id) {
         type: 'POST',
         dataType: 'json',
         data: {
-            id: id
+            id: $('.chatMessage').index($('#chat_msg_' + id))
         },
         success: function(data) {
             $.notify(data.message, {
@@ -400,7 +400,7 @@ function update_chat() {
     });
 }
 function delMsg(message){
-    $('#chat_msg_' + message.id).remove();
+    $('.chatMessage').eq(message.id).remove();
     var a = $("#chatScroll")[0];
     var isScrollDown = Math.abs((a.offsetHeight + a.scrollTop) - a.scrollHeight) < 5;
     if(isScrollDown) a.scrollTop = a.scrollHeight;
@@ -2350,17 +2350,3 @@ var conline = centrifuge.subscribe("online", function(message) {
     var data = message.data;
     $('#count_online').html(data);
 });
-/*.on("join", function(message) {
-    this.presence().then(function(message) {
-        var online = $.map(message.data, function(value, index) {return [value];});
-        console.log('Online: ' + online.length);
-    }, function(err) {});
-}).on("leave", function(message) {
-    this.presence().then(function(message) {
-        var online = $.map(message.data, function(value, index) {return [value];});
-        console.log('Online: ' + online.length);
-    }, function(err) {});
-}).presence().then(function(message) {
-    var online = $.map(message.data, function(value, index) {return [value];});
-    console.log('Online: ' + online.length);
-}, function(err) {});*/

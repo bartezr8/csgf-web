@@ -53,7 +53,7 @@ class ChatController extends Controller
         $lastID = json_decode($this->redis->get('chat_last'));
         if(is_null($lastID)) $lastID = 0;
         if($lastID == '') $lastID = 0;
-        $this->redis->set('chat_last', json_encode($lastID));
+        $this->redis->set('chat_last', json_encode($lastID + 1));
         $returnValue = [
             'id' => $lastID,
             'userid' => $userid, 
