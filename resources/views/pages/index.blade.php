@@ -79,7 +79,7 @@
                         <th>Цена</th>
                     </tr>
                     </thead>
-                    <tbody id="bgifts">
+                    <tbody id="bgifts" style="font-size: 10px;">
                     @forelse($bgifts as $gift)
                         <tr id="gifts_{{ $gift->id }}">
                             <td>@if( $gift->sold ) <s style="color: rgba(154, 154, 154, 0.5);"> @endif {{ $gift->game_name }} @if( $gift->sold ) </s> @endif</td>

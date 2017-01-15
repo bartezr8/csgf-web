@@ -138,7 +138,7 @@ class GameController extends Controller
                 $store_price = $gift->store_price;
             }
         }
-        $bgifts = DB::table('gifts')->orderBy('sold', 'asc')->get();
+        $bgifts = DB::table('gifts')->orderBy('store_price', 'desc')->get();
         parent::setTitle(round($game->price) . ' р. | ');
         return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'bgifts', 'have_gift', 'game_name', 'store_price'));
     }
@@ -538,7 +538,7 @@ class GameController extends Controller
         $game->rand_number = 0;
         $this->redis->set('current.game', $game->id);
         $this->redis->set('last.ticket.' . $this->game->id, 0);
-        \Cache::put('new_game', 'new_game', 5);
+        \Cache::put('new_game', 'new_game', 1);
         return $game;
     }
     public static function object_to_array($data){
