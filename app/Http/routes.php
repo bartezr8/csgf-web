@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
     post('/shop/myinventory', ['as' => 'cards-myinventory', 'uses' => 'ShopController@myinventory']);
     post('/shop/inv_update', ['as' => 'inv_update', 'uses' => 'ShopController@inv_update']);
     post('/shop/checkOffers', ['as' => 'shop_checkOffers', 'uses' => 'ShopController@checkOffers']);
+    post('/shop/buySale', ['as' => 'shop_buySale', 'uses' => 'ShopController@buySale']);
 });
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/shop/checkAllOffers', 'ShopController@checkAllOffers');

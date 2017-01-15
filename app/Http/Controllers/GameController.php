@@ -138,9 +138,15 @@ class GameController extends Controller
                 $store_price = $gift->store_price;
             }
         }
+        ShopController::checkSales();
+        $dsales = DB::table('shop')->where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->orderBy('price', 'desc')->limit(8)->get();
+        $sales = [];
+        foreach ($dsales as $item){
+            $sales[] = ['id' => $item->id, 'name' => $item->name, 'price' => round($item->price*0.9,2), 'oldprice' => $item->price, 'classid' => $item->classid, 'className' => Shop::getClassRarity($item->rarity) ];
+        }
         $bgifts = DB::table('gifts')->orderBy('store_price', 'desc')->get();
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'bgifts', 'have_gift', 'game_name', 'store_price'));
+        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'sales', 'bgifts', 'have_gift', 'game_name', 'store_price'));
     }
     public function getLastGame()
     {

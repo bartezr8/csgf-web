@@ -12,6 +12,22 @@ function n2w(n, w) {
             return w[2];
     }
 }
+function buySale(id){
+    $.notify("Отправляем обмен", {className: "success"});
+    $.ajax({
+        url: '/shop/buySale',
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        success: function (data) {
+            if (data.msg) $.notify(data.msg, {className: "success"});
+            updateBalance();
+        },
+        error: function () {
+            $.notify("Произошла ошибка. Попробуйте еще раз", {className: "error"});
+        }
+    });
+}
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -1899,6 +1915,14 @@ centrifuge.subscribe("queue", function(message) {
 });
 var last_game = Math.floor(Date.now()/1000) - 10;
 if(checkUrl('/')) {
+    centrifuge.subscribe("addSale", function(message) {
+        var data = message.data.html;
+        $('#sale-items-list').append(data);
+    });
+    centrifuge.subscribe("delSale", function(message) {
+        var data = message.data.id;
+        $('#shop-item_' + data).remove();
+    });
     centrifuge.subscribe("newDeposit", function(message) {
         var data = message.data;
         $('#roundFinishBlock').hide();

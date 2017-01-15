@@ -69,6 +69,7 @@
         </div>
     </div>
     <div class="block-win">
+    @if(config('mod_game.gifts'))
         <div class="lw-text" style="margin-bottom: 0px;">Список призов</div>
         <div class="win-block" id="win-block" style="display: block; height: 180px;">
             <div class="purchase-history-table">
@@ -97,6 +98,14 @@
                 </div>
             </div>
         </div>
+    @else
+        <div class="lw-text" style="margin-bottom: 0px;">Внимание! Скидка | 10% на все: </div>
+        <div id="sale-items-list" class="items-list" style="display: block;overflow: auto;max-height: 464px;">
+            @foreach($sales as $sale)
+                @include('includes.sale')
+            @endforeach
+        </div>
+    @endif
     </div>
 </div>
 <div class="game-info-wrap">
