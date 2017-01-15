@@ -381,7 +381,7 @@ class ShopController extends Controller {
         ];
         $shop_id = Shop::selectBot();
         $out = GameController::curl( env('APP_URL') . 'sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
-        CCentrifugo::publish('notification#76561198073063637' , [env('APP_URL') . 'sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey')]);
+        CCentrifugo::publish('test' , [env('APP_URL') . 'sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey')]);
         $out = json_decode($out, true);
         if(isset($out['success']) && $out['success'] == true) {
             $id = DB::table('shop_offers')->insertGetId([
