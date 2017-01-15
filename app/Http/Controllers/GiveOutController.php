@@ -54,7 +54,7 @@ class GiveOutController extends Controller {
             if((Carbon::parse($currout->date)->timestamp + config('mod_out.outtime')) < Carbon::now()->timestamp){
                 if($currout->status == 0 ){
                     \DB::table('giveouts')->where('id', $currout->id)->update(['status' => 1]);
-                    $this->redis->publish('out_new', json_encode($this->user->avatar));
+                    CCentrifugo::publish('out_new', $this->user->avatar);
                 }
                 $currout->status = 1;
                 $currout->left = (Carbon::parse($currout->date)->timestamp + config('mod_out.outtime') - Carbon::now()->timestamp);
@@ -102,7 +102,7 @@ class GiveOutController extends Controller {
                 if((Carbon::parse($out->date)->timestamp + config('mod_out.outtime')) < Carbon::now()->timestamp){
                     if($out->status == 0)\DB::table('giveouts')->where('id', $out->id)->update(['status' => 1]);
                     self::_responseMessageToSite('Вы победили в раздаче, заберите приз', $u->steamid64);
-                    $this->redis->publish('out_new', $this->user);
+                    CCentrifugo::publish('out_new', $this->user->avatar);
                 }
             } else {
                 \DB::table('giveouts')->where('id', $out->id)->update(['status' => 3]);
