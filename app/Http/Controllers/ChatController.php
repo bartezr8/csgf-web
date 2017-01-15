@@ -51,7 +51,7 @@ class ChatController extends Controller
         }
         $id = $this->redis->get('chat_id');
         $returnValue = [
-            'id' => $this->redis->get('chat_id');
+            'id' => $id,
             'userid' => $userid, 
             'avatar' => $avatar, 
             'time' => $time, 

@@ -1859,13 +1859,13 @@ centrifuge.subscribe("status", function(message) {
 });
 centrifuge.subscribe("chat_add", function(message) {
     var data = message.data;
-    updateChatMargin();
     addMsg(data);
+    updateChatMargin();
 });
 centrifuge.subscribe("chat_del", function(message) {
     var data = message.data;
-    updateChatMargin();
     delMsg(data);
+    updateChatMargin();
 });
 if(USER_ID != 76561197960265728) {
     centrifuge.subscribe("notification#" + USER_ID, function(message) {
