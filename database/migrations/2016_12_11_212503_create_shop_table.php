@@ -17,6 +17,7 @@ class CreateShopTable extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->string('classid');
+            $table->integer('bot_id');
             $table->string('inventoryId');
             $table->string('rarity')->nullable();
             $table->string('type')->nullable();

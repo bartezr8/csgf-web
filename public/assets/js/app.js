@@ -2102,6 +2102,11 @@ if(checkUrl('/')) {
             $('#store_price').text(data.store_price);
             $('#giftModal').arcticmodal(); 
         }
+        $('#gifts_' + data.id).fadeOut();
+        var html = '<tr id="gifts_' + data.id + '"><td><s style="color: rgba(154, 154, 154, 0.5);">' + data.game_name + '</s></td><td><s style="color: rgba(154, 154, 154, 0.5);">' + data.store_price + '</s></td></tr>';
+        setTimeout(function(){
+            $('#bgifts').append(html);
+        },500);
     });
     
 }

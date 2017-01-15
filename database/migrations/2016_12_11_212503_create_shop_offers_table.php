@@ -16,6 +16,7 @@ class CreateShopOffersTable extends Migration {
         {
             $table->increments('id');
             $table->string('tradeid');
+            $table->integer('bot_id');
             $table->integer('user_id')->unsigned()->nullable()->index('shop_depositor_id_foreign');
             $table->integer('status');
             $table->float('price');

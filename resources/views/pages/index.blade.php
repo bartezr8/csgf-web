@@ -19,7 +19,7 @@
                 <span class="cards-price-currency">Подарки<br>получили</span>
             </div>
             <span class="icon-arrow-right"style="float: left;"></span>
-            <div class="last-gout-block" id="last-gout-block" style="float: left; display: block; overflow: hidden; width: 738px; height: 52px;">
+            <div class="last-gout-block" id="last-gout-block" style="float: left; display: block; overflow: hidden; width: 865px; height: 52px;">
                 @if($gifts != NULL )
                     @forelse($gifts as $gift)
                         <img class="giftwinner" title="{{ $gift['game'] }} | {{ $gift['price'] }}"  style="border: 1px solid rgb(47, 84, 99); height: 42px; width: 42px; margin: 5px;" src="{{ $gift['avatar'] }}" class="scale-in">
@@ -68,7 +68,36 @@
             <div class="chanse_win" id="mlf-money">Выигрыш: <span class="down-text">??? Р</span> </div>
         </div>
     </div>
-    <div class="block-win"><div class="win-block" id="win-block" style="display: block;"></div></div>
+    <div class="block-win">
+        <div class="lw-text" style="margin-bottom: 0px;">Список призов</div>
+        <div class="win-block" id="win-block" style="display: block; height: 180px;">
+            <div class="purchase-history-table">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Игра</th>
+                        <th>Цена</th>
+                    </tr>
+                    </thead>
+                    <tbody id="bgifts">
+                    @forelse($bgifts as $gift)
+                        <tr id="gifts_{{ $gift->id }}">
+                            <td>@if( $gift->sold ) <s style="color: rgba(154, 154, 154, 0.5);"> @endif {{ $gift->game_name }} @if( $gift->sold ) </s> @endif</td>
+                            <td>@if( $gift->sold ) <s style="color: rgba(154, 154, 154, 0.5);"> @endif {{ $gift->store_price }} @if( $gift->sold ) </s> @endif</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2">Призов в базе нет</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+
+                <div class="pagination-history">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="game-info-wrap">
     <div class="game-info" style="height: 161px;">

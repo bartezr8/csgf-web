@@ -42,6 +42,7 @@ class GiftsController extends Controller {
                     $user = $users[rand(0, (count($user) - 1))];
                     DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
                     $value = [
+                        'id' => $gift->id,
                         'steamid' => $user->steamid64,
                         'game_name' => $gift->game_name,
                         'store_price' => $gift->store_price,
@@ -70,6 +71,7 @@ class GiftsController extends Controller {
             if(is_null($user) || is_null($gift)) return redirect('/gifts/admin');
             DB::table('gifts')->where('id', $gift->id)->update(['user_id' => $user->id, 'sold' => 1, 'sold_at' => Carbon::now()->toDateTimeString()]);
             $value = [
+                'id' => $gift->id,
                 'steamid' => $user->steamid64,
                 'game_name' => $gift->game_name,
                 'store_price' => $gift->store_price,

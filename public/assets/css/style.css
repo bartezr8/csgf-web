@@ -6419,3 +6419,70 @@ div#lw-avatar img {
     padding-left: 23px;
     background-position: -103px -35px;
 }
+.purchase-history-table table {
+    width: 100%;
+    color: #d5dbec;
+}
+.purchase-history-table table > thead > tr > th {
+    background: rgb(50, 63, 76);
+}
+.purchase-history-table table > thead > tr > th:nth-child(2n+1) {
+    background: rgb(56, 69, 82);
+}
+.purchase-history-table table > thead > tr > th,
+.purchase-history-table table > tbody > tr > td {
+    padding: 10px;
+    font-weight: 300;
+    text-align: center;
+    width: 1%;
+}
+.purchase-history-table table > tbody > tr:nth-child(even) {
+    background: #494f5e;
+}
+/*.purchase-history-table table > tbody > tr:hover {
+    background:#494f5e;
+}*/
+
+.purchase-history-table table > tbody > tr > td.weapon-td {
+    color: #fff;
+}
+.purchase-history-table table > tbody > tr > td.weapon-td span {
+    cursor: pointer;
+    background: #2A2E3A;
+    padding: 0px 5px 2px;
+    border-radius: 5px;
+    font-size: 15px;
+}
+.purchase-history-table table > tbody > tr > td.weapon-td span:hover {
+    background: #20242D;
+}
+.purchase-history-table table > tbody > tr > td.time-td:first-line {
+    color: #fff;
+}
+.purchase-history-table table > tbody > tr > td.price-td {
+    font-weight: bold;
+    color: #fff;
+}
+.purchase-history-table table > tbody > tr > td.price-td span {
+    font-weight: 300;
+}
+.purchase-history-table table > tbody > tr > td.waiting-td,
+.purchase-history-table table > tbody > tr > td.success-td {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.purchase-history-table table > tbody > tr > td.waiting-td {
+    color: #f7cd4e;
+}
+.purchase-history-table table > tbody > tr > td.success-td {
+    color: #96f74e;
+}
+.purchase-history-table table > tbody > tr > td.accepted-td {
+    color: green;
+}
+.purchase-history-table table > tbody > tr > td.declined-td {
+    color: red;
+}
+.purchase-history-table table > tbody > tr > td.error-td {
+    color: red;
+}

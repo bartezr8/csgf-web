@@ -1,6 +1,6 @@
 <?php
 return [
-    'gifts' => false,
+    'gifts' => true,
     'appid' => 730,                 // APPID игры
     'max_items' => 50,              // Предметов за игру
     'min_price' => 0.1,             // Минимальная ставка

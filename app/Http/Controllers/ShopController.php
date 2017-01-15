@@ -229,7 +229,7 @@ class ShopController extends Controller {
             $itemsToAdd = json_decode($jsonItem, true);
             $this->redis->lrem('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 1, $jsonItem);
             foreach($itemsToAdd as $item) {
-                $info = new Item($item);
+                $info = new Item($item); 
                 if (Item::pchk($info)) {
                     $item['steam_price'] = $info->price;
                     $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
