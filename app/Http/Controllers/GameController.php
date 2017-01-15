@@ -295,13 +295,14 @@ class GameController extends Controller
         $name = strtolower($user->username);
         if (strpos(strtolower(' '.$name),  strtolower(config('app.sitename'))) != false) $commission = $commission - config('mod_game.comission_site_nick');
         $commissionPrice = round(($this->game->price / 100) * $commission);
+        $cardSum = 0;
         foreach ($bets as $bet) {
             $betItems = json_decode($bet->items, true);
             foreach ($betItems as $item) {
                 if (($bet->user_id == $user->id) && ($chance >= config('mod_game.comission_minchance'))) {
                     $itemsInfo[] = $item;
                     if (!isset($item['classid'])) {
-                        User::mchange($user->id, $item['price']);
+                        $cardSum += $item['price'];
                     }
                 } else {
                     $items[] = $item;
@@ -316,7 +317,6 @@ class GameController extends Controller
             elseif($f1['price'] > $f2['price']) return -1;
             else return 0;
         });
-        $cardSum = 0;
         foreach ($items as $item) {
             if ((($item['price'] + $tempPrice) <= $commissionPrice)) {
                 $commissionItems[] = $item;
