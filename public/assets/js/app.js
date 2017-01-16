@@ -1852,7 +1852,7 @@ var declineTimeout,
     ngtimerStatus = true,
     onlineList = [];
 var centrifuge = new Centrifuge({
-    url: 'ws://beta.mh00.net:8000/connection/websocket',
+    url: WS_URL,
     user: USER_ID,
     timestamp: CENT_TIME,
     token: CENT_TIKEN
