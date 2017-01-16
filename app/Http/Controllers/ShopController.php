@@ -385,7 +385,7 @@ class ShopController extends Controller {
                     if($tradeCheck['status'] == 1){
                         $items = $tradeCheck['items'];
                         $returnValue = [];
-                        $total_price = $this->_parseItems($items);
+                        $total_price = round($this->_parseItems($items),2);
                         foreach($items as $item) {
                             $info = new Item($item);
                             if(Item::pchk($info)){
@@ -428,6 +428,7 @@ class ShopController extends Controller {
         $value = [
             'items' => $classids,
             'steamid' => $this->user->steamid64,
+            'price' => $request->get('price'),
             'accessToken' => $this->user->accessToken
         ];
         $shop_id = Shop::selectBot();
@@ -439,6 +440,7 @@ class ShopController extends Controller {
                 'date' => Carbon::now()->toDateTimeString(),
                 'bot_id' => $shop_id,
                 'tradeid' => $out['tradeid'],
+                'price' => $request->get('price'),
                 'status' => 0
             ]);
             return response()->json(['success' => true, 'msg' => $out['code'], 'tradeid' => $out['tradeid']]);

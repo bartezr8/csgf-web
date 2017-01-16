@@ -1002,6 +1002,7 @@ $(function() {
                 $.notify("Отправляем обмен", {className: "success"});
                 var items_list = makeArray(this.shop_cart);
                 var senditems = '';
+                var thisprice = this.shop_cart_price;
                 items_list.forEach(function (item) {
                     if(item.count > 0){
                         for (var i = 0; i < item.count; i++) {
@@ -1014,7 +1015,8 @@ $(function() {
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        classids: senditems
+                        classids: senditems,
+                        price: thisprice
                     },
                     success: function (data) {
                         if (data.success) {
