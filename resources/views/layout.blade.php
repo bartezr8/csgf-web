@@ -25,7 +25,8 @@
                 SM_ID = '{{ $u->steamid64 }}',
                 MAX_ITEMS = "{{ config('mod_game.game_items') }}",
                 IS_MODER = '{{ $u->is_moderator }}',
-                IS_ADMIN = '{{ $u->is_admin }}';
+                IS_ADMIN = '{{ $u->is_admin }}',
+                WS_URL = "{{ env('CENT_SCHEME_WS').'://'.env('CENT_HOST').env('CENT_URL_WS') }}",
                 USER_BALANCE = {{ $u->money }},
                 CENT_TIKEN = "{{ $ctoken }}",
                 CENT_TIME = "{{ $ctime }}",

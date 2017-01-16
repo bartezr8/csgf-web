@@ -6486,3 +6486,7 @@ div#lw-avatar img {
 .purchase-history-table table > tbody > tr > td.error-td {
     color: red;
 }
+#bgifts > tr > td{
+	padding: 2px;
+    font-size: 10px;
+}

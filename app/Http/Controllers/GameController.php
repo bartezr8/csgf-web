@@ -138,9 +138,15 @@ class GameController extends Controller
                 $store_price = $gift->store_price;
             }
         }
-        $bgifts = DB::table('gifts')->orderBy('sold', 'asc')->get();
+        ShopController::checkSales();
+        $dsales = DB::table('shop')->where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->orderBy('price', 'desc')->limit(8)->get();
+        $sales = [];
+        foreach ($dsales as $item){
+            $sales[] = ['id' => $item->id, 'name' => $item->name, 'price' => round($item->price*0.9,2), 'oldprice' => $item->price, 'classid' => $item->classid, 'className' => Shop::getClassRarity($item->rarity) ];
+        }
+        $bgifts = DB::table('gifts')->orderBy('store_price', 'desc')->get();
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'bgifts', 'have_gift', 'game_name', 'store_price'));
+        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items', 'gifts', 'sales', 'bgifts', 'have_gift', 'game_name', 'store_price'));
     }
     public function getLastGame()
     {
@@ -295,13 +301,14 @@ class GameController extends Controller
         $name = strtolower($user->username);
         if (strpos(strtolower(' '.$name),  strtolower(config('app.sitename'))) != false) $commission = $commission - config('mod_game.comission_site_nick');
         $commissionPrice = round(($this->game->price / 100) * $commission);
+        $cardSum = 0;
         foreach ($bets as $bet) {
             $betItems = json_decode($bet->items, true);
             foreach ($betItems as $item) {
                 if (($bet->user_id == $user->id) && ($chance >= config('mod_game.comission_minchance'))) {
                     $itemsInfo[] = $item;
                     if (!isset($item['classid'])) {
-                        User::mchange($user->id, $item['price']);
+                        $cardSum += $item['price'];
                     }
                 } else {
                     $items[] = $item;
@@ -316,7 +323,6 @@ class GameController extends Controller
             elseif($f1['price'] > $f2['price']) return -1;
             else return 0;
         });
-        $cardSum = 0;
         foreach ($items as $item) {
             if ((($item['price'] + $tempPrice) <= $commissionPrice)) {
                 $commissionItems[] = $item;
@@ -538,7 +544,7 @@ class GameController extends Controller
         $game->rand_number = 0;
         $this->redis->set('current.game', $game->id);
         $this->redis->set('last.ticket.' . $this->game->id, 0);
-        \Cache::put('new_game', 'new_game', 5);
+        \Cache::put('new_game', 'new_game', 1);
         return $game;
     }
     public static function object_to_array($data){

@@ -12,6 +12,22 @@ function n2w(n, w) {
             return w[2];
     }
 }
+function buySale(id){
+    $.notify("Отправляем обмен", {className: "success"});
+    $.ajax({
+        url: '/shop/buySale',
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        success: function (data) {
+            if (data.msg) $.notify(data.msg, {className: "success"});
+            updateBalance();
+        },
+        error: function () {
+            $.notify("Произошла ошибка. Попробуйте еще раз", {className: "error"});
+        }
+    });
+}
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -986,6 +1002,7 @@ $(function() {
                 $.notify("Отправляем обмен", {className: "success"});
                 var items_list = makeArray(this.shop_cart);
                 var senditems = '';
+                var thisprice = this.shop_cart_price;
                 items_list.forEach(function (item) {
                     if(item.count > 0){
                         for (var i = 0; i < item.count; i++) {
@@ -998,7 +1015,8 @@ $(function() {
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        classids: senditems
+                        classids: senditems,
+                        price: thisprice
                     },
                     success: function (data) {
                         if (data.success) {
@@ -1834,7 +1852,7 @@ var declineTimeout,
     ngtimerStatus = true,
     onlineList = [];
 var centrifuge = new Centrifuge({
-    url: 'ws://beta.mh00.net:8000/connection/websocket',
+    url: WS_URL,
     user: USER_ID,
     timestamp: CENT_TIME,
     token: CENT_TIKEN
@@ -1897,7 +1915,16 @@ centrifuge.subscribe("queue", function(message) {
         $('#count_trades').html(data.length);
     }
 });
+var last_game = Math.floor(Date.now()/1000) - 10;
 if(checkUrl('/')) {
+    centrifuge.subscribe("addSale", function(message) {
+        var data = message.data.html;
+        $('#sale-items-list').append(data);
+    });
+    centrifuge.subscribe("delSale", function(message) {
+        var data = message.data.id;
+        $('#shop-item_' + data).remove();
+    });
     centrifuge.subscribe("newDeposit", function(message) {
         var data = message.data;
         $('#roundFinishBlock').hide();
@@ -1972,7 +1999,7 @@ if(checkUrl('/')) {
     centrifuge.subscribe("slider", function(message) {
         var data = message.data;
         if(data.time != null) $('#newGameTimer .countSeconds').text(lpad(data.time, 2));
-        if(ngtimerStatus) {
+        if(ngtimerStatus && ((last_game - Math.floor(Date.now()/1000)) > 5)) {
             ngtimerStatus = false;
             $('#roundFinishBlock').hide();
             var users = data.userchanses;
@@ -2049,6 +2076,7 @@ if(checkUrl('/')) {
         }
     });
     centrifuge.subscribe("newGame", function(message) {
+        last_game = Math.floor(Date.now()/1000);
         var data = message.data;
         if(USER_ID != 76561197960265728) updateBalance();
         //$('html, body').animate({'scrollTop': '0'}, 'slow');
