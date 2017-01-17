@@ -69,7 +69,7 @@ class ChatController extends Controller
         $llen = $this->redis->llen(self::CHAT_CHANNEL);
         if($llen > config('mod_game.chat_history_length')) $this->redis->lpop(self::CHAT_CHANNEL);
         CCentrifugo::publish('chat_add' , [$returnValue]);
-        return response()->json(['message' => 'OK !', 'status' => 'success']);
+        return response()->json(['message' => 'OK !', 'status' => false]);
     }
     private function _validateMessage($request){
         $val = \Validator::make($request->all(), [
