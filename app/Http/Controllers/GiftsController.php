@@ -65,7 +65,7 @@ class GiftsController extends Controller {
     }
     public function selectGiftWinner(Request $request)
     {
-        if(config('mod_game.gifts')){
+        //if(config('mod_game.gifts')){
             $user = User::find($request->get('user'));
             $gift = DB::table('gifts')->where('id', $request->get('id'))->first();
             if(is_null($user) || is_null($gift)) return redirect('/gifts/admin');
@@ -78,7 +78,7 @@ class GiftsController extends Controller {
                 'user_ava' => $user->avatar
             ];
             CCentrifugo::publish('gifts' , $value);
-        }
+        //}
         return redirect('/gifts/admin');
     }
 }

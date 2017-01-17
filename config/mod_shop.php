@@ -6,6 +6,8 @@ return [
     'items_per_trade' => 100, 
     'select_limit' => 250,
     
+    'sales_per_day' => 100,
+    
     'games_need' => true,
     'games_need_count' => 1,
 

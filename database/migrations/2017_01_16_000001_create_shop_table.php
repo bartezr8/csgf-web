@@ -25,7 +25,6 @@ class CreateShopTable extends Migration {
                 if (!Schema::hasColumn('shop', 'buyer_id'))$table->integer('buyer_id')->unsigned()->nullable()->index('shop_buyer_id_foreign');
                 if (!Schema::hasColumn('shop', 'status'))$table->integer('status');
                 if (!Schema::hasColumn('shop', 'sale'))$table->integer('sale');
-                if (!Schema::hasColumn('shop', 'sale2'))$table->integer('sale2');
                 if (!Schema::hasColumn('shop', 'steam_price'))$table->float('steam_price');
                 if (!Schema::hasColumn('shop', 'price'))$table->float('price');
                 if (!Schema::hasColumn('shop', 'buy_at'))$table->dateTime('buy_at')->default('0000-00-00 00:00:00');
@@ -44,7 +43,6 @@ class CreateShopTable extends Migration {
                 $table->integer('buyer_id')->unsigned()->nullable()->index('shop_buyer_id_foreign');
                 $table->integer('status');
                 $table->integer('sale');
-                $table->integer('sale2');
                 $table->float('steam_price');
                 $table->float('price');
                 $table->dateTime('buy_at')->default('0000-00-00 00:00:00');
