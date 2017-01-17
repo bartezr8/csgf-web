@@ -1915,7 +1915,6 @@ centrifuge.subscribe("queue", function(message) {
         $('#count_trades').html(data.length);
     }
 });
-var last_game = Math.floor(Date.now()/1000) - 10;
 if(checkUrl('/')) {
     centrifuge.subscribe("addSale", function(message) {
         var data = message.data.html;
@@ -1999,7 +1998,7 @@ if(checkUrl('/')) {
     centrifuge.subscribe("slider", function(message) {
         var data = message.data;
         if(data.time != null) $('#newGameTimer .countSeconds').text(lpad(data.time, 2));
-        if(ngtimerStatus && ((last_game - Math.floor(Date.now()/1000)) > 5)) {
+        if(ngtimerStatus) {
             ngtimerStatus = false;
             $('#roundFinishBlock').hide();
             var users = data.userchanses;
@@ -2076,7 +2075,6 @@ if(checkUrl('/')) {
         }
     });
     centrifuge.subscribe("newGame", function(message) {
-        last_game = Math.floor(Date.now()/1000);
         var data = message.data;
         if(USER_ID != 76561197960265728) updateBalance();
         //$('html, body').animate({'scrollTop': '0'}, 'slow');
@@ -2105,7 +2103,7 @@ if(checkUrl('/')) {
         $('#gameTimer .countSeconds').text('00');
         $('title').text('0 р. | CSGF.RU');
         $('#roundStartBlock #date').html(data.created_at);
-        ngtimerStatus = true;
+        setTimeout(function(){ngtimerStatus = true;},5000);
         updateBackground();
         updateChatMargin();
     });
