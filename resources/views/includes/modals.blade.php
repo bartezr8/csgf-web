@@ -15,7 +15,7 @@
                         <input type="text" id="mssum" pattern="^[ 0-9.]+$" maxlength="5" placeholder="Введите сумму">
                         <button type="submit" class="btn-add-balance" id="msb">перевести</button>
                     </div>
-                    </div><br>
+                    <br>
                     <div class="balance-item">Средства получит</div>
                     <span class="icon-arrow-right"></span>
                     <div class="input-group">
