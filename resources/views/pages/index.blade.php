@@ -11,7 +11,7 @@
     <a href="{{ route('rand_url') }}" target="_blank">КЛИК СЮДА</a>
 </div>
 
-@if(config('mod_game.gifts'))
+@if(config('mod_game.gifts') || in_array($u->steamid64, config('access.gifts')))
 <div class="buy-cards-container" style="padding-top: 10px;">
     <div class="buy-cards-block" style="text-align:center;">
         <div style="float: left; display: inline-block">
@@ -69,7 +69,7 @@
         </div>
     </div>
     <div class="block-win">
-    @if(config('mod_game.gifts'))
+    @if(config('mod_game.gifts') || in_array($u->steamid64, config('access.gifts')))
         <div class="lw-text" style="margin-bottom: 0px;">Список призов</div>
         <div class="win-block" id="win-block" style="display: block; height: 180px;">
             <div class="purchase-history-table">

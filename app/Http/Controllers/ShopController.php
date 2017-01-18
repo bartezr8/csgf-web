@@ -109,14 +109,17 @@ class ShopController extends Controller {
         return response()->json(['list' => $returnValue, 'off' => false]);
     }
     public static function checkSales(){
-        $sales = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->get();
-        $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('status', 0)->where('sale', 0)->where('price', '>', 10)->where('price', '<', 200)->orderBy('id', 'asc')->limit(8-count($sales))->get();
-        foreach($items as $item){
-            $item->sale = 1;
-            $item->save();
-            $sale = ['id' => $item->id, 'name' => $item->name, 'price' => round($item->price*0.9,2), 'oldprice' => $item->price, 'classid' => $item->classid, 'className' => Shop::getClassRarity($item->rarity) ];
-            $returnValue = view('includes.sale', compact('sale'))->render();
-            CCentrifugo::publish('addSale' , [ 'html' => $returnValue]);
+        $tsales = Shop::where('sale', 1)->where('buy_at', '>=', Carbon::today())->get();
+        if((count($tsales) - 8) < config('mod_shop.sales_per_day')){
+            $sales = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->get();
+            $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('status', 0)->where('sale', 0)->where('price', '>', 10)->where('price', '<', 200)->orderBy('id', 'asc')->limit(8-count($sales))->get();
+            foreach($items as $item){
+                $item->sale = 1;
+                $item->save();
+                $sale = ['id' => $item->id, 'name' => $item->name, 'price' => round($item->price*0.9,2), 'oldprice' => $item->price, 'classid' => $item->classid, 'className' => Shop::getClassRarity($item->rarity) ];
+                $returnValue = view('includes.sale', compact('sale'))->render();
+                CCentrifugo::publish('addSale' , [ 'html' => $returnValue]);
+            }
         }
         return;
     }
@@ -273,7 +276,7 @@ class ShopController extends Controller {
         $delitems = []; foreach ($items as $item){ $delitems[] = $item->classid; }
         $returnValue = ['list' => $delitems, 'off' => false];
         CCentrifugo::publish('delShop' , $returnValue);
-        DB::table('shop')->where('bot_id', '=', $bot_id)->delete();
+        DB::table('shop')->where('bot_id', '=', $bot_id)->where('status', Shop::ITEM_STATUS_FOR_SALE)->delete();
         $jsonItems = $this->redis->lrange('s'.$bot_id.'_'.self::CHECK_ITEMS_CHANNEL, 0, -1);
         foreach($jsonItems as $jsonItem){
             $returnValue = [];

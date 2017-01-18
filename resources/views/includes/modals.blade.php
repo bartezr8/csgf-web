@@ -3,7 +3,7 @@
     <div class="box-modal b-modal-cards" id="msend">
         <div class="box-modal-container">
             <div class="box-modal_close arcticmodal-close"></div>
-            <div class="box-modal-content">
+            <div class="box-modal-content" style="margin-top: 10px;">
                 <div class="add-balance-block">
                     <div class="balance-item">
                         Ваш баланс:
@@ -15,11 +15,17 @@
                         <input type="text" id="mssum" pattern="^[ 0-9.]+$" maxlength="5" placeholder="Введите сумму">
                         <button type="submit" class="btn-add-balance" id="msb">перевести</button>
                     </div>
+                    <br>
+                    <div class="balance-item">Средства получит</div>
+                    <span class="icon-arrow-right"></span>
+                    <div class="input-group">
+                        <input id="smid" textarea="" name="smid" cols="50" maxlength="17" placeholder="SteamID64" autocomplete="off" value="" class="smid" style="background-color: #1F2D38;border: 1px solid #314657;height30px;width: 100%;color: #FFF;transition: 0.2s;text-align: center;">
+                    </div>
                 </div>
                 <div class="cards-cont">
                     <div class="msg-wrap" style="margin-bottom: -17px;">
                         <div class="icon-warning"></div>
-                        <div class="msg-green msg-mini" id="whenLoadingOrNoCardsOrTitle">Средства придут: <a id="smid" href="/user/76561198073063637" target="_blank">76561198073063637</a></div>
+                        <div class="msg-green msg-mini" id="whenLoadingOrNoCardsOrTitle">Средства придут сразу после перевода.</div>
                     </div>
                 </div>
                 <div class="user-winner-block" id="smb" style="display: block;">
@@ -71,7 +77,7 @@
                             </div>
                             <div style="text-align: right;display: inline-block;margin-left: 64px;">
                                 <span class="icon-arrow-right"></span>
-                                <a href="/shop/deposit" target="_blank" style="width: 270px;display: inline-block;vertical-align: middle;float: none;padding: 0px 25px;font-size: 12px;font-weight: 400;height: 30px;line-height: 30px;" class=" btn-vk ">Депозит</a>
+                                <a href="/shop/deposit" target="_blank" style="width: 270px;" class="dbutton blue">Депозит</a>
                             </div>
                         </div>
                         <div class="add-balance-block" style="padding:0;text-align: left;padding-left: 40px;">
@@ -80,7 +86,16 @@
                             </div>
                             <div style="text-align: right;display: inline-block;margin-left: 36px;">
                                 <span class="icon-arrow-right"></span>
-                                <a href="/ref" target="_blank" style="width: 270px;display: inline-block;vertical-align: middle;float: none;padding: 0px 25px;font-size: 12px;font-weight: 400;height: 30px;line-height: 30px;" class=" add-deposit ">Пригласить</a>
+                                <a href="/ref" target="_blank" style="width: 270px;" class="dbutton orange">Пригласить</a>
+                            </div>
+                        </div>
+                        <div class="add-balance-block" style="padding:0;text-align: left;padding-left: 40px;">
+                            <div class="balance-item">
+                                Перевод:
+                            </div>
+                            <div style="text-align: right;display: inline-block;margin-left: 138px;">
+                                <span class="icon-arrow-right"></span>
+                                <a style="width: 270px;" onclick="sendMoney()" class="dbutton purple">Перевести</a>
                             </div>
                         </div>
                         <div class="box-modal-footer">

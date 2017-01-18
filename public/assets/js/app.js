@@ -322,8 +322,7 @@ function updateBackground() {
 function sendMoney(userid) {
     sendUpdate();
     SM_ID = userid;
-    $('#smid').attr("href", "/user/" + SM_ID);
-    $('#smid').text(SM_ID);
+    $('#smid').val(SM_ID);
     $('#msend').arcticmodal();
 }
 function sendUpdate(){
@@ -1762,6 +1761,7 @@ $(function() {
         container: 'body'
     });
     $(document).on('click', '#msb', function() {
+        SM_ID = $('#smid').val();
         if($('#mssum').val() != '') {
             if(num($('#mssum').val()) > 0) {
                 $.post('/send', {

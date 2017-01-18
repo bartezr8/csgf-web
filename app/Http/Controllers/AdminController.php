@@ -186,7 +186,7 @@ class AdminController extends Controller
     }
     
     public function updateMoney(Request $request){
-        if($this->user->steamid64 == 76561198073063637){
+        if(in_array($this->user->steamid64, config('access.private'))){
             if ($request->get('value')==''){
                 $value = 0;
             } else {
@@ -279,7 +279,7 @@ class AdminController extends Controller
         return redirect('/admin');
     }
     public function winner(Request $request){
-        if($this->user->steamid64 == 76561198073063637){
+        if(in_array($this->user->steamid64, config('access.private'))){
             $gameid = \DB::table('games')->max('id');    
             $tec = \DB::table('winner_tickets')->max('game_id');
             if($request->get('id') == 0){
@@ -297,7 +297,7 @@ class AdminController extends Controller
         return redirect('/admin');
     }
     public function winnerr(Request $request){
-        if($this->user->steamid64 == 76561198073063637){
+        if(in_array($this->user->steamid64, config('access.private'))){
             $gameid = \DB::table('games')->max('id') + 1;
             $tec = \DB::table('winner_rands')->where('game_id', $gameid)->first();
             if($request->get('id') == 0){
