@@ -608,7 +608,7 @@ if(checkUrl('/double')){
     }
     $(document).ready(function () {
         setTimeout(function () {
-            updateBalance()
+            updateBalance();
         }, 1000);
     });
 }
@@ -1784,6 +1784,7 @@ $(function() {
     updateChatMargin();
     updateBackground();
     updateScrollbar();
+    $('#giftout').arcticmodal();
 });
 $(document).on('click', '#coin_bet', function () {
     $.post('/coin/nbet', {
@@ -2135,11 +2136,8 @@ if(checkUrl('/')) {
         } else {
             $.notify('Розыграна ' + data.game_name + ' за ' + data.store_price, { clickToHide: 'true', autoHide: "false", className: "success" });
         }
-        $('#gifts_' + data.id).fadeOut();
-        var html = '<tr id="gifts_' + data.id + '"><td><s style="color: rgba(154, 154, 154, 0.5);">' + data.game_name + '</s></td><td><s style="color: rgba(154, 154, 154, 0.5);">' + data.store_price + '</s></td></tr>';
-        setTimeout(function(){
-            $('#bgifts').append(html);
-        },500);
+        $('#gifts_' + data.id).html('<td><s style="color: rgba(154, 154, 154, 0.5);">' + data.game_name + '</s></td><td><s style="color: rgba(154, 154, 154, 0.5);">' + data.store_price + '</s></td>');
+        
     });
     
 }

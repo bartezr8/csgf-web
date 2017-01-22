@@ -138,4 +138,25 @@
             </div>
         </div>
     </div>
+    <div class="box-modal affiliate-program" id="giftout">
+        <div class="box-modal-head">
+            <div class="box-modal_close arcticmodal-close"></div>
+        </div>
+        <div class="box-modal-content">
+            <div class="content-block">
+                <div class="title-block"><h2>Раздача ключей</h2></div>
+            </div>
+            <div class="text-block-wrap">
+                <div class="text-block">
+                    <p class="lead-big">На нашем сайте присутствует система розыгрыша ключей.</p>                    
+                    <p class="lead-big" style="margin: 0px -20px 15px;background: rgba(20, 34, 41, 0.5);padding: 15px;-webkit-box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);box-shadow: inset 0px 0px 10px -2px rgba(12, 19, 23, 0.5);color: rgb(179, 218, 179);">
+                        Для участия необходимо делать ставки на любую сумму <span>каждые 5 мин</span>.<br>
+                        Список всех победителей на главной станице.
+                    </p>
+                    <p class="lead-normal">Один человек может выиграть <span>несколько</span> раз</span>.</p>
+                    <p class="lead-normal">Выигранные ключи вы забираете сами перейдя по ссылке активации.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
