@@ -607,9 +607,9 @@ if(checkUrl('/double')){
         return false;
     }
     $(document).ready(function () {
-        $('#giftout').arcticmodal();
         setTimeout(function () {
-            updateBalance()
+            updateBalance();
+            $('#giftout').arcticmodal();
         }, 1000);
     });
 }
