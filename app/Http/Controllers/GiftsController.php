@@ -30,7 +30,7 @@ class GiftsController extends Controller {
                 $lastBet = \DB::table('bets')->where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
                 if(is_null($lastBet)) continue;
                 if((Carbon::parse($lastBet->created_at)->timestamp + 600) < Carbon::now()->timestamp) continue;
-                $lastGift = DB::table('gifts')->where('user_id', $user)->first();
+                $lastGift = DB::table('gifts')->where('user_id', $user->id)->first();
                 if(!is_null($lastGift)) continue;
                 $users[] = $user;
             }
