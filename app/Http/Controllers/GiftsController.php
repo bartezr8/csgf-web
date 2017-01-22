@@ -23,7 +23,6 @@ class GiftsController extends Controller {
             $users = [];
             $online = CCentrifugo::presence('online')->getBody()['data'];
             foreach ($online as $data){
-                CCentrifugo::publish('test' , $data);
                 if($data['user'] == config('mod_game.bonus_bot_steamid64')) continue;
                 $user = User::where('steamid64', $data['user'])->first();
                 if(in_array($user, $users)) continue;
