@@ -824,7 +824,7 @@ class GameController extends Controller
         $totalItems = $this->user->itemsCountByGame($this->game);
         if ($totalItems > config('mod_game.max_items') || (1 + $totalItems) > config('mod_game.max_items')) return response()->json(['text' => 'Максимальное кол-во предметов для депозита - ' . config('mod_game.max_items'), 'type' => 'error']);
         if ($this->user->trade_link == "") return response()->json(['text' => 'Не установлена ссылка на обмен', 'type' => 'error']);
-        if (!$request->has('sum')) return response()->json(['text' => 'Ошибка. Укажите суму ставки.', 'type' => 'error']);
+        if (!$request->has('sum')) return response()->json(['text' => 'Ошибка. Укажите сумму ставки.', 'type' => 'error']);
         $this->game = $this->getLastGame();
         if ($this->game->status == Game::STATUS_PRE_FINISH || $this->game->status == Game::STATUS_FINISHED) return response()->json(['text' => 'Дождитесь следующей игры!', 'type' => 'error']);
         $sum = floor($request->get('sum')*100)/100;
