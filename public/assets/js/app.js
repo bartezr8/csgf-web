@@ -1856,7 +1856,8 @@ var centrifuge = new Centrifuge({
     url: WS_URL,
     user: USER_ID,
     timestamp: CENT_TIME,
-    token: CENT_TIKEN
+    token: CENT_TIKEN,
+    ping: false
 });
 centrifuge.connect();
 centrifuge.on('connect', function(context) {});
