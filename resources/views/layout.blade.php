@@ -22,7 +22,7 @@
         <script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
         <script>
             var USER_ID = '{{ $u->steamid64 }}',
-                GIFTS = "{{ config('mod_game.gifts')}} ",
+                GIFTS = "{{ config('mod_game.gifts') }}",
                 SM_ID = '{{ $u->steamid64 }}',
                 MAX_ITEMS = "{{ config('mod_game.game_items') }}",
                 IS_MODER = '{{ $u->is_moderator }}',
