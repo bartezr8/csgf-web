@@ -609,7 +609,6 @@ if(checkUrl('/double')){
     $(document).ready(function () {
         setTimeout(function () {
             updateBalance();
-            $('#giftout').arcticmodal();
         }, 1000);
     });
 }
@@ -1785,6 +1784,7 @@ $(function() {
     updateChatMargin();
     updateBackground();
     updateScrollbar();
+    $('#giftout').arcticmodal();
 });
 $(document).on('click', '#coin_bet', function () {
     $.post('/coin/nbet', {
