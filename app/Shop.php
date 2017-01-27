@@ -44,13 +44,23 @@ class Shop extends Model
     }
     public static function selectBot(){
         $max = 1000; $botid = 0;
-        foreach (config('mod_shop.bots') as $bot_id => $bot){
-            $count = self::where('status', self::ITEM_STATUS_FOR_SALE)->where('bot_id', $bot_id)->count();
-            if($count < $max) {
-                $max = $count;
-                $botid = $bot_id;
+        if (!\Cache::has('last.shop')) {
+            foreach (config('mod_shop.bots') as $bot_id => $bot){
+                $count = self::where('status', self::ITEM_STATUS_FOR_SALE)->where('bot_id', $bot_id)->count();
+                if($count < $max) {
+                    $max = $count;
+                    $botid = $bot_id;
+                }
+            }
+        } else {
+            $last = $this->redis->get('last.shop');
+            if($last + 1 > (count(config('mod_shop.bots')) - 1)){
+                $botid = 0;
+            } else {
+                $botid = $last + 1;
             }
         }
+        \Cache::put('last.shop', $botid, 60);        
         return $botid;
     }
     public static function parceTradeLinkShop($trade_link){
