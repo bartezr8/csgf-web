@@ -1784,7 +1784,11 @@ $(function() {
     updateChatMargin();
     updateBackground();
     updateScrollbar();
+<<<<<<< HEAD
     $('#giftout').arcticmodal();
+=======
+    if(GIFTS) $('#giftout').arcticmodal();
+>>>>>>> 907f8869a50d398c775093a7992c4fbaa08ddac5
 });
 $(document).on('click', '#coin_bet', function () {
     $.post('/coin/nbet', {

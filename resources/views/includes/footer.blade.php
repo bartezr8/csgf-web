@@ -5,7 +5,7 @@
             <a href="//www.free-kassa.ru/"><img style="height: 19px;" src="//www.free-kassa.ru/img/fk_btn/16.png"></a>
         </div>
         <div style="float: left; width: 50%; text-align: center;">
-            © CSGF.RU, 2016 | Все права защищены. <!--a href="https://yadi.sk/d/XKgD5YSoyF8MM" target="_blank">Автобот</a-->
+            © CSGF.RU, 2016 | Все права защищены 2017 | v3.22
         </div>
         <div style="float: left; text-align: right; width: 25%; margin-top: -6px;">
             Наши группы:
@@ -14,3 +14,4 @@
     </div>
     <br>
 </div>
+<!-- https://yadi.sk/d/XKgD5YSoyF8MM - Автобот -->

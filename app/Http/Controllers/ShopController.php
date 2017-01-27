@@ -186,6 +186,8 @@ class ShopController extends Controller {
             }
             $user = User::find($user_id);
             if(!is_null($user)){
+                $total_price = round($total_price,2);
+                $this->_responseMessageToSite('Средства возвращены | Сумма: ' . $total_price , $user->steamid64);
                 User::mchange($user->id, $total_price);
                 User::slchange($user->id, $total_price);
             }
@@ -389,21 +391,25 @@ class ShopController extends Controller {
                         $items = $tradeCheck['items'];
                         $returnValue = [];
                         $total_price = round($this->_parseItems($items),2);
-                        foreach($items as $item) {
-                            $info = new Item($item);
-                            if(Item::pchk($info)){
-                                $item['steam_price'] = $info->price;
-                                $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-                                Shop::create($item);
-                                $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
+                        if($total_price > 0){
+                            foreach($items as $item) {
+                                $info = new Item($item);
+                                if(Item::pchk($info)){
+                                    $item['steam_price'] = $info->price;
+                                    $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
+                                    Shop::create($item);
+                                    $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
+                                }
                             }
+                            $returnValue = ['list' => $returnValue, 'off' => false];
+                            CCentrifugo::publish('addShop' , $returnValue);
+                            $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                            DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
+                            $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);
+                            DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
+                        } else {
+                            $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                         }
-                        $returnValue = ['list' => $returnValue, 'off' => false];
-                        CCentrifugo::publish('addShop' , $returnValue);
-                        $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
-                        DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
-                        $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);
-                        DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
                     }
                     if($tradeCheck['status'] == 2){
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
@@ -431,7 +437,7 @@ class ShopController extends Controller {
         $value = [
             'items' => $classids,
             'steamid' => $this->user->steamid64,
-            'price' => $request->get('price'),
+            'price' => round($request->get('price'),2),
             'accessToken' => $this->user->accessToken
         ];
         $shop_id = Shop::selectBot();
