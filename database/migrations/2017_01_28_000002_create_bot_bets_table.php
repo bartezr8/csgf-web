@@ -16,13 +16,12 @@ class CreateBotBetsTable extends Migration {
             Schema::table('bot_bets', function(Blueprint $table)
             {
                 if (!Schema::hasColumn('bot_bets', 'id')) $table->increments('id');
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->integer('botid')->unsigned()->nullable();
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->integer('game_id')->unsigned()->nullable();
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->text('items', 65535);
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->timestamps();
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->integer('status');
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->integer('enum');
-                if (!Schema::hasColumn('bot_bets', 'id')) $table->text('items_won', 65535);
+                if (!Schema::hasColumn('bot_bets', 'botid')) $table->integer('botid')->unsigned()->nullable();
+                if (!Schema::hasColumn('bot_bets', 'game_id')) $table->integer('game_id')->unsigned()->nullable();
+                if (!Schema::hasColumn('bot_bets', 'items')) $table->text('items', 65535);
+                if (!Schema::hasColumn('bot_bets', 'status')) $table->integer('status');
+                if (!Schema::hasColumn('bot_bets', 'enum')) $table->integer('enum');
+                if (!Schema::hasColumn('bot_bets', 'items_won')) $table->text('items_won', 65535);
             });
         } else {
             Schema::create('bot_bets', function(Blueprint $table)
