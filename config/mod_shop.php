@@ -7,6 +7,7 @@ return [
     'select_limit' => 250,
     
     'sales_per_day' => 100,
+    'sales_per_day_user' => 3,
     
     'games_need' => true,
     'games_need_count' => 1,
