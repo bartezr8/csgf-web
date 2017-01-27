@@ -201,6 +201,7 @@ return [
         'Queue'     => Illuminate\Support\Facades\Queue::class,
         'Redirect'  => Illuminate\Support\Facades\Redirect::class,
         'LRedis'    => Illuminate\Support\Facades\Redis::class,
+        'Redis'     => Illuminate\Support\Facades\Predis\Client::class,
         'Request'   => Illuminate\Support\Facades\Request::class,
         'Response'  => Illuminate\Support\Facades\Response::class,
         'Route'     => Illuminate\Support\Facades\Route::class,
