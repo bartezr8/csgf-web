@@ -26,14 +26,17 @@ abstract class Controller extends BaseController
         } else {
             $this->user = User::find(1);
         }
-        view()->share('u', $this->user);
         $time = time();
-        $token = CCentrifugo::generateClientToken($this->user->steamid64, $time, '');
+        
+        $token = CCentrifugo::generateToken($this->user->steamid64, $time, '');
+        
+        $this->redis = LRedis::connection();
+        $this->redis->publish('new_user', $this->user->steamid64);
+        
         view()->share('ctoken', $token);
         view()->share('ctime', $time);
-        $this->redis = LRedis::connection();
+        view()->share('u', $this->user);
         view()->share('steam_status', $this->getSteamStatus());
-        $this->redis->publish('new_user', $this->user->steamid64);
     }
 
     public function  __destruct()
