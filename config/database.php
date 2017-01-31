@@ -99,12 +99,12 @@ return [
             'database' => env('WEB_REDIS_DB'),
         ],
         'centrifugo' => [
-            'scheme' => env('CENTR_REDIS_SCHEME'),
-            'host' => env('CENTR_REDIS_HOST'),
-            'path' => env('CENTR_REDIS_PATH'),
-            'password' => env('CENTR_REDIS_PASSWORD'),
-            'port' => env('CENTR_REDIS_PORT'),
-            'database' => env('CENTR_REDIS_DB'),
+            'scheme' => env('CENT_REDIS_SCHEME'),
+            'host' => env('CENT_REDIS_HOST'),
+            'path' => env('CENT_REDIS_PATH'),
+            'password' => env('CENT_REDIS_PASSWORD'),
+            'port' => env('CENT_REDIS_PORT'),
+            'database' => env('CENT_REDIS_DB'),
         ],
 
     ],
