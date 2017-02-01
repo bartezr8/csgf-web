@@ -443,7 +443,7 @@ class ShopController extends Controller {
             'accessToken' => $this->user->accessToken
         ];
         $shop_id = Shop::selectBot();
-        $out = GameController::curl( env('APP_URL') . '/sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
+        $out = GameController::curl( config('app.url') . '/sendTrade/'.$shop_id.'/?data='.json_encode($value).'&secretKey=' . config('app.secretKey'));
         $out = json_decode($out, true);
         if(isset($out['success']) && $out['success'] == true) {
             $id = DB::table('shop_offers')->insertGetId([
