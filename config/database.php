@@ -86,18 +86,25 @@ return [
     |
     */
 
-
     'redis' => [
 
         'cluster' => false,
 
         'default' => [
-            'scheme' => env('REDIS_SCHEME'),
-            'host' => env('REDIS_HOST'),
-            'path' => env('REDIS_PATH'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT'),
-            'database' => 0,
+            'scheme' => env('WEB_REDIS_SCHEME'),
+            'host' => env('WEB_REDIS_HOST'),
+            'path' => env('WEB_REDIS_PATH'),
+            'password' => env('WEB_REDIS_PASSWORD'),
+            'port' => env('WEB_REDIS_PORT'),
+            'database' => env('WEB_REDIS_DB'),
+        ],
+        'centrifugo' => [
+            'scheme' => env('CENT_REDIS_SCHEME'),
+            'host' => env('CENT_REDIS_HOST'),
+            'path' => env('CENT_REDIS_PATH'),
+            'password' => env('CENT_REDIS_PASSWORD'),
+            'port' => env('CENT_REDIS_PORT'),
+            'database' => env('CENT_REDIS_DB'),
         ],
 
     ],

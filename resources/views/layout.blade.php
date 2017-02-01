@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>{{ $title }}CSGF.RU</title>
+        <title>{{ $title }}{{ config('app.sitename') }}</title>
         <meta name="keywords" content="кс го рулетка,csgo джекпот,csgo jackpot, csgo джекпот,csgofast,csgoup,csgoup.ru,csgoshuffle,easydrop,cscard,csgo jackpot, Luck is on your side ,Удача на вашей стороне,cs go рулетка,рулетка кс го ,cs go рулетка от 1 рубля,рулетка кс го ,рулетка cs go, csgo джекпот ,csgo jackpot ,jackpot ,steam,cs steam ,раздачи ,конкурсы ,рулетка скинов ,скины, cs go скины ,ставки рулетка ,cs:go, cs go ставки,рулетка вещей, cs go рулетка оружий ,cs go рулетка ,cs go играть рулетка ,скинов cs go лотерея ,сsgo лотерея вещей сsgo, халява, от 1 рубля, рефералка, дабл, луты, steam" />
         <meta name="description" content="Рулетка CS GO для бомжей с маленькой ставкой от 1 рубля для новичков. Низкая комиссия, бонус бот и большая реферальная система. Много халявы." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,6 +22,7 @@
         <script src="{{ $asset('assets/js/jquery.transform.js') }}" ></script>
         <script>
             var USER_ID = '{{ $u->steamid64 }}',
+                GIFTS = "{{ config('mod_game.gifts') }}",
                 SM_ID = '{{ $u->steamid64 }}',
                 MAX_ITEMS = "{{ config('mod_game.game_items') }}",
                 IS_MODER = '{{ $u->is_moderator }}',
@@ -62,7 +63,7 @@
                             <li><a tabindex="-1" data-act="1">Копировать НИК</a></li>
                             <li><a tabindex="-1" data-act="2">Перевести средства</a></li>
                             <li><a tabindex="-1" data-act="3">Профиль Steam</a></li>
-                            <li><a tabindex="-1" data-act="4">Профиль CSGF.RU</a></li>
+                            <li><a tabindex="-1" data-act="4">Профиль {{ config('app.sitename') }}</a></li>
                             @if(!Auth::guest())
                                 @if($u->is_moderator==1)
                                 <li><a tabindex="-1" data-act="5">Управление</a></li>

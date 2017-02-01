@@ -465,7 +465,7 @@ class GameController extends Controller
         } else {
             $count = self::fixBotBets($gameid);
         }
-        return redirect('/admin');
+        return back();
     }
     public function checkBrokenGames(Request $request){
         $games = DB::table('games')->where('status_prize', 2)->take(10)->orderBy('created_at', 'desc')->get();
@@ -476,7 +476,7 @@ class GameController extends Controller
         return response()->json(['success' => true, 'count' => $count]);
     }
     private function fixBotBets($gameid){
-        $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->get();
+        $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->where('enum', '<', 5)->get();
         $game = Game::find($gameid);
         if(count($bot_bets_e)){
             $user = User::find($game->winner_id);
@@ -484,6 +484,7 @@ class GameController extends Controller
             $game->save();
             foreach($bot_bets_e as $bet){
                 $bet->status = 0;
+                $bet->enum = $bet->enum + 1;
                 $bet->save();
                 if($bet->items_won != ''){
                     $bitems = array_values(json_decode($bet->items_won, true));
@@ -581,15 +582,11 @@ class GameController extends Controller
                     continue;
                 }
             }
-            $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-            $words = self::object_to_array(json_decode($words));
             if (!isset($offer->message)){
                 $offer->message = '';
             } else {
                 $message = mb_strtolower($offer->message);
-                foreach ($words as $key => $value) {
-                    $message = str_ireplace($key, $value, $message);
-                }
+                $message = ChatController::censrepl($message);
                 $offer->message = $message;
             }
             if($offer->message != 'bonus'){

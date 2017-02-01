@@ -21,17 +21,13 @@ class SteamController extends Controller
 
     public function login()
     {
-        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-        $words = GameController::object_to_array(json_decode($words));
         if ($this->steamAuth->validate()) {
             $info = $this->steamAuth->getUserInfo();
             if (!is_null($info)) {
                 $user = User::where('steamid64', $info->steamID64)->first();
                 if (is_null($user)) {
                     $nick = $info->personaname;
-                    foreach ($words as $key => $value) {
-                        $nick = str_ireplace($key, $value, $nick);
-                    }
+                    $nick = ChatController::censrepl($nick);
                     $user = User::create([
                         'username' => $nick,
                         'avatar' => $info->avatarfull,
@@ -85,14 +81,10 @@ class SteamController extends Controller
     public function updateSettings(Request $request)
     {
         $user = $this->user;
-        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-        $words = GameController::object_to_array(json_decode($words));
         if(!$request->ajax()){
             $steamInfo = $this->_getSteamInfo($user->steamid64);
             $nick = $steamInfo->getNick();
-            foreach ($words as $key => $value) {
-                $nick = str_ireplace($key, $value, $nick);
-            }
+            $nick = ChatController::censrepl($nick);
             $user->username = $nick;
             $user->avatar = $steamInfo->getProfilePictureFull();
         }

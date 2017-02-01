@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\Cast\Object_;
 use App\CCentrifugo;
 use App\User;
 use LRedis;
-
+use Log;
 class ChatController extends Controller
 {
 
@@ -35,15 +35,8 @@ class ChatController extends Controller
         $avatar = $this->user->avatar;
         $time = date('H:i', time());
         $messages = strtolower($this->_validateMessage($request));
-        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-        $words = GameController::object_to_array(json_decode($words));
         $messages = mb_strtolower($messages);
-        foreach ($words as $key => $value) $messages = str_ireplace($key, $value, $messages);
-        /*if ($this->user->is_admin == 0) {
-            if ($bet == null) {
-               return response()->json(['message' => 'Вы должны поставить ставку чтобы писать в чате', 'status' => 'error']);
-            }
-        }*/
+        $messages = self::censrepl($messages);
         if ($this->user->is_admin == 1) {
             if (substr_count($messages, '/clear')) {
                 $this->redis->del(self::CHAT_CHANNEL);
@@ -113,7 +106,18 @@ class ChatController extends Controller
         }
         return $returnValue;
     }
-    
+    public function censrepl($text){
+        $words = [];
+        if(\Cache::has('cens')){
+            $words = \Cache::get('cens');
+            $words = json_decode($words);
+        } else {
+            $words = \DB::table('cens')->get();
+            \Cache::put('cens', json_encode($words), 60);
+        }
+        foreach ($words as $word) $text = str_ireplace($word->text, $word->repl, $text);
+        return $text;
+    }
     public function delmsg(Request $request){
         $id = $request->get('id');
         $value = $this->redis->lrange(self::CHAT_CHANNEL, $id, $id);

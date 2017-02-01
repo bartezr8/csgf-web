@@ -59,7 +59,7 @@
             <div class="b-modal-cards" style="border: none; width: 609px; border-radius: 0px;" id="cardDepositModal">
                 <div class="box-modal-container">
                     <div class="box-modal-content">
-                        <div class="add-balance-block" style="padding-top: 20px;padding:0;text-align: left;padding-left: 40px;">
+                        <div class="add-balance-block" style="padding-top: 20px;padding:0;text-align: left;padding-left: 40px;margin-top: 10px;">
                             <div class="balance-item">
                                 Через платежные системы:
                             </div>
