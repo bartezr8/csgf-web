@@ -586,7 +586,7 @@ class GameController extends Controller
                 $offer->message = '';
             } else {
                 $message = mb_strtolower($offer->message);
-                ChatController::censrepl($message);
+                $message = ChatController::censrepl($message);
                 $offer->message = $message;
             }
             if($offer->message != 'bonus'){

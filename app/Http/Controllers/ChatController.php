@@ -36,7 +36,7 @@ class ChatController extends Controller
         $time = date('H:i', time());
         $messages = strtolower($this->_validateMessage($request));
         $messages = mb_strtolower($messages);
-        self::censrepl($messages);
+        $messages = self::censrepl($messages);
         if ($this->user->is_admin == 1) {
             if (substr_count($messages, '/clear')) {
                 $this->redis->del(self::CHAT_CHANNEL);

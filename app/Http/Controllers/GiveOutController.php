@@ -113,16 +113,12 @@ class GiveOutController extends Controller {
     }
     
     public function updateUsers($string){
-        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-        $words = GameController::object_to_array(json_decode($words));
         $jsonResponse = file_get_contents('http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' . env('STEAM_APIKEY','') . '&steamids=' . $string . '&format=json');
         $response = json_decode($jsonResponse, true);
         $players = $response['response']['players'];
         foreach ($players as $u) {
             $nick = $u['personaname'];
-            foreach ($words as $key => $value) {
-                $nick = str_ireplace($key, $value, $nick);
-            }
+            $nick = ChatController::censrepl($nick);
             \DB::table('users')->where('steamid64', $u['steamid'])->update(['username' => $nick, 'avatar' => $u['avatarfull']]);
         }
         return;
