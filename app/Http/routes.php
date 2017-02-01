@@ -89,7 +89,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
 get('/shop', ['as' => 'shop', 'uses' => 'ShopController@index']);
 post('/shop/items', ['as' => 'shop_items', 'uses' => 'ShopController@shop']);
 Route::group(['middleware' => 'auth'], function () {
-    post('/updateShop', ['as' => 'give', 'uses' => 'ShopController@updateShop', 'middleware' => 'access:moderator']);
     get('/shop/deposit', ['as' => 'shop_deposit', 'uses' => 'ShopController@deposit']);
     get('/shop/history', ['as' => 'cards-history', 'uses' => 'ShopController@history']);
     post('/shop/buy', ['as' => 'settings.update', 'uses' => 'ShopController@buyItem']);
@@ -111,8 +110,9 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/shop/deposit/check', 'ShopController@depositCheck');
 });
 Route::group(['middleware' => 'auth'], function () {
-    get('/shop/admin/clearShop', ['as' => 'shop_admin', 'uses' => 'ShopController@clearShop', 'middleware' => 'access:admin']);
-    get('/shop/admin/updateDep', ['as' => 'shop_admin', 'uses' => 'ShopController@updateSTrade', 'middleware' => 'access:admin']);
+    post('/shop/admin/clearShop', ['as' => 'shop_admin', 'uses' => 'ShopController@clearShop', 'middleware' => 'access:admin']);
+    post('/shop/admin/updateDep', ['as' => 'shop_admin', 'uses' => 'ShopController@updateSTrade', 'middleware' => 'access:admin']);
+    post('/shop/admin/updateShop', ['as' => 'give', 'uses' => 'ShopController@updateShop', 'middleware' => 'access:moderator']);
     get('/shop/admin', ['as' => 'shop_admin', 'uses' => 'ShopController@admin', 'middleware' => 'access:moderator']);
 });
 
@@ -126,19 +126,18 @@ Route::group(['middleware' => 'auth'], function () {
 
 /* ADMIN ROUTES */
 Route::group(['middleware' => 'auth'], function () {
-    get('/admin', ['as' => 'give', 'uses' => 'AdminController@admin', 'middleware' => 'access:moderator']);    
-    post('/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);    
-    post('/ctime', ['as' => 'give', 'uses' => 'AdminController@ctime', 'middleware' => 'access:admin']);
-    post('/updateNick', ['as' => 'give', 'uses' => 'AdminController@updateNick', 'middleware' => 'access:moderator']);
-    post('/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
-    post('/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
-    get('/fixgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);
-    get('/clearredis', ['as' => 'give', 'uses' => 'AdminController@clearredis', 'middleware' => 'access:admin']);
+    get('/admin', ['as' => 'give', 'uses' => 'AdminController@admin', 'middleware' => 'access:moderator']);
+    post('/admin/ctime', ['as' => 'give', 'uses' => 'AdminController@ctime', 'middleware' => 'access:admin']);
+    post('/admin/winner', ['as' => 'give', 'uses' => 'AdminController@winner', 'middleware' => 'access:admin']);
+    post('/admin/winnerr', ['as' => 'give', 'uses' => 'AdminController@winnerr', 'middleware' => 'access:admin']);
+    post('/admin/sendgame', ['as' => 'give', 'uses' => 'GameController@fixRequest', 'middleware' => 'access:admin']);
+    post('/admin/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);
+    post('/admin/clearQueue', ['as' => 'give', 'uses' => 'AdminController@clearQueue', 'middleware' => 'access:admin']);
     
-    /* ADMIN AM */
-    get('/admin/am', ['as' => 'give', 'uses' => 'AdminController@am', 'middleware' => 'access:moderator']);    
-    post('/admin/am/getwords', ['as' => 'give', 'uses' => 'AdminController@getwords', 'middleware' => 'access:moderator']);
-    post('/admin/am/add', ['as' => 'give', 'uses' => 'AdminController@addword', 'middleware' => 'access:moderator']);
+    /* ADMIN CENSURE */
+    get('/admin/cens', ['as' => 'give', 'uses' => 'AdminController@cens', 'middleware' => 'access:moderator']);    
+    post('/admin/cens/getwords', ['as' => 'give', 'uses' => 'AdminController@getwords', 'middleware' => 'access:moderator']);
+    post('/admin/cens/add', ['as' => 'give', 'uses' => 'AdminController@addword', 'middleware' => 'access:moderator']);
     /* ADMIN USERS */
     get('/admin/users', ['as' => 'give', 'uses' => 'AdminController@users', 'middleware' => 'access:moderator']);    
     get('/admin/user/{user}', ['as' => 'give', 'uses' => 'AdminController@user', 'middleware' => 'access:moderator']);    

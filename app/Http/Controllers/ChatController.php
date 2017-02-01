@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\Cast\Object_;
 use App\CCentrifugo;
 use App\User;
 use LRedis;
-
+use Log;
 class ChatController extends Controller
 {
 
@@ -107,13 +107,14 @@ class ChatController extends Controller
         return $returnValue;
     }
     public function censrepl($text){
+        $words = [];
         if(\Cache::has('cens')){
             $words = \Cache::get('cens');
             $words = json_decode($words);
         } else {
             $words = \DB::table('cens')->get();
-            \Cache::forever('cens', json_encode($words));
-        }        
+            \Cache::put('cens', json_encode($words), 60);
+        }
         foreach ($words as $word) $text = str_ireplace($word->text, $word->repl, $text);
         return $text;
     }

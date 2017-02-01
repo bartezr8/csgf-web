@@ -4,24 +4,24 @@
 <title>  {{ $title = \App\Http\Controllers\AdminController::TITLE_UP }}</title>
 
 <link href="{{ $asset('assets/css/admin.css') }}" rel="stylesheet">
-    <div class="admin-container">
-        <div class="admin-top">
-            <div class="logotype active">
-            </div>
-            <div class="admin-menu">
-                <ul id="headNav" class="list-reset">
-                    <li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
-                    <li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
-                    <li class="faq"><a href="/admin/am/"><img src="/assets/img/tp.png" alt=""> Антимат</a></li>
-                    <li class="faq"><a href="/shop/admin/"><img src="/assets/img/php.png" alt=""> История обменов</a></li>
-                </ul>
-            </div>
+<div class="admin-container">
+    <div class="admin-top">
+        <div class="logotype active">
+        </div>
+        <div class="admin-menu">
+            <ul id="headNav" class="list-reset">
+                <li class="faq"><a href="/admin/"><img src="/assets/img/stav.png" alt=""> Главная страница</a></li>
+                <li class="faq"><a href="/admin/users/"><img src="/assets/img/user.png" alt=""> Пользователи</a></li>
+                <li class="faq"><a href="/admin/cens/"><img src="/assets/img/tp.png" alt=""> Антимат</a></li>
+                <li class="faq"><a href="/shop/admin/"><img src="/assets/img/php.png" alt=""> История обменов</a></li>
+            </ul>
         </div>
     </div>
+</div>
 <div class="content">
     <div class="title-block">
         <h2 style="color: #ffffff;">
-            Антимат - запрещенные слова!
+            Цензура - запрещенные слова!
         </h2>
     </div>
     <div class="black-txt-info " style="width: 100%;float: left; margin-top: 15px; margin-bottom: 5px;">
@@ -51,7 +51,7 @@
     <script>
     function udpw(data){
         $.ajax({
-            url: '/admin/am/add',
+            url: '/admin/cens/add',
             type: 'post',
             dataType: 'json',
             data: {
@@ -73,13 +73,14 @@
     }
     function updateWords() {
         $.ajax({
-            url: '/admin/am/getwords',
+            url: '/admin/cens/getwords',
             type: 'POST',
             dataType: 'json',
             success: function (data) {
                 $('#usertable').html('');
+                console.log(data);
                 for (key in data) {
-                    $('#usertable').prepend("<tr><td class=\"win-count\" onclick=\"udpw( '" + key + "' )\">" + key + "</td><td class=\"participations\">" + data[key] + "</td></tr>");
+                    $('#usertable').prepend("<tr><td class=\"win-count\" onclick=\"udpw( '" + data[key].text + "' )\">" + data[key].text + "</td><td class=\"participations\">" + data[key].repl + "</td></tr>");
                 }
             },
             error: function () {
@@ -91,7 +92,7 @@
     }
     $(document).on('click', '#sub', function () {
         $.ajax({
-            url: '/admin/am/add',
+            url: '/admin/cens/add',
             type: 'post',
             dataType: 'json',
             data: {
