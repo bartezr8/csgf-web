@@ -62,7 +62,7 @@
             <div class="icon-inform-white"></div>
             <div class="msg-white msg-mini">
                 На этой страницы показаны последние <span>20 игр.</span> Вы можете посмотреть историю любой игры, вписав ее номер в конец ссылки
-                <span class="color-lightblue-t"><span class="weight-normal">csgf.ru/game/</span>№ игры</span>
+                <span class="color-lightblue-t"><span class="weight-normal">{{ config('app.sitename') }}/game/</span>№ игры</span>
             </div>
         </div>
         <script>

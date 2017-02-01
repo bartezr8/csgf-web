@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>404 | CSGF.RU</title>
+    <title>404 | {{ config('app.sitename') }}</title>
     <meta charset="utf-8" />
     <link href="{{ $asset('assets/css/style.css') }}" rel="stylesheet">
     <!--link href="//fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet" type="text/css"-->

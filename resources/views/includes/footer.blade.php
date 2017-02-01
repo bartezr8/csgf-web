@@ -5,11 +5,11 @@
             <a href="//www.free-kassa.ru/"><img style="height: 19px;" src="//www.free-kassa.ru/img/fk_btn/16.png"></a>
         </div>
         <div style="float: left; width: 50%; text-align: center;">
-            © CSGF.RU, 2016 | Все права защищены 2017 | v4.0
+            © {{ config('app.sitename') }}, 2016 | Все права защищены 2017 | v4.0
         </div>
         <div style="float: left; text-align: right; width: 25%; margin-top: -6px;">
             Наши группы:
-            <a alt="Группа ВКонтакте CSGF.RU" target="_blank" href="https://vk.com/csgfru"><img style="width: 30px;" src="/assets/img/vk.png"></a>
+            <a alt="Группа ВКонтакте {{ config('app.sitename') }}" target="_blank" href="https://vk.com/csgfru"><img style="width: 30px;" src="/assets/img/vk.png"></a>
         </div>
     </div>
     <br>
