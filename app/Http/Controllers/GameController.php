@@ -582,15 +582,11 @@ class GameController extends Controller
                     continue;
                 }
             }
-            $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-            $words = self::object_to_array(json_decode($words));
             if (!isset($offer->message)){
                 $offer->message = '';
             } else {
                 $message = mb_strtolower($offer->message);
-                foreach ($words as $key => $value) {
-                    $message = str_ireplace($key, $value, $message);
-                }
+                ChatController::censrepl($message);
                 $offer->message = $message;
             }
             if($offer->message != 'bonus'){

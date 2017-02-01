@@ -85,14 +85,10 @@ class SteamController extends Controller
     public function updateSettings(Request $request)
     {
         $user = $this->user;
-        $words = mb_strtolower(file_get_contents(dirname(__FILE__) . '/words.json'));
-        $words = GameController::object_to_array(json_decode($words));
         if(!$request->ajax()){
             $steamInfo = $this->_getSteamInfo($user->steamid64);
             $nick = $steamInfo->getNick();
-            foreach ($words as $key => $value) {
-                $nick = str_ireplace($key, $value, $nick);
-            }
+            ChatController::censrepl($nick);
             $user->username = $nick;
             $user->avatar = $steamInfo->getProfilePictureFull();
         }
