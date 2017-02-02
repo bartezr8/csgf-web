@@ -12,55 +12,69 @@
         </h2>
     </div>
     @if($u->is_admin==1)
-    <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Управление классик</b></div>
-    <div class="support" >
-        <div style="width: 166px" class="nSend">
-            <input type="text" id="time" cols="50" style="width: 83px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
-            <input type="submit" style="width: 83px" onclick="postReq('/admin/ctime', {time:$('#time').val()})" value="Изменить">
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Управление классик</b></div>
+        <div class="support" >
+            <div style="width: 166px" class="nSend">
+                <input type="text" id="time" cols="50" style="width: 83px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
+                <input type="submit" style="width: 83px" onclick="postReq('/admin/ctime', {time:$('#time').val()})" value="Изменить">
+            </div>
+            <div style="width: 250px" class="nSend">
+                <input type="text" id="rid" cols="50" style="width: 125px" cols="50" placeholder="Номер билета" maxlength="18" autocomplete="off">
+                <input type="submit" onclick="postReq('/admin/winner', {id:$('#rid').val()})" style="width: 125px" value="Подкрутить">
+            </div>
+            <div style="width: 250px" class="nSend">
+                <input type="text" id="rrid" cols="50" style="width: 125px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
+                <input type="submit" onclick="postReq('/admin/winnerr', {id:$('#rrid').val()})" style="width: 125px" value="Число раунда">
+            </div>
+            <div style="width: 166px" class="nSend">
+                <input type="submit" style="width: 166px" onclick="postReq('/admin/clearQueue', {})" value="Очистить Redis">
+            </div>
+            <div style="width: 166px" class="nSend">
+                <input type="submit" onclick="clearTables()" style="width: 166px" value="Очистка таблиц">
+            </div>
         </div>
-        <div style="width: 250px" class="nSend">
-            <input type="text" id="rid" cols="50" style="width: 125px" cols="50" placeholder="Номер билета" maxlength="18" autocomplete="off">
-            <input type="submit" onclick="postReq('/admin/winner', {id:$('#rid').val()})" style="width: 125px" value="Подкрутить">
+        <br>
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Рассылка ВК</b></div>
+        <div class="support" >
+            <div style="width: 999px" class="nSend">
+                <input type="text" id="vktext" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
+                <input type="submit" onclick="postReq('/api/vk/sendText', {text:$('#vktext').val()})" style="width: 148px" value="Разослать">
+            </div>
         </div>
-        <div style="width: 250px" class="nSend">
-            <input type="text" id="rrid" cols="50" style="width: 125px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
-            <input type="submit" onclick="postReq('/admin/winnerr', {id:$('#rrid').val()})" style="width: 125px" value="Число раунда">
+        <br>
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Изменение Ключа Парсера</b></div>
+        <div class="support" >
+            <div style="width: 999px" class="nSend">
+                <input type="text" id="parse_site" cols="50" style="width: 400px" cols="50" placeholder="Домен сайта" value="" autocomplete="off">
+                <input type="text" id="parse_key" cols="50" style="width: 450px" cols="50" placeholder="Ключ" value="" autocomplete="off">
+                <input type="submit" onclick="postReq('/admin/addparser', {site:$('#parse_site').val(),key:$('#parse_key').val()})" style="width: 148px" value="Изменить">
+            </div>
         </div>
-        <div style="width: 166px" class="nSend">
-            <input type="submit" style="width: 166px" onclick="postReq('/admin/clearQueue', {})" value="Очистить Redis">
+        <br>
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Управление магазином</b></div>
+        <div class="support" >
+            <div style="width: 333px" class="nSend">
+                <input type="text" id="usid" cols="50" style="width: 115px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
+                <input type="submit" style="width: 218px" onclick="postReq('/shop/admin/updateShop', {id:$('#usid').val()})" value="Обновить магазин">
+            </div>
+            <div style="width: 333px" class="nSend">
+                <input type="text" id="csid" cols="50" style="width: 145px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
+                <input type="submit" style="width: 188px" onclick="postReq('/shop/admin/clearShop', {id:$('#csid').val()})" value="Удалить из магазина">
+            </div>
+            <div style="width: 333px" class="nSend">
+                <input type="text" id="udid" cols="50" style="width: 105px" cols="50" placeholder="ID трейда" maxlength="18" autocomplete="off">
+                <input type="text" id="udstatus" cols="50" style="width: 80px" cols="50" placeholder="статус" maxlength="18" autocomplete="off">
+                <input type="submit" style="width: 148px" onclick="postReq('/shop/admin/updateDep', {id:$('#udid').val(),status:$('#udstatus').val()})" value="Обновить депозит">
+            </div>
         </div>
-        <div style="width: 166px" class="nSend">
-            <input type="submit" onclick="clearTables()" style="width: 166px" value="Очистка таблиц">
-        </div>
-    </div>
-    <br>
-    <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Рассылка ВК</b></div>
-    <div class="support" >
-        <div style="width: 999px" class="nSend">
-            <input type="text" id="vktext" cols="50" style="width: 851px" cols="50" placeholder="Текст сообщения" value="" autocomplete="off">
-            <input type="submit" onclick="postReq('/api/vk/sendText', {text:$('#vktext').val()})" style="width: 148px" value="Разослать">
-        </div>
-    </div>
-    <br>
-    <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Управление магазином</b></div>
-    <div class="support" >
-        <div style="width: 333px" class="nSend">
-            <input type="text" id="usid" cols="50" style="width: 115px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
-            <input type="submit" style="width: 218px" onclick="postReq('/shop/admin/updateShop', {id:$('#usid').val()})" value="Обновить магазин">
-        </div>
-        <div style="width: 333px" class="nSend">
-            <input type="text" id="csid" cols="50" style="width: 145px" cols="50" placeholder="ID бота" maxlength="18" autocomplete="off">
-            <input type="submit" style="width: 188px" onclick="postReq('/shop/admin/clearShop', {id:$('#csid').val()})" value="Удалить из магазина">
-        </div>
-        <div style="width: 333px" class="nSend">
-            <input type="text" id="udid" cols="50" style="width: 105px" cols="50" placeholder="ID трейда" maxlength="18" autocomplete="off">
-            <input type="text" id="udstatus" cols="50" style="width: 80px" cols="50" placeholder="статус" maxlength="18" autocomplete="off">
-            <input type="submit" style="width: 148px" onclick="postReq('/shop/admin/updateDep', {id:$('#udid').val(),status:$('#udstatus').val()})" value="Обновить депозит">
-        </div>
-    </div>
+        <br>
     @else
         <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> На данной странице для модераторов нет дотупных комманд.</b></div>
+        <br>
     @endif
+    <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Статистика</b></div>
+    
+    
     <script>
         function postReq(url, data){
             $.ajax({

@@ -28,7 +28,5 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')->hourly();
         $schedule->command('parser:prices --bp --fast')->cron('0 */3 * * *');
-        $schedule->command('parser:prices --parser')->cron('30 */3 * * *');
-        $schedule->command('online:change')->cron('*/1 * * * *');
     }
 }

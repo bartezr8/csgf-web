@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth'], function () {
     post('/admin/fixtic', ['as' => 'give', 'uses' => 'AdminController@fixGameTic', 'middleware' => 'access:admin']);
     post('/admin/clearQueue', ['as' => 'give', 'uses' => 'AdminController@clearQueue', 'middleware' => 'access:admin']);
     post('/admin/cleartables', ['as' => 'give', 'uses' => 'AdminController@cleartables', 'middleware' => 'access:admin']);
+    post('/admin/addparser', ['as' => 'give', 'uses' => 'AdminController@addparser', 'middleware' => 'access:admin']);
     /* ADMIN CENSURE */
     get('/admin/cens', ['as' => 'give', 'uses' => 'AdminController@cens', 'middleware' => 'access:moderator']);    
     post('/admin/cens/getwords', ['as' => 'give', 'uses' => 'AdminController@getwords', 'middleware' => 'access:moderator']);
