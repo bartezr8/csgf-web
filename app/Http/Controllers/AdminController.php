@@ -73,15 +73,15 @@ class AdminController extends Controller
     }
     public function addword(Request $request) {
         if($request->get('word') != ''){
-            $word = \DB::table('cens')->where('text', mb_strtolower($request->get('word')))->first();
+            $word = \DB::table('cens')->where('text', trim(mb_strtolower($request->get('word'))))->first();
             if(is_null($word)){
-                \DB::table('cens')->insert(['text' => mb_strtolower($request->get('word')), 'repl' => mb_strtolower($request->get('repl'))]);
+                \DB::table('cens')->insert(['text' => trim(mb_strtolower($request->get('word'))), 'repl' => trim(mb_strtolower($request->get('repl')))]);
                 $msg = 'Замена добавлена';
             } else {
                 if ($request->get('repl') == '-'){
-                    \DB::table('cens')->where('text', mb_strtolower($request->get('word')))->delete();
+                    \DB::table('cens')->where('text', trim(mb_strtolower($request->get('word'))))->delete();
                 } else {
-                    \DB::table('cens')->where('text', mb_strtolower($request->get('word')))->update(['repl' => mb_strtolower($request->get('repl'))]);
+                    \DB::table('cens')->where('text', trim(mb_strtolower($request->get('word'))))->update(['repl' => trim(mb_strtolower($request->get('repl')))]);
                 }
                 $msg = 'Замена обновлена';
             }
