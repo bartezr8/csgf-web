@@ -106,7 +106,7 @@ class ChatController extends Controller
         }
         return $returnValue;
     }
-    public function censrepl($text){
+    public static function censrepl($text){
         $words = [];
         if(\Cache::has('cens')){
             $words = \Cache::get('cens');

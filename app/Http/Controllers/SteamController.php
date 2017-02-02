@@ -37,9 +37,7 @@ class SteamController extends Controller
                     ]);
                 } else {
                     $nick = $info->personaname;
-                    foreach ($words as $key => $value) {
-                        $nick = str_ireplace($key, $value, $nick);
-                    }
+                    $nick = ChatController::censrepl($nick);
                     \DB::table('users')->where('steamid64', $info->steamID64)->update(['username' => $nick, 'avatar' => $info->avatarfull]);
                 }
                 Auth::login($user, true);
