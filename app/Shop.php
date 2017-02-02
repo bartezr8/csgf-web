@@ -53,7 +53,7 @@ class Shop extends Model
                 }
             }
         } else {
-            $last = $this->redis->get('last.shop');
+            $last = \Cache::get('last.shop');
             if($last + 1 > (count(config('mod_shop.bots')) - 1)){
                 $botid = 0;
             } else {

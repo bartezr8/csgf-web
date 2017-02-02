@@ -167,7 +167,7 @@ class ShopController extends Controller {
         foreach($jsonItems as $jsonItem){
             $this->redis->lrem('s'.$bot_id.'_'.self::STATUS_ITEMS_CHANNEL, 1, $jsonItem);
             $data = json_decode($jsonItem, true);
-            $total_price = 0; $returnValue = []; $user_id = 0;
+            $total_price = 0; $returnValue = []; $user_id = 0; $send_price = 0;
             foreach($data['items'] as $id) {
                 $item = DB::table('shop')->where('inventoryId', $id)->where('bot_id', $bot_id)->first();
                 if(!is_null($item)){
@@ -182,6 +182,12 @@ class ShopController extends Controller {
                         } else {
                             $total_price += $item->price;
                         }
+                    } else {
+                        if($item->sale == 1) {
+                            $send_price += round($item->price * 0.9,2);
+                        } else {
+                            $send_price += $item->price;
+                        }
                     }
                     $user_id = $item->buyer_id;
                 }
@@ -189,9 +195,13 @@ class ShopController extends Controller {
             $user = User::find($user_id);
             if(!is_null($user)){
                 $total_price = round($total_price,2);
-                $this->_responseMessageToSite('Средства возвращены | Сумма: ' . $total_price , $user->steamid64);
-                User::mchange($user->id, $total_price);
-                User::slchange($user->id, $total_price);
+                if($send_price>0){
+                    $this->_responseMessageToSite('Обмен отправлен | Сумма: ' . $send_price , $user->steamid64);
+                } else {
+                    $this->_responseMessageToSite('Средства возвращены | Сумма: ' . $total_price , $user->steamid64);
+                    User::mchange($user->id, $total_price);
+                    User::slchange($user->id, $total_price);
+                }
             }
         }
         return response()->json(['success' => false]);
