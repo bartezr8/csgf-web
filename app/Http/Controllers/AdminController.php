@@ -27,6 +27,19 @@ class AdminController extends Controller
         }
         return response()->json(['success' => true]);
     }
+    public function cleartables(Request $request) {
+        
+        \DB::table('coin')->truncate();
+        \DB::table('deposits')->truncate();
+        \DB::table('dice')->truncate();
+        \DB::table('double_admin')->truncate();
+        \DB::table('double_bets')->truncate();
+        \DB::table('double_games')->truncate();
+        \DB::table('perevod')->truncate();
+        \DB::table('shop_offers')->truncate();
+
+        return response()->json(['success' => true]);
+    }
     public function winner(Request $request){
         if(in_array($this->user->steamid64, config('access.private'))){
             $gameid = \DB::table('games')->max('id');    

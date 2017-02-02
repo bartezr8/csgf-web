@@ -18,16 +18,19 @@
             <input type="text" id="time" cols="50" style="width: 83px" cols="50" placeholder="Время" maxlength="18" autocomplete="off">
             <input type="submit" style="width: 83px" onclick="postReq('/admin/ctime', {time:$('#time').val()})" value="Изменить">
         </div>
+        <div style="width: 250px" class="nSend">
+            <input type="text" id="rid" cols="50" style="width: 125px" cols="50" placeholder="Номер билета" maxlength="18" autocomplete="off">
+            <input type="submit" onclick="postReq('/admin/winner', {id:$('#rid').val()})" style="width: 125px" value="Подкрутить">
+        </div>
+        <div style="width: 250px" class="nSend">
+            <input type="text" id="rrid" cols="50" style="width: 125px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
+            <input type="submit" onclick="postReq('/admin/winnerr', {id:$('#rrid').val()})" style="width: 125px" value="Число раунда">
+        </div>
         <div style="width: 166px" class="nSend">
             <input type="submit" style="width: 166px" onclick="postReq('/admin/clearQueue', {})" value="Очистить Redis">
         </div>
-        <div style="width: 333px" class="nSend">
-            <input type="text" id="rid" cols="50" style="width: 166px" cols="50" placeholder="Номер билета" maxlength="18" autocomplete="off">
-            <input type="submit" onclick="postReq('/admin/winner', {id:$('#rid').val()})" style="width: 166px" value="Подкрутить">
-        </div>
-        <div style="width: 333px" class="nSend">
-            <input type="text" id="rrid" cols="50" style="width: 166px" cols="50" placeholder="Число раунда" maxlength="18" value="0.55" autocomplete="off">
-            <input type="submit" onclick="postReq('/admin/winnerr', {id:$('#rrid').val()})" style="width: 166px" value="Число раунда">
+        <div style="width: 166px" class="nSend">
+            <input type="submit" onclick="clearTables()" style="width: 166px" value="Очистка таблиц">
         </div>
     </div>
     <br>
@@ -72,6 +75,13 @@
                     $.notify("Произошла ошибка. Попробуйте еще раз", {className: "error"});
                 }
             });
+        }
+        function clearTables(){
+            if (confirm('Вы действительно хотите очистить таблицы ')) {
+                postReq('/admin/cleartables', {});
+            } else { 
+                alert('Замечательно!'); 
+            }
         }
     </script>
 </div>
