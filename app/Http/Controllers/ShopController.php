@@ -199,6 +199,12 @@ class ShopController extends Controller {
                     $this->_responseMessageToSite('Обмен отправлен | Сумма: ' . $send_price , $user->steamid64);
                 } else {
                     $this->_responseMessageToSite('Средства возвращены | Сумма: ' . $total_price , $user->steamid64);
+                    DB::table('deposits')->insertGetId([
+                        'user_id' => $user->id, 
+                        'date' => Carbon::now()->toDateTimeString(),
+                        'price' => $total_price,
+                        'type' => Shop::D_RETURN
+                    ]);
                     User::mchange($user->id, $total_price);
                     User::slchange($user->id, $total_price);
                 }
