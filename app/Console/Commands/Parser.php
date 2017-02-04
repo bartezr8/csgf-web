@@ -19,9 +19,9 @@ class Parser extends Command
     const BP_URL = 'http://backpack.tf/api/IGetMarketPrices/v1/?key=';
     const FAST_URL = 'https://api.csgofast.com/price/all';
     
-    protected $signature = 'parser:prices {--bp} {--fast} {--parser}';
+    protected $signature = 'parser:prices {--bp} {--fast}';
 
-    protected $description = ' {--bp} {--fast} {--parser} Updates Prices from steam, bp and fast';
+    protected $description = ' {--bp} {--fast} Updates Prices from steam, bp and fast';
 
     public function __construct()
     {
@@ -31,7 +31,7 @@ class Parser extends Command
     {
         $this->log('Запускаем парсер');
         $usd = $this->getActualCurs();
-        if(!$this->option('bp')&&!$this->option('fast')&&!$this->option('parser')){
+        if(!$this->option('bp')&&!$this->option('fast')){
             $this->log('Неверные параметры! Проверьте правильность введенной команды!');
         } else {
             if($this->option('bp')){
@@ -50,12 +50,6 @@ class Parser extends Command
                                 $dbitem->price = $nitem['price'];
                                 $dbitem->save();
                             }
-                            //$this->log($nitem['market_hash_name'].' : '.$nitem['price']);
-                            /*$count++;
-                            if($count>200){
-                                $count = 0;
-                                sleep(1);
-                            }*/
                         }
                         $num++; $this->log(round((($num*100)/count((array)$BPitems)),2).'%');
                     }
@@ -78,34 +72,15 @@ class Parser extends Command
                                 $dbitem->price = $nitem['price'];
                                 $dbitem->save();
                             }
-                            //$this->log($nitem['market_hash_name'].' : '.$nitem['price']);
-                            /*$count++;
-                            if($count>200){
-                                $count = 0;
-                                sleep(1);
-                            }*/
                         }
                         $num++; $this->log(round((($num*100)/count((array)$FastItems)),2).'%');
                     }
                     $this->log('Цены с CSGOFAST загружены');
                 }
             }
-            if($this->option('parser')){
-                $this->update_parsed();
-            }
         }
         $this->log('Парсер завершает свою работу');
     } 
-    private function update_parsed(){
-        $this->log('Обновляем цены для API');
-        $items = []; $item_BP = Item_BP::all(); $num = 0;
-        foreach($item_BP as $item){
-            $items[$item->market_hash_name] = Item::getItemPrice($item->market_hash_name);
-            $num++; $this->log(round((($num*100)/count((array)$item_BP)),2).'%');
-        }
-        Cache::forever('prices', $items);
-        $this->log('Закончили обновление');
-    }
     private function curl($url) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
