@@ -64,7 +64,7 @@ class VKController extends Controller {
                 self::send_msg('Неверный пароль', $user_id);
                 return;
             }
-            self::send_msg('Вы успешно авторизировались!<br>ID вк: '.$user_id.'<br>ID на сайте: '.$user->id.'<br>SteamID64: '.$user->steamid64.'<br>Никнейм: '.$user->username.'<br>Profile: http://csgf.ru/user/'.$user->steamid64 , $user_id);
+            self::send_msg('Вы успешно авторизировались!<br>ID вк: '.$user_id.'<br>ID на сайте: '.$user->id.'<br>SteamID64: '.$user->steamid64.'<br>Никнейм: '.$user->username.'<br>Profile: https://csgf.ru/user/'.$user->steamid64 , $user_id);
             Cache::forever('vk.user.' . $user_id, ['id' => $user->id, 'steamid64' => $user->steamid64, 'name' => Cache::get('vk.user.name.' . $user_id), 'nick' => $user->username]);
         } else {
             self::send_msg('Вам нужно авторизироваться. Инструкция по авторизации выше ↑!', $user_id);
