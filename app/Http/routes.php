@@ -2,8 +2,10 @@
 
 get('/', ['as' => 'index', 'uses' => 'GameController@currentGame']);
 
+
 get('/login', ['as' => 'login', 'uses' => 'SteamController@login']);
 get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
+
 
 get('/support', ['as' => 'support', 'uses' => 'PagesController@support']);
 get('/fairplay/{game}', ['as' => 'fairplay', 'uses' => 'PagesController@fairplay']);
@@ -15,6 +17,7 @@ get('/history', ['as' => 'history', 'uses' => 'PagesController@history']);
 get('/escrow', ['as' => 'escrow', 'uses' => 'PagesController@escrow']);
 post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
 get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
+
 get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
 
 get('/donate', 'DonateController@Donate');
@@ -79,8 +82,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/getPreviousWinner', 'GameController@getPreviousWinner');
     post('/novigra', 'GameController@newGame');
     post('/checkBrokenGames', 'GameController@checkBrokenGames');
-    post('/clearOnline', 'GameController@clearOnline');
-    post('/updateOnline', 'GameController@updateOnline');
     post('/userinfo', 'GameController@userinfo');
     post('/parseSteam', 'GameController@parseMarket');
 });
@@ -120,7 +121,6 @@ Route::group(['middleware' => 'auth'], function () {
 Route::group(['middleware' => 'auth'], function () {
     post('/add_message', ['as' => 'chat', 'uses' => 'ChatController@add_message']);
     post('/delmsg', ['as' => 'chat', 'uses' => 'ChatController@delmsg']);
-    post('/ban_user', ['as' => 'chat', 'uses' => 'ChatController@ban_user']);
     post('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
 });
 

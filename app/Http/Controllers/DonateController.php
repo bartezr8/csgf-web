@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Shop;
 use Carbon\Carbon;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -35,7 +36,7 @@ class DonateController extends Controller
             'user_id' => $user->id, 
             'date' => Carbon::now()->toDateTimeString(),
             'price' => $sum,
-            'type' => 3
+            'type' => Shop::D_MONEY
         ]);
         \DB::table('freekassa_payments')->where('id', $request->get('MERCHANT_ORDER_ID'))->update(['status' => 1, 'intid' => $request->get('intid'), 'P_EMAIL' => $request->get('P_EMAIL'), 'P_PHONE' => $request->get('P_PHONE'), 'dateComplete' => Carbon::now()->toDateTimeString(), 'AMOUNT' => $sum]);
         return "YES";

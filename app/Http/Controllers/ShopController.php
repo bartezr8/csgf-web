@@ -155,7 +155,7 @@ class ShopController extends Controller {
             'user_id' => $this->user->id, 
             'date' => Carbon::now()->toDateTimeString(),
             'price' => $itemsum,
-            'type' => 1
+            'type' => Shop::D_BUY
         ]);
         self::checkSales();
         return response()->json(['success' => true, 'msg' => 'Предмет будет отправлен в течение 1 мин.']);
@@ -361,7 +361,7 @@ class ShopController extends Controller {
             'user_id' => $this->user->id, 
             'date' => Carbon::now()->toDateTimeString(),
             'price' => $itemsum,
-            'type' => 1
+            'type' => Shop::D_BUY
         ]);
         return response()->json(['success' => true, 'msg' => 'Предметы будут отправлены в течение 1 мин.']);
     }
@@ -418,7 +418,7 @@ class ShopController extends Controller {
                             $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                             DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
                             $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);
-                            DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => 0 ]);
+                            DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => Shop::D_DEPOSIT ]);
                         } else {
                             $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                         }

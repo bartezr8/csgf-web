@@ -29,20 +29,22 @@
                                     <td>{{ $deposit->id }}</td>
                                     <td>{{ $deposit->user_id }}</td>
                                     <td>{{ $deposit->date }}</td>
-                                    <td>@if($deposit->type == 0)
+                                    <td>@if($deposit->type == \App\Shop::D_DEPOSIT)
                                             Депозит скинами
-                                        @elseif($deposit->type == 3)
-                                            Пополнение баланса
-                                        @else
+                                        @elseif($deposit->type == \App\Shop::D_BUY)
                                             Вывод средств
+                                        @elseif($deposit->type == \App\Shop::D_RETURN)
+                                            Возврат средств
+                                        @else
+                                            Пополнение баланса
                                         @endif
                                     </td>
-                                    <td>@if($deposit->type == 1)- @endif{{ $deposit->price }} руб</td>
+                                    <td>@if($deposit->type == \App\Shop::D_BUY)- @endif{{ $deposit->price }} руб</td>
                                     <td>Принят</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6">Вы не делали обменов с магазином</td>
+                                    <td colspan="6">У вас небыло операций с изменением баланса</td>
                                 </tr>
                             @endforelse
                             </tbody>

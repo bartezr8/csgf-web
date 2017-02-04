@@ -17,6 +17,11 @@ class Shop extends Model
     const ITEM_STATUS_SEND = 3;
     const ITEM_STATUS_ERROR_TO_SEND = 4;
     const ITEM_STATUS_RETURNED = 5;
+    
+    const D_DEPOSIT = 0;
+    const D_BUY = 1;
+    const D_RETURN = 2;
+    const D_MONEY = 3;
 
     public function buyer()
     {
