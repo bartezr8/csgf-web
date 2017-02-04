@@ -13,7 +13,6 @@ function n2w(n, w) {
     }
 }
 function buySale(id){
-    $.notify("Отправляем обмен", {className: "success"});
     $.ajax({
         url: '/shop/buySale',
         type: 'POST',
