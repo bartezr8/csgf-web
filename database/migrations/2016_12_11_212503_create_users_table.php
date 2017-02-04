@@ -38,7 +38,7 @@ class CreateUsersTable extends Migration {
             $table->timestamps();
         });
         
-        $bonus = User::create(['username' => 'БОНУС БОТ', 'avatar' => 'http://csgf.ru/assets/img/bonus.png', 'steamid' => 'STEAM_0:1:00000000', 'steamid64' => '76561197960265728']);
+        $bonus = User::create(['username' => 'БОНУС БОТ', 'avatar' => 'https://csgf.ru/assets/img/bonus.png', 'steamid' => 'STEAM_0:1:00000000', 'steamid64' => '76561197960265728']);
     }
 
 
