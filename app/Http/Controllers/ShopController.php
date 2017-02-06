@@ -125,7 +125,7 @@ class ShopController extends Controller {
     }
     public function buySale(Request $request){
         $id = $request->get('id');
-        $sales = Shop::where('status', Shop::ITEM_STATUS_SOLD)->where('buyer_id', $this->user->id)->where('sale', 1)->where('buy_at', '>=', Carbon::today())->count();
+        $sales = Shop::where('buyer_id', $this->user->id)->where('sale', 1)->where('buy_at', '>=', Carbon::today())->count();
         if($sales >= config('mod_shop.sales_per_day_user')) return response()->json(['success' => false, 'msg' => 'Максимум ' . config('mod_shop.sales_per_day_user') . ' предмета по скидке в сутки']);
         
         $item = Shop::find($id);
