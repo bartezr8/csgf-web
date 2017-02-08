@@ -109,10 +109,10 @@ class ShopController extends Controller {
         return response()->json(['list' => $returnValue, 'off' => false]);
     }
     public static function checkSales(){
-        $tsales = Shop::where('sale', 1)->where('buy_at', '>=', Carbon::today())->get();
-        if((count($tsales) - 8) < config('mod_shop.sales_per_day')){
-            $sales = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->get();
-            $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('status', 0)->where('sale', 0)->where('price', '>', 10)->where('price', '<', 200)->orderBy('id', 'asc')->limit(8-count($sales))->get();
+        $tsales = Shop::where('sale', 1)->where('buy_at', '>=', Carbon::today())->count();
+        if(($tsales - 8) < config('mod_shop.sales_per_day')){
+            $sales = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('sale', 1)->count()();
+            $items = Shop::where('status', Shop::ITEM_STATUS_FOR_SALE)->where('status', 0)->where('sale', 0)->where('price', '>', 10)->where('price', '<', 200)->orderBy('id', 'asc')->limit(8-$sales)->get();
             foreach($items as $item){
                 $item->sale = 1;
                 $item->save();

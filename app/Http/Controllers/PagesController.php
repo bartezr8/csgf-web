@@ -341,14 +341,9 @@ class PagesController extends Controller
         exit();
     }
     public function prices(Request $request){
-        if(!$request->get('key')) return 'Wrong key';
-        $result = DB::table('parser_keys')->where('key', $request->get('key'))->first();
-        if(is_null($result)) return 'Wrong key';
         $sql = DB::select('select b.market_hash_name , format( if( ifnull( s.price, ( b.price + f.price ) / 2 ) < 20, s.price, ( s.price + b.price + f.price ) / 3 ), 2) as price from items_backpack b join items_steam s on s.market_hash_name=b.market_hash_name join items_fast f on f.market_hash_name=b.market_hash_name;');
         $items = [];
-        foreach($sql as $data){
-            $items[$data->market_hash_name] = 0 + $data->price;
-        }
+        foreach($sql as $data) $items[$data->market_hash_name] = 0 + $data->price;
         echo json_encode($items);
         return;
     }

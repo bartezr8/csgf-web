@@ -42,15 +42,6 @@
             </div>
         </div>
         <br>
-        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Изменение Ключа Парсера</b></div>
-        <div class="support" >
-            <div style="width: 999px" class="nSend">
-                <input type="text" id="parse_site" cols="50" style="width: 400px" cols="50" placeholder="Домен сайта" value="" autocomplete="off">
-                <input type="text" id="parse_key" cols="50" style="width: 450px" cols="50" placeholder="Ключ" value="" autocomplete="off">
-                <input type="submit" onclick="postReq('/admin/addparser', {site:$('#parse_site').val(),key:$('#parse_key').val()})" style="width: 148px" value="Изменить">
-            </div>
-        </div>
-        <br>
         <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Управление магазином</b></div>
         <div class="support" >
             <div style="width: 333px" class="nSend">

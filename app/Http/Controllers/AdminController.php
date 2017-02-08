@@ -28,19 +28,6 @@ class AdminController extends Controller
         return response()->json(['success' => true]);
     }
     
-    public function addparser(Request $request) {
-        $site = \DB::table('parser_keys')->where('site', trim(mb_strtolower($request->get('site'))))->first();
-        if(is_null($site)){
-            \DB::table('parser_keys')->insert(['site' => trim(mb_strtolower($request->get('site'))), 'key' => trim($request->get('key'))]);
-        } else {
-            if ($request->get('key') == '-'){
-                \DB::table('parser_keys')->where('site', trim(mb_strtolower($request->get('site'))))->delete();
-            } else {
-                \DB::table('parser_keys')->where('site', trim(mb_strtolower($request->get('site'))))->update(['key' => trim($request->get('key'))]);
-            }
-        }
-        return response()->json(['success' => true]);
-    }
     public function cleartables(Request $request) {
         if(in_array($this->user->steamid64, config('access.private'))){
             \DB::table('coin')->truncate();
