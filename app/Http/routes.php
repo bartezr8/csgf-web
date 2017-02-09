@@ -20,7 +20,7 @@ get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
 
 get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
 
-get('/donate', 'DonateController@Donate');
+post('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
 get('/prices', 'PagesController@prices');
