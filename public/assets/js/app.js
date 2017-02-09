@@ -477,33 +477,31 @@ function addMsg(message){
 if(checkUrl('/double')){
     function plus1(){
         field_bet = 0;
-        if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(parseInt(field_bet) + 1);
+        if($('input#betAmount').val()) field_bet = $('input#betAmount').val();
+        $('input#betAmount').val(num(num(field_bet) + 1));
     }
     function plus10(){
         field_bet = 0;
-        if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(parseInt(field_bet) + 10);
+        if($('input#betAmount').val()) field_bet = $('input#betAmount').val();
+        $('input#betAmount').val(num(num(field_bet) + 10));
     }
     function plus100(){
         field_bet = 0;
-        if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(parseInt(field_bet) + 100);
+        if($('input#betAmount').val()) field_bet = $('input#betAmount').val();
+        $('input#betAmount').val(num(num(field_bet) + 100));
     }
-    function plus1000(){
-        field_bet = 0;
-        if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(parseInt(field_bet) + 1000);
+    function dmin(){
+        $('input#betAmount').val(0.01);
     }
     function dev2(){
         field_bet = 0;
-        if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(Math.floor(parseInt(field_bet)/2));
+        if($('input#betAmount').val()) field_bet = $('input#betAmount').val();
+        $('input#betAmount').val(num(num(field_bet)/2));
     }
     function x2(){
         field_bet = 0;
         if($('input#betAmount').val()) field_bet = $('input#betAmount').val()
-        $('input#betAmount').val(parseInt(field_bet)*2);
+        $('input#betAmount').val(num(num(field_bet)*2));
     }
     function max(){
         field_bet = 0;
@@ -529,18 +527,17 @@ if(checkUrl('/double')){
                         autoHide: "false",
                         className: "success"
                     });
-                    updateBalance();
+                    USER_BALANCE = num(num(USER_BALANCE) - num(money));
+                    $('.userBalance').text(USER_BALANCE);
                 }
                 else {
                     if (data.msg) $.notify(data.msg, {className: "error"});
-                    updateBalance();
                 }
             },
             error: function () {
                 $.notify("Произошла ошибка. Попробуйте еще раз", {
                     className: "error"
                 });
-                updateBalance();
             }
         });
         return false;
@@ -559,18 +556,17 @@ if(checkUrl('/double')){
                         autoHide: "false",
                         className: "success"
                     });
-                    updateBalance();
+                    USER_BALANCE = num(num(USER_BALANCE) - num(money));
+                    $('.userBalance').text(USER_BALANCE);
                 }
                 else {
                     if (data.msg) $.notify(data.msg, {className: "error"});
-                    updateBalance();
                 }
             },
             error: function () {
                 $.notify("Произошла ошибка. Попробуйте еще раз", {
                     className: "error"
                 });
-                updateBalance();
             }
         });
         return false;
@@ -589,18 +585,17 @@ if(checkUrl('/double')){
                         autoHide: "false",
                         className: "success"
                     });
-                    updateBalance();
+                    USER_BALANCE = num(num(USER_BALANCE) - num(money));
+                    $('.userBalance').text(USER_BALANCE);
                 }
                 else {
                     if (data.msg) $.notify(data.msg, {className: "error"});
-                    updateBalance();
                 }
             },
             error: function () {
                 $.notify("Произошла ошибка. Попробуйте еще раз", {
                     className: "error"
                 });
-                updateBalance();
             }
         });
         return false;
@@ -2302,30 +2297,30 @@ if(checkUrl('/double')) {
                     $('#double_txt').text('Выпало: ' + data.num);
                     if(data.win == 1) {
                         $('#mybetr').css('font-weight', 'bold');
-                        $('#mybetr').text('+' + ($('#mybetr').text()) * 2);
+                        $('#mybetr').text('+' + num(num($('#mybetr').text()) * 2));
                         $('#mybetg').text('-' + $('#mybetg').text());
                         $('#mybetb').text('-' + $('#mybetb').text());
                         $('#tbetr').css('font-weight', 'bold');
-                        $("#tbetcr").text('+' + ($('#tbetcr').text()) * 2),
-                            $('#tbetcg').text('-' + $('#tbetcg').text());
+                        $("#tbetcr").text('+' + num(num($('#tbetcr').text()) * 2));
+                        $('#tbetcg').text('-' + $('#tbetcg').text());
                         $('#tbetcb').text('-' + $('#tbetcb').text());
                     } else if(data.win == 2) {
                         $('#mybetg').css('font-weight', 'bold');
-                        $('#mybetg').text('+' + ($('#mybetg').text()) * 12);
+                        $('#mybetg').text('+' + num(num($('#mybetg').text()) * 12));
                         $('#mybetr').text('-' + $('#mybetr').text());
                         $('#mybetb').text('-' + $('#mybetb').text());
                         $('#tbetg').css('font-weight', 'bold');
-                        $("#tbetcg").text('+' + ($('#tbetcg').text()) * 12),
-                            $('#tbetcr').text('-' + $('#tbetcr').text());
+                        $("#tbetcg").text('+' + num(num($('#tbetcg').text()) * 12));
+                        $('#tbetcr').text('-' + $('#tbetcr').text());
                         $('#tbetcb').text('-' + $('#tbetcb').text());
                     } else if(data.win == 3) {
                         $('#mybetb').css('font-weight', 'bold');
-                        $('#mybetb').text('+' + ($('#mybetb').text()) * 2);
+                        $('#mybetb').text('+' + num(num($('#mybetb').text()) * 2));
                         $('#mybetg').text('-' + $('#mybetg').text());
                         $('#mybetr').text('-' + $('#mybetr').text());
                         $('#tbetb').css('font-weight', 'bold');
-                        $("#tbetcb").text('+' + ($('#tbetcb').text()) * 2),
-                            $('#tbetcr').text('-' + $('#tbetcr').text());
+                        $("#tbetcb").text('+' + num(num($('#tbetcb').text()) * 2));
+                        $('#tbetcr').text('-' + $('#tbetcr').text());
                         $('#tbetcg').text('-' + $('#tbetcg').text());
                     }
                     $('#lastGames').html(data.ehtml);
@@ -2349,24 +2344,24 @@ if(checkUrl('/double')) {
             $('#tbetcr').text(data.tbp);
             $('#ddr').prepend(data.html);
             if(data.userid == USER_ID) {
-                $('#mybetr').text(parseInt($('#mybetr').text()) + data.price);
+                $('#mybetr').text(num(num($('#mybetr').text()) + num(data.price)));
             }
         }
         if(data.type == 2) {
             $('#tbetcg').text(data.tbp);
             $('#ddg').prepend(data.html);
             if(data.userid == USER_ID) {
-                $('#mybetg').text(parseInt($('#mybetg').text()) + data.price);
+                $('#mybetg').text(num(num($('#mybetg').text()) + num(data.price)));
             }
         }
         if(data.type == 3) {
             $('#tbetcb').text(data.tbp);
             $('#ddb').prepend(data.html);
             if(data.userid == USER_ID) {
-                $('#mybetb').text(parseInt($('#mybetb').text()) + data.price);
+                $('#mybetb').text(num(num($('#mybetb').text()) + num(data.price)));
             }
         }
-        $('#roundBank').text(parseInt($('#tbetcr').text()) + parseInt($('#tbetcg').text()) + parseInt($('#tbetcb').text()));
+        $('#roundBank').text(num(num($('#tbetcr').text()) + num($('#tbetcg').text()) + num($('#tbetcb').text())));
         var audio = new Audio('/assets/sounds/betLow.mp3');
         if(sound_status) audio.play();
     });

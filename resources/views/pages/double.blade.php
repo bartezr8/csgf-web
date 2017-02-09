@@ -42,34 +42,13 @@
 
             </div>
         </div>
-        @if(!Auth::guest())
-            @if($u->is_admin==1)
-            <div class="participate-block" style="margin-top: 2px; margin-bottom: 1px;">
-                <div style="float: left">
-                    <span class="icon-arrow-right" style="float: left;margin: 0px 20px 0px 0px;"></span>
-                    <form action="/dwinner" method="GET" style="float: left;padding: 10px 20px 11px;">
-                        <div class="form">
-                            <input textarea placeholder="Выберите число" name="id" cols="50" maxlength="2" placeholder="" value="" autocomplete="off" style="height: 37px;" class="coupon_post">
-                            <input type="submit" id="submit" class="btn-add-balance2 " style="height: 37px;width: 200px;font-size: 13px;font-weight: 400;letter-spacing: 0.2px;text-transform: uppercase;" value="Подкрутить">
-                        </div>
-                    </form>
-                    <div class="card-or-item" style="padding: 0px 25px 0px 25px;">{{ $am }}</div>
-                    <a id="depositButton" href="/admin" target="_blank" class=" add-deposit ">Админпанель</a>
-
-                    <span class="icon-arrow-left" style="margin: 0px 0px 0px 25px;"></span>
-                </div>
-            </div>
-            @else
-                </br>
-            @endif
-        @endif
+        </br>
         <div id="DoubleCarouselConatiner" class="DoubleCarouselConatiner">
             <div class="DoubleCarouselLine" style="left: 10px;"></div>
             <div class="DoubleCarouselLine" style="left: 525px;"></div>
             <div class="DoubleCarouselLine" style="left: 1020px;"></div>
             <div id="DoubleCarousel" class="DoubleCarousel"></div>
         </div>
-        @if(!Auth::guest())
         <div class="form-group" style="margin-top: 20px;">
             <form>
                 <center id="dbuttons" style="float: left;">
@@ -90,10 +69,10 @@
                     </div>
                     <input class="amount" style="float: left; margin-left:4px" placeholder="Ваша ставка..." id="betAmount">
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="clearr();">Clear</button>
+                    <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="dmin();">Min</button>
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="plus1();">+1</button>           
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="plus10();">+10</button>
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="plus100();">+100</button>
-                    <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="plus1000();">+1000</button>
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="dev2();">1/2</button>
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="x2();">x2</button>
                     <button type="button" style="float: left; margin-left:4px" class="balance-button" onclick="max();">Max</button>
@@ -101,13 +80,12 @@
             </form>
             <form style="margin-top: 10px; margin-bottom: 15px;">
                 <center>
-                    <button type="button" style="width: 33%" class="red-button" onclick="red();">     1 - 7 <span style="font-size: 8px;">x2</span></button>
-                    <button type="button" style="width: 33%" class="green-button" onclick="green();">     0 <span style="font-size: 8px;">x12</span></button>           
-                    <button type="button" style="width: 33%" class="black-button" onclick="black();">     8 - 14 <span style="font-size: 8px;">x2</span></button>
+                    <button type="button" style="width: 33%" class="red-button" @if(!Auth::guest()) onclick="red();" @endif>     1 - 7 <span style="font-size: 8px;">x2</span></button>
+                    <button type="button" style="width: 33%" class="green-button" @if(!Auth::guest()) onclick="green();" @endif>     0 <span style="font-size: 8px;">x12</span></button>           
+                    <button type="button" style="width: 33%" class="black-button" @if(!Auth::guest()) onclick="black();" @endif>     8 - 14 <span style="font-size: 8px;">x2</span></button>
                 </center>
             </form>
         </div>
-        @endif
         <div id="double-deposits">
             <div class="dep_block" id="dep_red">
                 <center>

@@ -6,7 +6,6 @@ get('/', ['as' => 'index', 'uses' => 'GameController@currentGame']);
 get('/login', ['as' => 'login', 'uses' => 'SteamController@login']);
 get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
 
-
 get('/support', ['as' => 'support', 'uses' => 'PagesController@support']);
 get('/fairplay/{game}', ['as' => 'fairplay', 'uses' => 'PagesController@fairplay']);
 get('/fairplay', ['as' => 'fairplay_no', 'uses' => 'PagesController@fairplay_no']);
@@ -163,9 +162,9 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 /* DOUBLE ROUTES */
+get('/double', ['as' => 'double_index', 'uses' => 'DoubleController@double_index']);
 Route::group(['middleware' => 'auth'], function () {
     get('/dwinner', ['as' => 'dwinner', 'uses' => 'DoubleController@dwinner', 'middleware' => 'access:admin']);
-    get('/double', ['as' => 'double_index', 'uses' => 'DoubleController@double_index']);    
     post('/double/bet', ['as' => 'bet', 'uses' => 'DoubleController@newBet']);    
 });
 
@@ -176,14 +175,14 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/double/getCurrentGame', 'DoubleController@getCurrentGame');
 });
 /* COINFLIP ROUTES */
+get('/coin', ['as' => 'coinflip', 'uses' => 'CoinFlipController@index']);
 Route::group(['middleware' => 'auth'], function () {
-    get('/coin', ['as' => 'coinflip', 'uses' => 'CoinFlipController@index']);
     post('/coin/bet', ['as' => 'coinflip_bet', 'uses' => 'CoinFlipController@bet']);
     post('/coin/nbet', ['as' => 'coinflip_new_bet', 'uses' => 'CoinFlipController@nbet']);
 });
 /* DICE ROUTES */
+get('/dice', ['as' => 'dicegame', 'uses' => 'DiceController@index']);
 Route::group(['middleware' => 'auth'], function () {
-    get('/dice', ['as' => 'dicegame', 'uses' => 'DiceController@index']);
     post('/dice/bet', ['as' => 'dicebet', 'uses' => 'DiceController@bet']);
 });
 /* VK ROUTES */
