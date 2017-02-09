@@ -164,7 +164,7 @@ Route::group(['middleware' => 'auth'], function () {
 /* DOUBLE ROUTES */
 get('/double', ['as' => 'double_index', 'uses' => 'DoubleController@double_index']);
 Route::group(['middleware' => 'auth'], function () {
-    get('/dwinner', ['as' => 'dwinner', 'uses' => 'DoubleController@dwinner', 'middleware' => 'access:admin']);
+    post('/admin/double', ['as' => 'dwinner', 'uses' => 'DoubleController@dwinner', 'middleware' => 'access:admin']);
     post('/double/bet', ['as' => 'bet', 'uses' => 'DoubleController@newBet']);    
 });
 

@@ -216,7 +216,7 @@ class DoubleController extends Controller {
         } else {
             DB::table('double_admin')->insertGetId(['num' => $request->get('id'), 'id' => $gameid]);    
         }    
-        return redirect('/double');
+        return response()->json(['success' => true]);
     }
 
 }

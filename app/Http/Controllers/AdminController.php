@@ -11,13 +11,33 @@ use App\Http\Controllers\Controller;
 use File;
 use Storage;
 use LRedis;
-
+use App\Shop;
 class AdminController extends Controller
 {
     const TITLE_UP = "ПY | ";
 
     public function admin() {
-        return view('pages.admin.index');
+        $data = [
+            'double' => [
+                'am' => \DB::table('double_games')->sum('am'),
+                'total' => \DB::table('double_games')->sum('price'),
+            ],
+            'coin' => \DB::table('coin')->sum('money'),
+            'dice' => [
+                'am' => \DB::table('dice')->sum('am'),
+                'total' => \DB::table('dice')->sum('money'),
+            ],
+            'classic' => [
+                'total_today' => \DB::table('games')->where('created_at', '>=', Carbon::today())->sum('price'),
+                'comission' => \DB::table('games')->where('created_at', '>=', Carbon::today())->sum('price') * (1 - config('mod_game.comission')/100),
+            ],
+            'shop' => [
+                'withdraw' => \DB::table('deposits')->where('type', Shop::D_BUY)->where('date', '>=', Carbon::today())->sum('price'),
+                'deposit' => \DB::table('deposits')->where('type', Shop::D_DEPOSIT)->where('date', '>=', Carbon::today())->sum('price'),
+                'pay' => \DB::table('deposits')->where('type', Shop::D_MONEY)->where('date', '>=', Carbon::today())->sum('price'),
+            ]
+        ];
+        return view('pages.admin.index', compact('data'));
     }    
     
     public function clearQueue(Request $request) {

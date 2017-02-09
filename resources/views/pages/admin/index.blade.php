@@ -58,13 +58,67 @@
                 <input type="submit" style="width: 148px" onclick="postReq('/shop/admin/updateDep', {id:$('#udid').val(),status:$('#udstatus').val()})" value="Обновить депозит">
             </div>
         </div>
+        <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Double</b></div>
+        <div class="support" >
+            <div style="width: 999px" class="nSend">
+                <input type="text" id="did" cols="50" style="width: 851px" cols="50" placeholder="Победное число" value="" autocomplete="off">
+                <input type="submit" onclick="postReq('/admin/double', {id:$('#did').val()})" style="width: 148px" value="Подкрутить">
+            </div>
+        </div>
         <br>
     @else
         <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> На данной странице для модераторов нет дотупных комманд.</b></div>
         <br>
     @endif
     <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Статистика</b></div>
-    
+    <div class="page-main-block" style="border-bottom: 1px solid #3D5260; padding-bottom: 20px;">
+        <br>
+        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+            <div class="page-mini-title">Double:</div>
+            <div class="page-block">
+                <ul>
+                    <li>Антиминус: {{ $data['double']['am'] }}</li>
+                    <li>За все время: {{ $data['double']['total'] }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+            <div class="page-mini-title">Coin:</div>
+            <div class="page-block">
+                <ul>
+                    <li>За все время: {{ $data['coin'] }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+            <div class="page-mini-title">Dice:</div>
+            <div class="page-block">
+                <ul>
+                    <li>Антиминус: {{ $data['dice']['am'] }}</li>
+                    <li>За все время: {{ $data['dice']['total'] }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+            <div class="page-mini-title">Рулетка:</div>
+            <div class="page-block">
+                <ul>
+                    <li>За сегодня: {{ $data['classic']['total_today'] }}</li>
+                    <li>Комиссия: {{ $data['classic']['comission'] }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+            <div class="page-mini-title">Магазин: (сегодня)</div>
+            <div class="page-block">
+                <ul>
+                    <li>Вывод: {{ $data['shop']['withdraw'] }}</li>
+                    <li>Депозит: {{ $data['shop']['deposit'] }}</li>
+                    <li>Пополнене: {{ $data['shop']['pay'] }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     
     <script>
         function postReq(url, data){
