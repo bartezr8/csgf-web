@@ -17,8 +17,8 @@ class CreateDoubleGamesTable extends Migration {
             $table->increments('id');
             $table->integer('num')->unsigned()->nullable();
             $table->integer('status')->unsigned();
-            $table->bigInteger('price');
-            $table->integer('am');
+            $table->float('price');
+            $table->float('am');
         });
     }
 

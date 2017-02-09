@@ -119,17 +119,19 @@
                     </div>
                 </center>
                 <ul class="dul" id="ddr">
-                    @foreach($tr as $bet)
+                    @foreach($data['bets'] as $bet)
+                        @if($bet->type == 1)
                         <li class="dl">
                             <div style="overflow: hidden;line-height:32px">
-                                <a href="/user/{{ $users[$bet->user_id]->steamid64 }}" target="_blank">
+                                <a href="/user/{{ $data['users'][$bet->user_id]->steamid64 }}" target="_blank">
                                     <div class="pull-left">
-                                        <img class="rounded" src="{{ $users[$bet->user_id]->avatar }}"> <span style="color: white;">{{ $users[$bet->user_id]->username }}</span>
+                                        <img class="rounded" src="{{ $data['users'][$bet->user_id]->avatar }}"> <span style="color: white;">{{ $data['users'][$bet->user_id]->username }}</span>
                                     </div>
                                     <div class="amount pull-right"><b style="color: white;">{{ $bet->price }}</b> </div>
                                 </a>
                             </div>
                         </li>
+                        @endif
                     @endforeach
                 </ul>
             </div>
@@ -143,17 +145,19 @@
                     </div>
                 </center>
                 <ul class="dul" id="ddg">
-                    @foreach($tg as $bet)
+                    @foreach($data['bets'] as $bet)
+                        @if($bet->type == 2)
                         <li class="dl">
                             <div style="overflow: hidden;line-height:32px">
-                                <a href="/user/{{ $users[$bet->user_id]->steamid64 }}" target="_blank">
+                                <a href="/user/{{ $data['users'][$bet->user_id]->steamid64 }}" target="_blank">
                                     <div class="pull-left">
-                                        <img class="rounded" src="{{ $users[$bet->user_id]->avatar }}"> <span style="color: white;">{{ $users[$bet->user_id]->username }}</span>
+                                        <img class="rounded" src="{{ $data['users'][$bet->user_id]->avatar }}"> <span style="color: white;">{{ $data['users'][$bet->user_id]->username }}</span>
                                     </div>
                                     <div class="amount pull-right"><b style="color: white;">{{ $bet->price }}</b> </div>
                                 </a>
                             </div>
                         </li>
+                        @endif
                     @endforeach
                 </ul>
             </div>
@@ -167,17 +171,19 @@
                     </div>
                 </center>
                 <ul class="dul" id="ddb">
-                    @foreach($tb as $bet)
+                    @foreach($data['bets'] as $bet)
+                        @if($bet->type == 3)
                         <li class="dl">
                             <div style="overflow: hidden;line-height:32px">
-                                <a href="/user/{{ $users[$bet->user_id]->steamid64 }}" target="_blank">
+                                <a href="/user/{{ $data['users'][$bet->user_id]->steamid64 }}" target="_blank">
                                     <div class="pull-left">
-                                        <img class="rounded" src="{{ $users[$bet->user_id]->avatar }}"> <span style="color: white;">{{ $users[$bet->user_id]->username }}</span>
+                                        <img class="rounded" src="{{ $data['users'][$bet->user_id]->avatar }}"> <span style="color: white;">{{ $data['users'][$bet->user_id]->username }}</span>
                                     </div>
                                     <div class="amount pull-right"><b style="color: white;">{{ $bet->price }}</b> </div>
                                 </a>
                             </div>
                         </li>
+                        @endif
                     @endforeach
                 </ul>
             </div>

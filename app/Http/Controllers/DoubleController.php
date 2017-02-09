@@ -13,25 +13,40 @@ use Storage;
 
 class DoubleController extends Controller {
     public function double_index(){
+        parent::setTitle('DOUBLE | ');
+        
+        
         $gameid = \DB::table('double_games')->max('id');
         if (is_null($gameid)){$this->newGame(); $gameid = \DB::table('double_games')->max('id');}
         $games = \DB::table('double_games')->orderBy('id')->where('id','>=', $gameid-11)->where('id','<', $gameid)->get();
-        foreach ($games as $i){ $i->type = $this->_getWinnerType($i->num); } $trp = 0;
-        $tr = \DB::table('double_bets')->where('type', 1)->where('game_id', $gameid)->get();
-        foreach ($tr as $i){ $trp += $i->price; } $tgp = 0;
-        $tg = \DB::table('double_bets')->where('type', 2)->where('game_id', $gameid)->get();
-        foreach ($tg as $i){ $tgp += $i->price; } $tbp = 0;
-        $tb = \DB::table('double_bets')->where('type', 3)->where('game_id', $gameid)->get();
-        foreach ($tb as $i){ $tbp += $i->price; } $mrp = 0;
-        $mr = \DB::table('double_bets')->where('type', 1)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-        foreach ($mr as $i){ $mrp += $i->price; } $mgp = 0;
-        $mg = \DB::table('double_bets')->where('type', 2)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-        foreach ($mg as $i){ $mgp += $i->price; } $mbp = 0;
-        $mb = \DB::table('double_bets')->where('type', 3)->where('user_id', $this->user->id)->where('game_id', $gameid)->get();
-        foreach ($mb as $i){ $mbp += $i->price; } $users = [];
-        $tu = \DB::table('double_bets')->where('game_id', $gameid)/*->groupBy('user_id')*/->get();
-        foreach ($tu as $i){ $user = User::where('id', $i->user_id)->first(); $users[$i->user_id] = $user; }
-        parent::setTitle('DOUBLE | ');
+        foreach ($games as $i){ $i->type = $this->_getWinnerType($i->num); }
+        $data = self::getGameInfo($gameid);
+        
+        $am = \DB::table('double_games')->sum('am');
+        
+        return view('pages.double', compact('gameid','games','data','am'));
+    }
+    private function getGameInfo($gameid){
+        $trp = 0;$tgp = 0;$tbp = 0;$mrp = 0;$mgp = 0;$mbp = 0;$users = [];
+        $bets = \DB::table('double_bets')->where('game_id', $gameid)->get();
+        foreach($bets as $bet){
+            switch ($bet->type) {
+                case 1:
+                    $trp += $bet->price;
+                    if($bet->user_id == $this->user->id) $mrp += $bet->price;
+                    break;
+                case 2:
+                    $tgp += $bet->price;
+                    if($bet->user_id == $this->user->id) $mgp += $bet->price;
+                    break;
+                case 3:
+                    $tbp += $bet->price;
+                    if($bet->user_id == $this->user->id) $mbp += $bet->price;
+                    break;
+            }
+            $user = User::where('id', $bet->user_id)->first(); 
+            $users[$bet->user_id] = $user;
+        }
         $data = [
             'tr'=>$trp,
             'tg'=>$tgp,
@@ -39,10 +54,11 @@ class DoubleController extends Controller {
             'mr'=>$mrp,
             'mg'=>$mgp,
             'mb'=>$mbp,
-            'rb'=>$trp+$tgp+$tbp
+            'rb'=>$trp+$tgp+$tbp,
+            'bets'=>$bets,
+            'users'=>$users
         ];
-        $am = \DB::table('double_games')->sum('am');
-        return view('pages.double', compact('tr','tg','tb','gameid','games','users','data','am'));
+        return $data;
     }
     public function getCurrentGame()
     {

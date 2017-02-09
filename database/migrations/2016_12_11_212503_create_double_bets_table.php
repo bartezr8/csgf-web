@@ -18,7 +18,7 @@ class CreateDoubleBetsTable extends Migration {
             $table->integer('user_id')->unsigned()->nullable();
             $table->integer('type')->unsigned()->nullable();
             $table->integer('game_id')->unsigned()->nullable();
-            $table->integer('price');
+            $table->float('price');
         });
     }
 
