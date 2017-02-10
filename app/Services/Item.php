@@ -66,6 +66,7 @@ class Item {
         if(!isset($item->price)) return false;
         if(!$item->price) return false;
         if($item->price <= 0) return false;
+        if((strrpos(strtolower(' '.$item->market_hash_name.' '), "souvenir") !== false)||(strrpos(strtolower(' '.$item->market_hash_name.' '), "Сувенир")) !== false) return false;
         return true;
     }
 }
