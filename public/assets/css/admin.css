@@ -1,4 +1,11 @@
-﻿.support {
+﻿.adm {
+    height: 170px;
+    display: inline-block;
+    padding: 15px;
+    vertical-align: middle;
+    width: 19%;
+}
+.support {
 
 	/*padding: 10px 97px;*/
 	margin-top: 15px;
@@ -12,10 +19,9 @@
     top: 0;
     background: #323a3d;
     z-index: 9999;
-	  margin: 0 -9999rem;
-  /* add back section padding value */
-  padding: .25rem 9999rem;
-      font-size: 24px;
+    margin: 0 -9999rem;
+    padding: .25rem 9999rem;
+    font-size: 24px;
 	text-align: center;
 	vertical-align: middle;
 	line-height: 90px;

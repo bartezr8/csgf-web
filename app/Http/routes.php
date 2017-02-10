@@ -1,11 +1,8 @@
 <?php
 
 get('/', ['as' => 'index', 'uses' => 'GameController@currentGame']);
-
-
 get('/login', ['as' => 'login', 'uses' => 'SteamController@login']);
 get('/auth', ['as' => 'auth', 'uses' => 'SteamController@auth']);
-
 get('/support', ['as' => 'support', 'uses' => 'PagesController@support']);
 get('/fairplay/{game}', ['as' => 'fairplay', 'uses' => 'PagesController@fairplay']);
 get('/fairplay', ['as' => 'fairplay_no', 'uses' => 'PagesController@fairplay_no']);
@@ -14,17 +11,15 @@ get('/game/{game}', ['as' => 'game', 'uses' => 'PagesController@game']);
 get('/user/{user}', ['as' => 'user', 'uses' => 'PagesController@user']);
 get('/history', ['as' => 'history', 'uses' => 'PagesController@history']);
 get('/escrow', ['as' => 'escrow', 'uses' => 'PagesController@escrow']);
-post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
 get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
-
 get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
-
-post('/donate', 'DonateController@Donate');
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
 get('/prices', 'PagesController@prices');
 
+post('/donate', 'DonateController@Donate');
 post('/getSlimit', ['as' => 'get.slimit', 'uses' => 'GameController@getSlimit']);
+post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
 
 Route::group(['middleware' => 'auth'], function () {
     get('/logout', ['as' => 'logout', 'uses' => 'SteamController@logout']);
@@ -42,7 +37,6 @@ Route::group(['middleware' => 'auth'], function () {
     post('/getBalance', ['as' => 'get.balance', 'uses' => 'GameController@getBalance']);
     post('/my_comission', 'GameController@curcomm');
     post('/updatepassword', ['as' => 'updatepassword', 'uses' => 'SteamController@updatepassword']);
-    
     get('/dec', ['as' => 'dec', 'uses' => 'GameController@dec', 'middleware' => 'access:admin']);
 });
 
@@ -105,7 +99,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/shop/itemlist', 'ShopController@itemlist');
     post('/shop/checkShop', 'ShopController@checkShop');
     post('/shop/setItemStatus', 'ShopController@setItemStatus');
-    
     post('/shop/deposit/toCheck', 'ShopController@depositToCheck');
     post('/shop/deposit/check', 'ShopController@depositCheck');
 });
@@ -180,6 +173,9 @@ Route::group(['middleware' => 'auth'], function () {
     post('/coin/bet', ['as' => 'coinflip_bet', 'uses' => 'CoinFlipController@bet']);
     post('/coin/nbet', ['as' => 'coinflip_new_bet', 'uses' => 'CoinFlipController@nbet']);
 });
+/* BICH GAME */
+/*get('/bich', ['as' => 'bich', 'uses' => 'BGameController@currentGame']);
+Route::group(['middleware' => 'auth'], function () {});*/
 /* DICE ROUTES */
 get('/dice', ['as' => 'dicegame', 'uses' => 'DiceController@index']);
 Route::group(['middleware' => 'auth'], function () {

@@ -58,6 +58,7 @@
                 <input type="submit" style="width: 148px" onclick="postReq('/shop/admin/updateDep', {id:$('#udid').val(),status:$('#udstatus').val()})" value="Обновить депозит">
             </div>
         </div>
+        <br>
         <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Double</b></div>
         <div class="support" >
             <div style="width: 999px" class="nSend">
@@ -73,7 +74,7 @@
     <div class="info_title"><b style="float: left; margin-left: 10px;"><i class="info_icon"></i> Статистика</b></div>
     <div class="page-main-block" style="border-bottom: 1px solid #3D5260; padding-bottom: 20px;">
         <br>
-        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+        <div class="adm" >
             <div class="page-mini-title">Double:</div>
             <div class="page-block">
                 <ul>
@@ -82,7 +83,7 @@
                 </ul>
             </div>
         </div>
-        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+        <div class="adm" >
             <div class="page-mini-title">Coin:</div>
             <div class="page-block">
                 <ul>
@@ -90,7 +91,7 @@
                 </ul>
             </div>
         </div>
-        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+        <div class="adm" >
             <div class="page-mini-title">Dice:</div>
             <div class="page-block">
                 <ul>
@@ -99,7 +100,7 @@
                 </ul>
             </div>
         </div>
-        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+        <div class="adm" >
             <div class="page-mini-title">Рулетка:</div>
             <div class="page-block">
                 <ul>
@@ -108,7 +109,7 @@
                 </ul>
             </div>
         </div>
-        <div class="adm" style="display: inline-block;padding: 15px;vertical-align: middle;">
+        <div class="adm" >
             <div class="page-mini-title">Магазин: (сегодня)</div>
             <div class="page-block">
                 <ul>

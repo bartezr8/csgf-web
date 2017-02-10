@@ -47,60 +47,17 @@ class BGameController extends Controller
     {
         $this->redis->disconnect();
     }
-    public static function curl($url) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); 
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
-    }
     public function deposit()
     {
         return redirect(config('mod_bich.trade'));
-    }
-    private function _parseItems(&$items, &$missing = false, &$price = false)
-    {
-        $itemInfo = [];
-        $total_price = 0;
-        $i = 0;
-
-        foreach ($items as $item) {
-            $value = $item['classid'];
-            if ($item['appid'] != config('mod_game.appid')) {
-                $missing = true;
-                break;
-            }
-            if (!isset($itemInfo[$value])){
-                $info = new Item($item);
-                $itemInfo[$value] = $info;
-            }
-            if(Item::pchk($itemInfo[$value])){
-                $total_price = $total_price + $itemInfo[$value]->price;
-                $items[$i]['price'] = $itemInfo[$value]->price;
-                unset($items[$i]['appid']);
-                $i++;
-            } else {
-                $price = true;
-                break;
-            }
-        }
-        return $total_price;
     }
     public function currentGame()
     {
         $game = BGame::orderBy('id', 'desc')->first();
         if (is_null($game)) $game = $this->newGame();
         $bets = $game->bets()->with(['user', 'game'])->get()->sortByDesc('created_at');
-        if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
-        $chances = json_encode($this->_getChancesOfGame($game));
-        if (!is_null($this->user)) $user_items = $this->user->itemsCountByGame($game);
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.index', compact('game', 'bets', 'user_chance', 'chances', 'user_items'));
+        return view('pages.bgame', compact('game', 'bets'));
     }
     public function getLastGame()
     {
@@ -116,21 +73,18 @@ class BGameController extends Controller
     public function getWinners()
     {
         $us = $this->game->users();
-
         $lastBet = BBet::where('game_id', $this->game->id)->orderBy('to', 'desc')->first();
-
         $winTicket = ceil($this->game->rand_number * $lastBet->to);
-
         $winningBet = BBet::where('game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
+        
         $this->game->winner_id      = $winningBet->user_id;
-        $this->game->price             = $lastBet->to/100;
+        $this->game->price          = $lastBet->to/100;
         $this->game->status         = BGame::STATUS_FINISHED;
         $this->game->finished_at    = Carbon::now();
         $chance = $this->_getUserChanceOfGame($this->game->winner, $this->game);
         $items = $this->sendItems($this->game->bets, $this->game->winner, $chance);
         $this->game->won_items      = json_encode($items['itemsInfo']);
         $this->game->comission      = json_encode($items['commissionItems']);
-        if($items['countbb'] == 0) $this->game->status_prize = 1;
         $this->game->chance         = $chance;
         $this->game->save();
         $users = [];
@@ -236,7 +190,7 @@ class BGameController extends Controller
             'items' => $returnItems,
             'game' => $gameid
         ];
-        $this->redis->rpush('send.offers.list', json_encode($value));
+        $this->redis->rpush(self::SEND_OFFERS_LIST, json_encode($value));
         if ( $game->status != 3) {
             DB::table('games')->where('id', '=', $gameid)->update(['status' => 3]);
         }
@@ -244,8 +198,8 @@ class BGameController extends Controller
     public function newGame(){
         $rand_number = "0.";
         $firstrand = mt_rand(20, 80);
-        if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
-        if (mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
+        if (mt_rand(0, config('mod_bich.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
+        if (mt_rand(0, (config('mod_bich.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
         if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
         $rand_number .= $firstrand;
         for($i = 1; $i < 15; $i++) $rand_number .= mt_rand(0, 9);
@@ -254,18 +208,8 @@ class BGameController extends Controller
         $game->hash = md5($game->rand_number);
         $game->rand_number = 0;
         $this->redis->set('current.game', $game->id);
-        $this->redis->set('bich.last.ticket.' . $this->game->id, 0);
+        $this->redis->set('bich.last.ticket.' . $game->id, 0);
         return $game;
-    }
-    public static function object_to_array($data){
-        if (is_array($data) || is_object($data)) {
-            $result = array();
-            foreach ($data as $key => $value) {
-                $result[$key] = self::object_to_array($value);
-            }
-            return $result;
-        }
-        return $data;
     }
     public function checkOffer(Request $request){
         $data = $this->redis->lrange('bich.check.list', 0, -1);
@@ -420,7 +364,7 @@ class BGameController extends Controller
     {
         CCentrifugo::publish('notification#'.$userid , ['message' => $message]);
     }
-    }private function _responseSuccess(){
+    private function _responseSuccess(){
         return response()->json(['success' => true]);
     }
 }

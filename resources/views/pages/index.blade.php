@@ -201,7 +201,7 @@
                             <button type="submit" style="width: 90px;padding: 0px 9px;" class="btn-add-balance @if(empty($u->accessToken)) no-link @endif" onclick="tbet()" >Поставить</button>
                         </div>
                         <span class="icon-arrow-right" style="margin: 0px 0px 0px 0px;"></span>
-                        <a id="depositButton" href="{{ route('deposit') }}" target="_blank" class=" add-deposit @if(empty($u->accessToken)) no-link @endif">Внести предметы</a>
+                        <a id="depositButton" onclick="openWindow('{{ route('deposit') }}');" target="_blank" class=" add-deposit @if(empty($u->accessToken)) no-link @endif">Внести предметы</a>
                         <span class="icon-arrow-left" style="margin: 0px 0px 0px 15px;"></span>
                     </div>
                 </div>

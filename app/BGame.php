@@ -76,6 +76,6 @@ class BGame extends Model
     }
     public function bets()
     {
-        return $this->hasMany('App\Bet');
+        return $this->hasMany('App\BBet');
     }
 }

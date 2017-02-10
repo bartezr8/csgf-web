@@ -90,6 +90,10 @@
     <script src="{{ $asset('assets/js/snowstorm.js') }}"></script>
     <script src="{{ $asset('assets/js/app.js') }}"></script>
     <script>
+        function openWindow(url){
+            var newWin = window.open(url, "CSGF.RU", "width=420,height=800,resizable=no,scrollbars=no,status=yes");
+            newWin.focus()
+        }
         @if(!Auth::guest())
             function updateBalance() {
                 $.post('/getBalance', function (data) {
