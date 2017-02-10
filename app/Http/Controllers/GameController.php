@@ -247,8 +247,7 @@ class GameController extends Controller
             $winTicket = ceil($this->game->rand_number * $lastBet->to);
         } else {
             $winTicket = $winTicket->winnerticket;
-            $this->game->rand_number = ($winTicket - 1)/$lastBet->to;
-            
+            $this->game->rand_number = ($winTicket- 0.1)/$lastBet->to;
             if(strlen($this->game->rand_number)<19) {
                 $diff = 19 - strlen($this->game->rand_number);
                 $min = "1";
@@ -283,7 +282,8 @@ class GameController extends Controller
             'tickets' => $lastBet->to,
             'users' => $us,
             'userchanses' => $users,
-            'chance' => $chance
+            'chance' => $chance,
+            'winb_id' => $winningBet->id
         ];
         return response()->json($returnValue);
     }

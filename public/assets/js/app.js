@@ -2037,6 +2037,10 @@ if(checkUrl('/')) {
                 if(sound_status) audio.play();
                 $('#usersCarousel').css("transform", "translate(" + scrollmar + "px)").css('transition-duration', (1000 * (data.time - 10)) + 'ms');
                 setTimeout(function(){
+                    $('#bet_' + data.winb_id).css({'margin-top': '#2px'});
+                    $('#bet_' + data.winb_id).css({'border': '1px solid #399b4e'});
+                    $('#bet_' + data.winb_id).css({'font-weight': 'bold'});
+                    $('#bet_' + data.winb_id).addClass("pulse");
                     $('#li_winner_112').css({'height': '70px'});
                     $('#div_winner_112').slideDown();
                     $('#li_winner_112').addClass("rotate");
