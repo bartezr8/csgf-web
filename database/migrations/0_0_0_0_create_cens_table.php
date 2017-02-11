@@ -12,7 +12,7 @@ class CreateCensTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('cens', function(Blueprint $table)
+		if (!Schema::hasTable('cens'))Schema::create('cens', function(Blueprint $table)
 		{
 			$table->text('text', 65535);
 			$table->text('repl', 65535);

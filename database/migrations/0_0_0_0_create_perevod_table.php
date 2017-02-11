@@ -12,7 +12,7 @@ class CreatePerevodTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('perevod', function(Blueprint $table)
+		if (!Schema::hasTable('perevod'))Schema::create('perevod', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->float('money_amount');

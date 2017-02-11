@@ -12,7 +12,7 @@ class CreateItemsFastTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('items_fast', function(Blueprint $table)
+		if (!Schema::hasTable('items_fast'))Schema::create('items_fast', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('market_hash_name');

@@ -12,7 +12,7 @@ class CreateBGamesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('b_games', function(Blueprint $table)
+		if (!Schema::hasTable('b_games'))Schema::create('b_games', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('winner_id')->unsigned()->nullable()->index('games_winner_id_foreign');

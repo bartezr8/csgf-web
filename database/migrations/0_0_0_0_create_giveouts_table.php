@@ -12,7 +12,7 @@ class CreateGiveoutsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('giveouts', function(Blueprint $table)
+		if (!Schema::hasTable('giveouts'))Schema::create('giveouts', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->float('price');

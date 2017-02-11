@@ -12,7 +12,7 @@ class CreateItemsSteamTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('items_steam', function(Blueprint $table)
+		if (!Schema::hasTable('items_steam'))Schema::create('items_steam', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('market_hash_name');

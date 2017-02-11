@@ -12,7 +12,7 @@ class CreateItemsBackpackTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('items_backpack', function(Blueprint $table)
+		if (!Schema::hasTable('items_backpack'))Schema::create('items_backpack', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('market_hash_name');

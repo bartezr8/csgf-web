@@ -12,7 +12,7 @@ class CreateDiceTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('dice', function(Blueprint $table)
+		if (!Schema::hasTable('dice'))Schema::create('dice', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->float('money');

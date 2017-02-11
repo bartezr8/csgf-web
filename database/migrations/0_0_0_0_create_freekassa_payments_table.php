@@ -12,7 +12,7 @@ class CreateFreekassaPaymentsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('freekassa_payments', function(Blueprint $table)
+		if (!Schema::hasTable('freekassa_payments'))Schema::create('freekassa_payments', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->string('intid');

@@ -12,7 +12,7 @@ class CreateRefersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('refers', function(Blueprint $table)
+		if (!Schema::hasTable('refers'))Schema::create('refers', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->string('usera');

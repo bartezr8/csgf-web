@@ -12,7 +12,7 @@ class CreateBBetsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('b_bets', function(Blueprint $table)
+		if (!Schema::hasTable('b_bets'))Schema::create('b_bets', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('user_id')->unsigned()->nullable()->index('bets_user_id_foreign');

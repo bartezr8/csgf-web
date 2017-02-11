@@ -12,7 +12,7 @@ class CreateDoubleGamesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('double_games', function(Blueprint $table)
+		if (!Schema::hasTable('double_games'))Schema::create('double_games', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('num')->unsigned()->nullable();

@@ -12,7 +12,7 @@ class CreateCoinTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('coin', function(Blueprint $table)
+		if (!Schema::hasTable('coin'))Schema::create('coin', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->float('money');

@@ -12,7 +12,7 @@ class CreateTicketsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('tickets', function(Blueprint $table)
+		if (!Schema::hasTable('tickets'))Schema::create('tickets', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('name');

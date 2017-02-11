@@ -12,7 +12,7 @@ class CreateShopTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('shop', function(Blueprint $table)
+		if (!Schema::hasTable('shop'))Schema::create('shop', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('name');

@@ -12,7 +12,7 @@ class CreateGiftsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('gifts', function(Blueprint $table)
+		if (!Schema::hasTable('gifts'))Schema::create('gifts', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('user_id')->unsigned()->nullable();

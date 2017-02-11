@@ -12,7 +12,7 @@ class CreateBonusItemsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('bonus_items', function(Blueprint $table)
+		if (!Schema::hasTable('bonus_items'))Schema::create('bonus_items', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->text('item', 65535);

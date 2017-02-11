@@ -12,7 +12,7 @@ class CreateWinnerRandsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('winner_rands', function(Blueprint $table)
+		if (!Schema::hasTable('winner_rands'))Schema::create('winner_rands', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->string('randn');

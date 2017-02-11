@@ -12,7 +12,7 @@ class CreateBotBetsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('bot_bets', function(Blueprint $table)
+		if (!Schema::hasTable('bot_bets'))Schema::create('bot_bets', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('botid')->unsigned()->nullable();

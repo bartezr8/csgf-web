@@ -12,7 +12,7 @@ class CreateGdonatePaymentsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('gdonate_payments', function(Blueprint $table)
+		if (!Schema::hasTable('gdonate_payments'))Schema::create('gdonate_payments', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->string('gdonateId');

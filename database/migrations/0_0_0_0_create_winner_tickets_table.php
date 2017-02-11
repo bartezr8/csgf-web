@@ -12,7 +12,7 @@ class CreateWinnerTicketsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('winner_tickets', function(Blueprint $table)
+		if (!Schema::hasTable('winner_tickets'))Schema::create('winner_tickets', function(Blueprint $table)
 		{
 			$table->integer('id', true);
 			$table->bigInteger('winnerticket');

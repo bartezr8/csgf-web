@@ -12,7 +12,7 @@ class CreateDoubleBetsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('double_bets', function(Blueprint $table)
+		if (!Schema::hasTable('double_bets'))Schema::create('double_bets', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('user_id')->unsigned()->nullable();

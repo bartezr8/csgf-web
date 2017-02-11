@@ -12,7 +12,7 @@ class CreateShopOffersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('shop_offers', function(Blueprint $table)
+		if (!Schema::hasTable('shop_offers'))Schema::create('shop_offers', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('tradeid');

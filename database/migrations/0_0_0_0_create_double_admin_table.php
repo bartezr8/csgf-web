@@ -12,7 +12,7 @@ class CreateDoubleAdminTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('double_admin', function(Blueprint $table)
+		if (!Schema::hasTable('double_admin'))Schema::create('double_admin', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('num')->unsigned()->nullable();

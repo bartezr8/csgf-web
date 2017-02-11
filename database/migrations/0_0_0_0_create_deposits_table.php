@@ -12,7 +12,7 @@ class CreateDepositsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('deposits', function(Blueprint $table)
+		if (!Schema::hasTable('deposits'))Schema::create('deposits', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->float('price');
