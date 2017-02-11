@@ -340,11 +340,4 @@ class PagesController extends Controller
         header('Location: '.$url);
         exit();
     }
-    public function prices(Request $request){
-        $sql = DB::select('select b.market_hash_name , format( if( ifnull( s.price, ( b.price + f.price ) / 2 ) < 20, s.price, ( s.price + b.price + f.price ) / 3 ), 2) as price from items_backpack b join items_steam s on s.market_hash_name=b.market_hash_name join items_fast f on f.market_hash_name=b.market_hash_name;');
-        $items = [];
-        foreach($sql as $data) $items[$data->market_hash_name] = 0 + $data->price;
-        echo json_encode($items);
-        return;
-    }
 }

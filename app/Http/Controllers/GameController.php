@@ -11,7 +11,6 @@ use App\Services\Item;
 use App\Ticket;
 use App\User;
 use App\Shop;
-use App\Item_Steam;
 use Carbon\Carbon;
 use LRedis;
 use Illuminate\Http\Request;
@@ -180,30 +179,6 @@ class GameController extends Controller
         $rand_number .= mt_rand(1, 9);
         return $rand_number;
     }
-    public function parseMarket() {
-        $data = $this->redis->lrange('parserSteam', 0, -1);
-        foreach ($data as $strpage) {
-            $json = json_decode($strpage);
-            $this->redis->lrem('parserSteam', 0, $strpage);
-            $sdata = $json->results_html;
-            preg_match_all('%<a class="market_listing_row_link" href="(.+?)" id="resultlink.*?<span class="normal_price">(.+?) .+?</span>.+?<span class="sale_price">(.+?) .+?</span>.*?class="market_listing_item_name" style=".*?">(.+?)</span>%s', $sdata, $result, PREG_PATTERN_ORDER);
-            for ($i = 0; $i < count($result[0]); $i++) {
-                $steam_price_sale = trim($result[3][$i]);
-                $steam_market_name = $result[4][$i];
-                $steam_price_sale = str_replace(",", ".", $steam_price_sale);
-                if($steam_price_sale == 0) $steam_price_sale = $this->getStemItemPrice($steam_market_name);
-                $nitem = [ 'market_hash_name' => $steam_market_name, 'price' => $steam_price_sale ];
-                $dbitem = Item_Steam::where('market_hash_name', $nitem['market_hash_name'])->first();
-                if(is_null($dbitem)){
-                    Item_Steam::create($nitem);
-                } else {
-                    $dbitem->price = $nitem['price'];
-                    $dbitem->save();
-                }
-            }
-            sleep(1);
-        }
-    } 
     private function getStemItemPrice($mhn){
         $lowest = 0; $median=0;
         $tprice = self::curl('http://steamcommunity.com/market/priceoverview/?currency=5&country=ru&appid='.config('mod_game.appid').'&market_hash_name=' . urlencode($mhn) . '&format=json');

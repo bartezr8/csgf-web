@@ -15,8 +15,6 @@ get('/chat', ['as' => 'chat', 'uses' => 'ChatController@chat']);
 get('/rand_url', ['as' => 'rand_url', 'uses' => 'PagesController@rand_url']);
 get('/success', 'PagesController@success');
 get('/fail', 'PagesController@fail');
-get('/prices', 'PagesController@prices');
-
 post('/donate', 'DonateController@Donate');
 post('/getSlimit', ['as' => 'get.slimit', 'uses' => 'GameController@getSlimit']);
 post('ajax', ['as' => 'ajax', 'uses' => 'AjaxController@parseAction']);
@@ -37,7 +35,6 @@ Route::group(['middleware' => 'auth'], function () {
     post('/getBalance', ['as' => 'get.balance', 'uses' => 'GameController@getBalance']);
     post('/my_comission', 'GameController@curcomm');
     post('/updatepassword', ['as' => 'updatepassword', 'uses' => 'SteamController@updatepassword']);
-    get('/dec', ['as' => 'dec', 'uses' => 'GameController@dec', 'middleware' => 'access:admin']);
 });
 
 /* GIVEOUT ROUTES */
@@ -76,7 +73,6 @@ Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
     post('/novigra', 'GameController@newGame');
     post('/checkBrokenGames', 'GameController@checkBrokenGames');
     post('/userinfo', 'GameController@userinfo');
-    post('/parseSteam', 'GameController@parseMarket');
 });
 
 /* SHOP ROUTES */
@@ -185,4 +181,9 @@ Route::group(['middleware' => 'auth'], function () {
 Route::group(['prefix' => 'api'], function () {
     post('/vk', 'VKController@index');
     post('/vk/sendText', 'VKController@sendTextVK');
+});
+/* PARSER ROUTES */
+get('/prices', 'ParserController@prices');
+Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
+    post('/parseSteam', 'ParserController@parseSteam');
 });

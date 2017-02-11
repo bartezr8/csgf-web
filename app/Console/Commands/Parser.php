@@ -39,7 +39,7 @@ class Parser extends Command
                 $dataBP = self::curl(self::BP_URL . config('mod_game.backpack_key') . '&compress=1&appid=' . config('mod_game.appid'));
                 $response = json_decode($dataBP);
                 if(isset($response->response->items)){
-                    $BPitems = $response->response->items; $count = 0; $num = 0;
+                    $BPitems = $response->response->items; $count = 0; $num = 0; $last = 0;
                     foreach($BPitems as $key => $item){
                         $nitem = [ 'market_hash_name' => $key, 'price' => $item->value / 100 * $usd ];
                         $dbitem = Item_BP::where('market_hash_name', $nitem['market_hash_name'])->first();
@@ -51,7 +51,12 @@ class Parser extends Command
                                 $dbitem->save();
                             }
                         }
-                        $num++; $this->log(round((($num*100)/count((array)$BPitems)),2).'%');
+                        $num++; 
+                        $percent = round((($num*100)/count((array)$BPitems)),2);
+                        if($percent>($last+0.99)){
+                            $this->log($percent.'%');
+                            $last = $percent;
+                        }
                     }
                     $this->log('Цены с BackPack загружены');
                 }
@@ -61,7 +66,7 @@ class Parser extends Command
                 $jsonItemsFast = self::curl(self::FAST_URL);
                 $FastItems = json_decode($jsonItemsFast, true);
                 if(isset($FastItems['AWP | Dragon Lore (Factory New)'])){
-                    $count = 0; $num = 0;
+                    $count = 0; $num = 0; $last = 0;
                     foreach($FastItems as $key => $item){
                         $nitem = [ 'market_hash_name' => $key, 'price' => $item * $usd ];
                         $dbitem = Item_Fast::where('market_hash_name', $nitem['market_hash_name'])->first();
@@ -73,7 +78,12 @@ class Parser extends Command
                                 $dbitem->save();
                             }
                         }
-                        $num++; $this->log(round((($num*100)/count((array)$FastItems)),2).'%');
+                        $num++; 
+                        $percent = round((($num*100)/count((array)$BPitems)),2);
+                        if($percent>($last+0.99)){
+                            $this->log($percent.'%');
+                            $last = $percent;
+                        }
                     }
                     $this->log('Цены с CSGOFAST загружены');
                 }
