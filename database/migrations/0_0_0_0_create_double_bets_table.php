@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateItemsBackpackTable extends Migration {
+class CreateDoubleBetsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,13 @@ class CreateItemsBackpackTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('items_backpack', function(Blueprint $table)
+		Schema::create('double_bets', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('market_hash_name')->index('market_hash_name');
+			$table->integer('user_id')->unsigned()->nullable();
+			$table->integer('type')->unsigned()->nullable();
+			$table->integer('game_id')->unsigned()->nullable();
 			$table->float('price');
-			$table->timestamps();
 		});
 	}
 
@@ -29,7 +30,7 @@ class CreateItemsBackpackTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('items_backpack');
+		Schema::drop('double_bets');
 	}
 
 }

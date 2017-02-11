@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateItemsFastTable extends Migration {
+class CreateItemsSteamTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,10 +12,10 @@ class CreateItemsFastTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('items_fast', function(Blueprint $table)
+		Schema::create('items_steam', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('market_hash_name')->index('market_hash_name');
+			$table->string('market_hash_name');
 			$table->float('price');
 			$table->timestamps();
 		});
@@ -29,7 +29,7 @@ class CreateItemsFastTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('items_fast');
+		Schema::drop('items_steam');
 	}
 
 }

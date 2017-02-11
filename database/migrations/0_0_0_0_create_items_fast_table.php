@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateDoubleGamesTable extends Migration {
+class CreateItemsFastTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,13 +12,12 @@ class CreateDoubleGamesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('double_games', function(Blueprint $table)
+		Schema::create('items_fast', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('num')->unsigned()->nullable();
-			$table->integer('status')->unsigned();
-			$table->bigInteger('price');
-			$table->integer('am');
+			$table->string('market_hash_name');
+			$table->float('price');
+			$table->timestamps();
 		});
 	}
 
@@ -30,7 +29,7 @@ class CreateDoubleGamesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('double_games');
+		Schema::drop('items_fast');
 	}
 
 }
