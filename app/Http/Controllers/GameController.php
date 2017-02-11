@@ -167,7 +167,19 @@ class GameController extends Controller
         $echo = 'Разыграно сегодня: ' . $sumtd . ' | Комиссия: ~' . ($sumtd * 0.09) . '<br> Разыграно за неделю: ' . $sumfw . ' | Комиссия: ~' . ($sumfw * 0.09) . '<br> Разыграно всего: ' . $sumfr . ' | Комиссия: ~' . ($sumfr * 0.09);
         return $echo;
     }
-    
+    private function genRand(){
+        $rand_number = "0.";
+        $firstrand = mt_rand(20, 80);
+        if(mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
+        if(mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
+        if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
+        $rand_number .= $firstrand;
+        for($i = 1; $i < 15; $i++) {
+            $rand_number .= mt_rand(0, 9);
+        }
+        $rand_number .= mt_rand(1, 9);
+        return $rand_number;
+    }
     public function parseMarket() {
         $data = $this->redis->lrange('parserSteam', 0, -1);
         foreach ($data as $strpage) {
@@ -476,6 +488,8 @@ class GameController extends Controller
         return response()->json(['success' => true, 'count' => $count]);
     }
     private function fixBotBets($gameid){
+        $game = Game::find($gameid);
+        if(is_null($game)) return 0;
         $bot_bets_e = Bot_bet::where('game_id', $gameid)->where('status', 2)->where('enum', '<', 5)->get();
         $game = Game::find($gameid);
         if(count($bot_bets_e)){
@@ -511,38 +525,34 @@ class GameController extends Controller
         return count($bot_bets_e);
     }
 
-    public function newGame(){        
-        $rand = DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
-        if(is_null($rand)) {
-            $rand_number = "0.";
-            $firstrand = mt_rand(20, 80);
-            if (mt_rand(0, config('mod_game.game_low_chanse')) == 0) $firstrand = mt_rand(3, 96);
-            if (mt_rand(0, (config('mod_game.game_low_chanse') * 2)) == 0) $firstrand = mt_rand(0, 9) . mt_rand(0, 9);
-            if(strlen($firstrand) < 2) $firstrand = "0" . $firstrand;
-            $rand_number .= $firstrand;
-            for($i = 1; $i < 15; $i++) {
-                $rand_number .= mt_rand(0, 9);
-            }
-            $rand_number .= mt_rand(1, 9);
-        } else {
-            $rand = $rand->randn;
-            if(strlen($rand)<19) {
-                $diff = 19 - strlen($rand);
-                $min = "1";
-                $max = "9";
-                for($i = 1; $i < $diff; $i++) {
-                    $min .= "0";
-                    $max .= "9";
+    public function newGame(){
+        if(!is_null($this->game)){
+            $rand = DB::table('winner_rands')->where('game_id', $this->game->id + 1)->first();
+            if(is_null($rand)) {
+                $rand_number = self::genRand();
+            } else {
+                $rand = $rand->randn;
+                if(strlen($rand)<19) {
+                    $diff = 19 - strlen($rand);
+                    $min = "1";
+                    $max = "9";
+                    for($i = 1; $i < $diff; $i++) {
+                        $min .= "0";
+                        $max .= "9";
+                    }
+                    $rand = $rand . "" . rand($min, $max);
                 }
-                $rand = $rand . "" . rand($min, $max);
+                $rand_number = $rand;
+                DB::table('winner_rands')->truncate();
             }
-            $rand_number = $rand;
-            DB::table('winner_rands')->truncate();
+        } else {
+            $rand_number = self::genRand();
         }
         
         $game = Game::create(['rand_number' => $rand_number]);
         $game->hash = md5($game->rand_number);
         $game->rand_number = 0;
+        $this->game = $game;
         $this->redis->set('current.game', $game->id);
         $this->redis->set('last.ticket.' . $this->game->id, 0);
         \Cache::put('new_game', 'new_game', 1);

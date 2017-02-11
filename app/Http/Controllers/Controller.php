@@ -25,6 +25,9 @@ abstract class Controller extends BaseController
             $this->user = Auth::user();
         } else {
             $this->user = User::find(1);
+            if(is_null($this->user)){
+                $this->user = User::create(['username' => 'БОНУС БОТ', 'avatar' => 'https://csgf.ru/assets/img/bonus.png', 'steamid' => 'STEAM_0:1:00000000', 'steamid64' => '76561197960265728']);
+            }
         }
         $time = time();
         
