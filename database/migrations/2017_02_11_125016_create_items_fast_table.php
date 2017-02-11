@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateCensTable extends Migration {
+class CreateItemsFastTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,10 +12,12 @@ class CreateCensTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('cens', function(Blueprint $table)
+		Schema::create('items_fast', function(Blueprint $table)
 		{
-			$table->text('text', 65535);
-			$table->text('repl', 65535);
+			$table->increments('id');
+			$table->string('market_hash_name')->index('market_hash_name');
+			$table->float('price');
+			$table->timestamps();
 		});
 	}
 
@@ -27,7 +29,7 @@ class CreateCensTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('cens');
+		Schema::drop('items_fast');
 	}
 
 }

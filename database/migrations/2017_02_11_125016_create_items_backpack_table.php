@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateParserKeysTable extends Migration {
+class CreateItemsBackpackTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,11 +12,12 @@ class CreateParserKeysTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('parser_keys', function(Blueprint $table)
+		Schema::create('items_backpack', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->text('key', 65535);
-			$table->text('site', 65535);
+			$table->string('market_hash_name')->index('market_hash_name');
+			$table->float('price');
+			$table->timestamps();
 		});
 	}
 
@@ -28,7 +29,7 @@ class CreateParserKeysTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('parser_keys');
+		Schema::drop('items_backpack');
 	}
 
 }
