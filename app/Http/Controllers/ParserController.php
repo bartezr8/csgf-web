@@ -21,6 +21,7 @@ class ParserController extends Controller
         switch($request->get('type')){
             case 'default': $result = self::getDef(); break;
             case 'steam': $result = self::getSteam(); break;
+            case 'median': $result = self::getMedian(); break;
             case 'no_steam': $result = self::getNSteam(); break;
             case 'no_souvenir': $result = self::getNSouvenir(); break;
             default: $result = self::getDef(); break;
@@ -74,6 +75,51 @@ class ParserController extends Controller
         }
         return $items;
     }
+    private function getMedian(){
+        $items = [];
+        if(!Cache::has('parser.median')) {
+            $item_BP = Item_BP::all(); 
+            foreach($item_BP as $item){
+                if(!isset($items[$item->market_hash_name])){
+                    $items[$item->market_hash_name] = [$item->price];
+                } else {
+                    $items[$item->market_hash_name][] = $item->price;
+                }
+            }
+            unset($item_BP);
+            $item_F = Item_Fast::all();  
+            foreach($item_F as $item){
+                if(!isset($items[$item->market_hash_name])){
+                    $items[$item->market_hash_name] = [$item->price];
+                } else {
+                    $items[$item->market_hash_name][] = $item->price;
+                }
+            }
+            unset($item_F);
+            $item_S = Item_Steam::all();
+            foreach($item_S as $item){
+                if(!isset($items[$item->market_hash_name])){
+                    $items[$item->market_hash_name] = [$item->price];
+                } else {
+                    $items[$item->market_hash_name][] = $item->price;
+                }
+            }
+            unset($item_S);
+            foreach($items as $key => $item){
+                $sp = 0; $c = 0;
+                foreach($item as $price){
+                    $sp += $price;
+                    $c++;
+                }
+                $items[$key] = round($sp/$c,2);
+            }
+            $items = json_encode($items);
+            Cache::put('parser.median', $items, 1 * 60 * 60);
+        } else {
+            $items = Cache::get('parser.median');
+        }
+        return $items;
+    }
     private function getNSouvenir(){
         $items = [];
         if(!Cache::has('parser.no_souvenir')) {
@@ -115,7 +161,7 @@ class ParserController extends Controller
                     $sp += $price;
                     $c++;
                 }
-                $items[$key] = $sp/$c;
+                $items[$key] = round($sp/$c,2);;
             }
             $items = json_encode($items);
             Cache::put('parser.no_souvenir', $items, 1 * 60 * 60);
@@ -149,7 +195,7 @@ class ParserController extends Controller
                     $sp += $price;
                     $c++;
                 }
-                $items[$key] = $sp/$c;
+                $items[$key] = round($sp/$c,2);;
             }
             $items = json_encode($items);
             Cache::put('parser.no_steam', $items, 1 * 60 * 60);
