@@ -31,8 +31,6 @@ class ParserController extends Controller
         $items = [];
         if(!Cache::has('parser.default')) {
             $item_BP = Item_BP::all(); 
-            $item_F = Item_Fast::all();  
-            $item_S = Item_Steam::all();
             foreach($item_BP as $item){
                 if(!isset($items[$item->market_hash_name])){
                     $items[$item->market_hash_name] = [$item->price];
@@ -40,6 +38,8 @@ class ParserController extends Controller
                     $items[$item->market_hash_name][] = $item->price;
                 }
             }
+            unset($item_BP);
+            $item_F = Item_Fast::all();  
             foreach($item_F as $item){
                 if(!isset($items[$item->market_hash_name])){
                     $items[$item->market_hash_name] = [$item->price];
@@ -47,6 +47,8 @@ class ParserController extends Controller
                     $items[$item->market_hash_name][] = $item->price;
                 }
             }
+            unset($item_F);
+            $item_S = Item_Steam::all();
             foreach($item_S as $item){
                 if($item->price < 20){
                     $items[$item->market_hash_name] = [$item->price];
@@ -56,13 +58,14 @@ class ParserController extends Controller
                     $items[$item->market_hash_name][] = $item->price;
                 }
             }
+            unset($item_S);
             foreach($items as $key => $item){
                 $sp = 0; $c = 0;
                 foreach($item as $price){
                     $sp += $price;
                     $c++;
                 }
-                $items[$key] = $sp/$c;
+                $items[$key] = round($sp/$c,2);
             }
             $items = json_encode($items);
             Cache::put('parser.default', $items, 1 * 60 * 60);
