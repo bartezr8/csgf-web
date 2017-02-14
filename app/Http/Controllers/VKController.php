@@ -97,6 +97,7 @@ class VKController extends Controller {
         ); 
         $get_params = http_build_query($request_params); 
         $response = json_decode(GameController::curl('https://api.vk.com/method/messages.send?'. $get_params));
+        if(!isset($response->response)) $response = (object)['response'=>''];
         return $response->response; 
     }
     private function check_cmd($user_id, $body, $mes_id){
@@ -192,13 +193,12 @@ class VKController extends Controller {
     private function getDialogs($i,$j){
         $request_params = array(
             'count' => $i,
-            'start_message_id' => 50*$j,
+            'offset' => 100*$j,
             'preview_length' => 1,
-            'unread' => 1,
+            'unread' => 0,
             'access_token' => config('mod_vk.access_token'),
             'v'=>'5.62'
         );
-        
         $get_params = http_build_query($request_params); 
         $response = GameController::curl('https://api.vk.com/method/messages.getDialogs?'. $get_params);
         return $response;
@@ -209,7 +209,6 @@ class VKController extends Controller {
             'access_token' => config('mod_vk.access_token'),
             'v'=>'5.62'
         );
-        
         $get_params = http_build_query($request_params); 
         $response = GameController::curl('https://api.vk.com/method/messages.getDialogs?'. $get_params);
         $response = json_decode($response, true);
@@ -219,19 +218,28 @@ class VKController extends Controller {
     public function sendTextVK(Request $request){
         $text = $request->get('text');
         $count = self::getCDialogs();
-        Log::error($count);
-        /*for ($i = 0; $i<ceil($count/50);$i++){
-            $dialogs = self::getDialogs(50,$i);
+        for ($i = 0; $i<ceil($count/100);$i++){            
+            $dialogs = self::getDialogs(100,$i);
             $dialogs = json_decode($dialogs, true);
             $dialogs = $dialogs['response']['items'];
             foreach( $dialogs as $dialog){
-                if(isset($dialog['uid'])){
-                    self::send_msg($text, $dialog['uid']);
-                    usleep(10000);
+                if(isset($dialog['message']['user_id'])){
+                    $this->redis->rpush('vk.to_send.list', json_encode(['id' => $dialog['message']['user_id'], 'mes' => $text]));
                 }
             }
+            usleep(100000);
+        }
+        return response()->json(['success' => true]);
+    }
+    public function checkSending(){
+        $data = $this->redis->lrange('vk.to_send.list', 0, -1); $i = 0;
+        foreach ($data as $json) {
+            $this->redis->lrem('vk.to_send.list', 0, $json);
+            $info = json_decode($json, true);
+            self::send_msg($info['mes'], $info['id']);
+            $i++; if($i>3) break;
             usleep(1000000);
-        }*/
-        return redirect('/admin');
+        }
+        return response()->json(['success' => true]);
     }
 }

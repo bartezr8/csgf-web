@@ -182,6 +182,9 @@ Route::group(['prefix' => 'api'], function () {
     post('/vk', 'VKController@index');
     post('/vk/sendText', 'VKController@sendTextVK');
 });
+Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
+    post('/vk/checkSending', 'VKController@checkSending');
+});
 /* PARSER ROUTES */
 get('/prices', 'ParserController@prices');
 Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
