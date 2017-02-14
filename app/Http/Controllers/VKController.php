@@ -118,7 +118,7 @@ class VKController extends Controller {
                     self::send_msg('/help<br>/list<br>/form<br>/send<br>/a<br>/logout', $user_id);
                     return;
                 case '/a':
-                    if(in_array($this->user->steamid64, config('mod_vk.admins'))){
+                    if(in_array($user_id, config('mod_vk.admins'))){
                         if(!isset($data[1])||!isset($data[2])){
                             self::send_msg('/a USER_ID TEXT', $user_id);
                         } else {
