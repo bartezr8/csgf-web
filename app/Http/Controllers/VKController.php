@@ -115,7 +115,20 @@ class VKController extends Controller {
                     self::send_msg('Вы вышли из аккаунта', $user_id);
                     return;
                 case '/list':
-                    self::send_msg('/help<br>/list<br>/form<br>/send', $user_id);
+                    self::send_msg('/help<br>/list<br>/form<br>/send<br>/a<br>/logout', $user_id);
+                    return;
+                case '/a':
+                    if(in_array($this->user->steamid64, config('mod_vk.admins'))){
+                        if(!isset($data[1])||!isset($data[2])){
+                            self::send_msg('/a USER_ID TEXT', $user_id);
+                        } else {
+                            self::send_msg($data[2], $data[1]);
+                            usleep(1000000);
+                            self::send_msg('Сообщение отправлено.', $user_id);
+                        }
+                    } else {
+                        self::send_msg('Упс. Вы не админ.', $user_id);
+                    }
                     return;
                 case '/form':
                     self::send_msg('Вы открыли форму запроса в поддержку. Максимально полно опишите свою проблему, прикрепите скрины и все необходимые материалы в одно сообщение.<br>После пропишите /send для отправки формы.', $user_id);
@@ -126,6 +139,12 @@ class VKController extends Controller {
                         switch ($data[1]){
                             case 'list':
                                 self::send_msg('Показывает список команд', $user_id);
+                                return;
+                            case 'logout':
+                                self::send_msg('Выход из аккаунта', $user_id);
+                                return;
+                            case 'a':
+                                self::send_msg('Ответить на запрос пользователя [админ]', $user_id);
                                 return;
                             case 'form':
                                 self::send_msg('Формирует обращение в поддерджку', $user_id);
