@@ -115,14 +115,15 @@ class VKController extends Controller {
                     self::send_msg('Вы вышли из аккаунта', $user_id);
                     return;
                 case '/list':
-                    self::send_msg('/help<br>/list<br>/form<br>/send<br>/a<br>/logout', $user_id);
+                    self::send_msg('/help<br>/list<br>/form<br>/send<br>/m<br>/logout', $user_id);
                     return;
-                case '/a':
+                case '/m':
                     if(in_array($user_id, config('mod_vk.admins'))){
                         if(!isset($data[1])||!isset($data[2])){
-                            self::send_msg('/a USER_ID TEXT', $user_id);
+                            self::send_msg('/m USER_ID TEXT', $user_id);
                         } else {
-                            self::send_msg($data[2], $data[1]);
+                            $text = str_replace("/m " . $data[1] . " ", "", $body);
+                            self::send_msg($text, $data[1]);
                             usleep(1000000);
                             self::send_msg('Сообщение отправлено.', $user_id);
                         }
@@ -143,7 +144,7 @@ class VKController extends Controller {
                             case 'logout':
                                 self::send_msg('Выход из аккаунта', $user_id);
                                 return;
-                            case 'a':
+                            case 'm':
                                 self::send_msg('Ответить на запрос пользователя [админ]', $user_id);
                                 return;
                             case 'form':
