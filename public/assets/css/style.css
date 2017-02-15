@@ -6535,3 +6535,15 @@ div#lw-avatar img {
 .dbutton.purple:hover {
     background: rgba(199, 36, 208, 0.40);
 }
+.gp_t {
+    color: #f6e444;
+    font-weight: bold;
+}
+.gp_s {
+    margin: 6px;
+    display: inline-block;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: url(/assets/img/coins-sprite.png) -4px -40px;
+}

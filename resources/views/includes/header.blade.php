@@ -82,17 +82,17 @@
     <div class="msg-wrap">
         <a href="/">
             <div class="black-txt-info " style="width: 24%;float: left;margin: 5px 0px 5px;height:30px;">
-                <img src="/assets/img/stav.png" style="margin-right: 5px" alt=""><b>Рулетка | </b><span id="classic_p">{{ $prices['classic'] }}</span>
+                <img src="/assets/img/stav.png" style="margin-right: 5px" alt=""><b>Рулетка | </b><span class="gp_t" id="classic_p">{{ $prices['classic'] }}</span><div class="gp_s"></div>
             </div>
         </a>
         <a href="/double">
             <div class="black-txt-info " style="width: 25%;float: left;margin: 5px 0px 5px;height:30px;">
-                <img src="/assets/img/tp.png" style="margin-right: 5px" alt=""><b>Дабл | </b><span id="double_p">{{ $prices['double'] }}</span>
+                <img src="/assets/img/tp.png" style="margin-right: 5px" alt=""><b>Дабл | </b><span class="gp_t" id="double_p">{{ $prices['double'] }}</span><div class="gp_s"></div>
             </div>
         </a>
         <a href="/coin">
             <div class="black-txt-info " style="width: 25%;float: left;margin: 5px 0px 5px;height:30px;">
-                <img src="/assets/img/coin.png" style="margin-right: 5px" alt=""><b>Монетка | </b><span id="coin_p">{{ $prices['coin'] }}</span>
+                <img src="/assets/img/coin.png" style="margin-right: 5px" alt=""><b>Монетка | </b><span class="gp_t" id="coin_p">{{ $prices['coin'] }}</span><div class="gp_s"></div>
             </div>
         </a>
         <a href="/dice">
