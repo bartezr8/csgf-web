@@ -55,6 +55,8 @@ class CoinFlipController extends Controller {
         ];
         User::slchange($this->user->id, $game->money / 100 * config('mod_game.slimit'));
         CCentrifugo::publish('coin_scroll' , $returnValue);
+        $gsum = DB::table('coin')->where('status', 0)->sum('money') ?? 0;
+        CCentrifugo::publish('update_p' , ['type' => 'coin', 'price' => $gsum]);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
     }
     public function nbet(Request $request){
@@ -76,6 +78,8 @@ class CoinFlipController extends Controller {
         ];
         User::slchange($this->user->id, $sum / 100 * config('mod_game.slimit'));
         CCentrifugo::publish('coin_new' , $returnValue);
+        $gsum = DB::table('coin')->where('status', 0)->sum('money');
+        CCentrifugo::publish('update_p' , ['type' => 'coin', 'price' => $gsum]);
         return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
     }
 }

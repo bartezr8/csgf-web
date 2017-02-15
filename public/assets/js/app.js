@@ -1857,6 +1857,24 @@ centrifuge.on('connect', function(context) {});
 centrifuge.subscribe("test", function(message) {
     console.log(message);
 });
+centrifuge.subscribe("update_p", function(message) {
+    var data = message.data;
+    switch (data.type) {
+        case 'classic':
+            $('#classic_p').text(data.price);
+            break;
+        case 'double':
+            $('#double_p').text(data.price);
+            break;
+        case 'coin':
+            $('#coin_p').text(data.price);
+            break;
+        case 'dice':
+            $('#dice_p').text(data.price);
+            break;
+        default: break;
+    }
+});
 centrifuge.subscribe("update", function(message) {
     updateData(message);
 });

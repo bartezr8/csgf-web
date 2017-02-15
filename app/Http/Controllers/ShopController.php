@@ -410,7 +410,8 @@ class ShopController extends Controller {
                         $items = $tradeCheck['items'];
                         $returnValue = [];
                         $total_price = round($this->_parseItems($items),2);
-                        if($total_price > 0){
+                        $diff = abs($trade->price - $total_price);
+                        if(($total_price > 0) && ($trade->price/10 > $diff)){
                             foreach($items as $item) {
                                 $info = new Item($item);
                                 if(Item::pchk($info)){

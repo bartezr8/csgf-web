@@ -67,6 +67,7 @@ class DoubleController extends Controller {
     public function newGame(){
         $gameid = DB::table('double_games')->insertGetId(['status' => 0]);
         $game = DB::table('double_games')->where('id', $gameid)->first();
+        CCentrifugo::publish('update_p' , ['type' => 'double', 'price' => 0]);       
         return response()->json($game);
     }
     public function newBet(Request $request){
@@ -81,7 +82,7 @@ class DoubleController extends Controller {
         $betid = DB::table('double_bets')->insertGetId(['user_id' => $this->user->id, 'game_id' => $gameid, 'price' => $amount, 'type' => $type]);
         $bet = DB::table('double_bets')->where('id', $betid)->first();
         $price = $amount + $thisgame->price;
-        DB::table('double_games')->where('id', $gameid)->update(['price' => $price]);    
+        DB::table('double_games')->where('id', $gameid)->update(['price' => $price]); 
         $color = $this->_getTypeText($type);
         $realcolor = $this->_getTypeColor($type);
         $user = $this->user;
@@ -99,6 +100,7 @@ class DoubleController extends Controller {
         User::slchange($this->user->id, $amount / 100 * config('mod_game.slimit'));
         $this->redis->publish('nbdouble', json_encode($returnValue));
         CCentrifugo::publish('nbdouble' , $returnValue);
+        CCentrifugo::publish('update_p' , ['type' => 'double', 'price' => $price]);       
         return response()->json(['success' => true, 'msg' => 'Действие выполнено']);
     }
 

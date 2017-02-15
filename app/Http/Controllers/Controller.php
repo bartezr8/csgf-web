@@ -36,8 +36,19 @@ abstract class Controller extends BaseController
         $this->redis = LRedis::connection();
         $this->redis->publish('new_user', $this->user->steamid64);
         
+        $classic =  \DB::table('games')->orderBy('id', 'desc')->first()->price;
+        $double =   \DB::table('double_games')->orderBy('id', 'desc')->where('status', 1)->first()->price ?? 0;
+        $coin =     \DB::table('coin')->where('status', 0)->sum('money') ?? 0;
+        
+        $prices = [
+            'classic' => $classic,
+            'double' => $double,
+            'coin' => $coin,
+        ];
+        
         view()->share('ctoken', $token);
         view()->share('ctime', $time);
+        view()->share('prices', $prices);
         view()->share('u', $this->user);
         view()->share('steam_status', $this->getSteamStatus());
     }

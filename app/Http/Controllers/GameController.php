@@ -530,6 +530,7 @@ class GameController extends Controller
         $this->game = $game;
         $this->redis->set('current.game', $game->id);
         $this->redis->set('last.ticket.' . $this->game->id, 0);
+        CCentrifugo::publish('update_p' , ['type' => 'classic', 'price' => 0]);
         \Cache::put('new_game', 'new_game', 1);
         return $game;
     }
@@ -793,6 +794,7 @@ class GameController extends Controller
                 ];
                 $this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
                 CCentrifugo::publish(self::NEW_BET_CHANNEL, $returnValue);
+                CCentrifugo::publish('update_p' , ['type' => 'classic', 'price' => $this->game->price]);
             } else {
                 $this->redis->lrem('bets.list', 0, $newBetJson);
                 $this->_responseMessageToSite('Вы забанены на сайте.', $user->steamid64);
@@ -894,6 +896,7 @@ class GameController extends Controller
             ];
             $this->redis->publish(self::NEW_BET_CHANNEL, json_encode($returnValue));
             CCentrifugo::publish(self::NEW_BET_CHANNEL, $returnValue);
+            CCentrifugo::publish('update_p' , ['type' => 'classic', 'price' => $this->game->price]);
             return response()->json(['text' => 'Действие выполнено.', 'type' => 'success']);
         }
     }
