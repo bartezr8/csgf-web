@@ -26,7 +26,7 @@ class VKController extends Controller {
         return $response;
     }
     private function message_new($user_id, $body, $mes_id){
-        if (Cache::has('vk.temp.' . $user_id)){return;} else {Cache::put('vk.temp.' . $user_id, '', 2);}
+        if (Cache::has('vk.temp.' . $user_id)){return;} else {Cache::put('vk.temp.' . $user_id, '', 1);}
         $info = self::get_info($user_id);
         if($info['status']){
             $user = $info['info'];
@@ -44,7 +44,7 @@ class VKController extends Controller {
                 return;
             }
             if(!isset($data[2])){
-                self::send_msg('Укжите пароль ↑!', $user_id);
+                self::send_msg('Укажите пароль ↑!', $user_id);
                 return;
             }
             $user = User::where('refkode', $data[1])->first();
@@ -83,7 +83,7 @@ class VKController extends Controller {
             } else {
                 $user_name = self::get_user($user_id);
                 Cache::forever('vk.user.name.' . $user_id, $user_name);
-                self::send_msg('Для авторизации пропишите команду:<br>/login РЕФЕРАЛ ПАРОЛЬ<br>Пароль можно установить в вашем профиле!', $user_id);
+                self::send_msg('Для авторизации пропишите команду:<br>/login РЕФЕРАЛ ПАРОЛЬ<br>Пароль можно установить в вашем профиле!<br>Максимум 1 сообщение в 2 сек.<br>https://youtu.be/0eMQO7drbsw', $user_id);
             }
         }
         return $response;
@@ -93,7 +93,7 @@ class VKController extends Controller {
             'message' => $mes, 
             'user_id' => $user_id, 
             'access_token' => config('mod_vk.access_token'), 
-            'v' => '5.0' 
+            'v' => '5.62' 
         ); 
         $get_params = http_build_query($request_params); 
         $response = json_decode(GameController::curl('https://api.vk.com/method/messages.send?'. $get_params));
@@ -101,66 +101,62 @@ class VKController extends Controller {
         return $response->response; 
     }
     private function check_cmd($user_id, $body, $mes_id){
+        $data = explode(" ", $body);
         if (Cache::has('vk.user.name.' . $user_id . '.form')){
-            if($body == '/send'){
-                self::sendForm($user_id);
+            if($data[0] == '/send'){
+                if(in_array($user_id, config('mod_vk.admins'))){
+                    if(isset($data[1])){
+                        self::sendForm($user_id, $data[1]);
+                    } else {
+                        self::sendForm($user_id, false);
+                    }
+                } else {
+                    self::sendForm($user_id, false);
+                }
             } else {
                 self::Form($user_id, $mes_id);
             }
             return;
         } else {
-            $data = explode(" ", $body);
             switch ($data[0]){
+                case '/login':
+                    self::send_msg('Вы уже авторизованы', $user_id);
+                    return;
                 case '/logout':
+                    Cache::forget('vk.user.name.' . $user_id);
                     Cache::forget('vk.user.' . $user_id);
                     self::send_msg('Вы вышли из аккаунта', $user_id);
                     return;
-                case '/list':
-                    self::send_msg('/help<br>/list<br>/form<br>/send<br>/m<br>/logout', $user_id);
-                    return;
-                case '/m':
-                    if(in_array($user_id, config('mod_vk.admins'))){
-                        if(!isset($data[1])||!isset($data[2])){
-                            self::send_msg('/m USER_ID TEXT', $user_id);
-                        } else {
-                            $text = str_replace("/m " . $data[1] . " ", "", $body);
-                            self::send_msg($text, $data[1]);
-                            usleep(1000000);
-                            self::send_msg('Сообщение отправлено.', $user_id);
-                        }
-                    } else {
-                        self::send_msg('Упс. Вы не админ.', $user_id);
-                    }
-                    return;
                 case '/form':
-                    self::send_msg('Вы открыли форму запроса в поддержку. Максимально полно опишите свою проблему, прикрепите скрины и все необходимые материалы в одно сообщение.<br>После пропишите /send для отправки формы.', $user_id);
+                    self::send_msg('Максимально полно опишите вашу проблему<br>После пропишите "/send" для отправки формы.', $user_id);
                     self::Form($user_id, $mes_id);
                     return;
                 case '/help':
                     if(isset($data[1])){
                         switch ($data[1]){
-                            case 'list':
-                                self::send_msg('Показывает список команд', $user_id);
-                                return;
                             case 'logout':
                                 self::send_msg('Выход из аккаунта', $user_id);
                                 return;
-                            case 'm':
-                                self::send_msg('Ответить на запрос пользователя [админ]', $user_id);
-                                return;
                             case 'form':
-                                self::send_msg('Формирует обращение в поддерджку', $user_id);
+                                self::send_msg('Формирует обращение в поддержку', $user_id);
                                 return;
                             case 'send':
-                                self::send_msg('Отправляет обращение в поддерджку', $user_id);
+                                self::send_msg('Отправляет обращение в поддержку', $user_id);
                                 return;
                             default:break;
                         }
                     }
-                    self::send_msg('Для подробной справки о команде пропишите<br>/help КОМАНДА<br>/list - список команд', $user_id);
+                    self::send_msg('/help КОМАНДА - справка по каждой команде<br>/form - открыть форму запроса<br>/send - закрыть и оптарвить форму<br>/logout - выйти из аккаунта<br>Пример использования help:<br>/help form<br>https://youtu.be/0eMQO7drbsw', $user_id);
                     return;
                 default:
-                    self::send_msg('/help - для справки', $user_id);
+                    $datat = array_map('strtolower', $data);
+                    if(in_array('как',$datat)&&in_array('дела',$data)){
+                        self::send_msg('Нормально, если че - /help - для справки<br>https://youtu.be/0eMQO7drbsw', $user_id);
+                    } else if(in_array('привет',$data)) {
+                        self::send_msg('Здарова. /help - для справки<br>https://youtu.be/0eMQO7drbsw', $user_id);
+                    } else {
+                        self::send_msg('/help - для справки<br>https://youtu.be/0eMQO7drbsw', $user_id);
+                    }
                     return false;
             }
         }
@@ -174,20 +170,54 @@ class VKController extends Controller {
             Cache::forever('vk.user.name.' . $user_id . '.form', $info['info']['init']);
         }
     }
-    private function sendForm($user_id){
+    private function sendForm($user_id, $to_id){
         $forward_messages = Cache::get('vk.user.name.' . $user_id . '.form');
         Cache::forget('vk.user.name.' . $user_id . '.form');
-        foreach(config('mod_vk.admins') as $admin){
+        if(!$to_id){
+            $admins = false;
+            foreach(config('mod_vk.admins') as $admin) if(!$admins) $admins = $admin; else $admins .= ',' . $admin;
             $request_params = array(
                 'message' => 'https://vk.com/gim' . config('mod_vk.group_id') . '?sel=' . $user_id, 
-                'user_id' => $admin,
+                'user_ids' => $admins,
                 'forward_messages' => $forward_messages,
                 'access_token' => config('mod_vk.access_token'), 
-                'v' => '5.0' 
-            ); 
+                'v' => '5.62'
+            );
+            $get_params = http_build_query($request_params); 
+            GameController::curl('https://api.vk.com/method/messages.send?'. $get_params);
+        } else {
+            $fms = explode(",", $forward_messages); 
+            unset($fms[0]);$fma = '';$i = 0;
+            foreach($fms as $fm){
+                if($i == 0){
+                    $fma = $fm;
+                } else {
+                    $fma .= ','.$fm;
+                }
+                $i++;
+            }
+            $request_params = array(
+                'message_ids' => $fma, 
+                'preview_length' => 0,
+                'access_token' => config('mod_vk.access_token'),
+                'v' => '5.62' 
+            );
+            $get_params = http_build_query($request_params); 
+            $msges = json_decode(GameController::curl('https://api.vk.com/method/messages.getById?'. $get_params),true);
+            $text = '';
+            foreach($msges['response']['items'] as $item){
+                if(isset($item['body']))$text .= ' ' . $item['body'];
+            }
+            $request_params = array(
+                'message' => $text, 
+                'user_ids' => $to_id,
+                'access_token' => config('mod_vk.access_token'), 
+                'v' => '5.62' 
+            );
             $get_params = http_build_query($request_params); 
             GameController::curl('https://api.vk.com/method/messages.send?'. $get_params);
         }
+        self::send_msg('Сообщение отправлено.', $user_id);
         return;
     }
     private function getDialogs($i,$j){
@@ -218,16 +248,22 @@ class VKController extends Controller {
     public function sendTextVK(Request $request){
         $text = $request->get('text');
         $count = self::getCDialogs();
+        $users = [];
         for ($i = 0; $i<ceil($count/100);$i++){            
             $dialogs = self::getDialogs(100,$i);
             $dialogs = json_decode($dialogs, true);
             $dialogs = $dialogs['response']['items'];
-            foreach( $dialogs as $dialog){
+            foreach($dialogs as $dialog){
                 if(isset($dialog['message']['user_id'])){
-                    $this->redis->rpush('vk.to_send.list', json_encode(['id' => $dialog['message']['user_id'], 'mes' => $text]));
+                    if(!in_array($dialog['message']['user_id'], $users)){
+                        $users[] = $dialog['message']['user_id'];
+                    }
                 }
             }
             usleep(100000);
+        }
+        foreach($users as $user){
+            $this->redis->rpush('vk.to_send.list', json_encode(['id' => $user, 'mes' => $text]));
         }
         return response()->json(['success' => true]);
     }

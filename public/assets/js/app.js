@@ -1645,10 +1645,10 @@ $(function() {
     });
     load_page();
     if($.cookie('vk_post') != 'true') {
-        VK.Widgets.CommunityMessages("vk_community_messages", 133906356, {widgetPosition: "left",expandTimeout: "5000",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
+        VK.Widgets.CommunityMessages("vk_community_messages", VK_GROUP, {widgetPosition: "left",expandTimeout: "5000",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
         $.cookie('vk_post', 'true', {expires: 0.1,path: '/',});
     } else {
-        VK.Widgets.CommunityMessages("vk_community_messages", 133906356, {widgetPosition: "left",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
+        VK.Widgets.CommunityMessages("vk_community_messages", VK_GROUP, {widgetPosition: "left",tooltipButtonText: "У вас есть вопросы? Задайте их нам."});
     }
     $('a[href="' + document.location.pathname + '"]').parent().addClass('active');
     $('.deposit-item:not(.card)').tooltip({

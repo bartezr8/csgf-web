@@ -31,6 +31,7 @@
                 USER_BALANCE = {{ $u->money }},
                 CENT_TIKEN = "{{ $ctoken }}",
                 CENT_TIME = "{{ $ctime }}",
+                VK_GROUP = "{{ config('mod_vk.group_id') }}",
                 LOAD = false;
         </script>
     </head>
