@@ -149,6 +149,7 @@ class PagesController extends Controller
             $games = Game::where('winner_id', $user->id)->get();
             $winz = $games->count();
             $gamesList = [];
+            $gamesList2 = [];
             $gamecount = 0;
             $wins = 0;
             if($user->steamid64 != '76561197960265728'){
@@ -170,13 +171,12 @@ class PagesController extends Controller
                     if ($game->winner_id == $user->id) $gamesList[$i]->win = true;
                     if ($userId != config('mod_game.bot_steamid')){
                         $gamesList[$i]->chance = round($game->betValue / $game->price, 3) * 100;
-                        //if ($gamesList[$i]->chance < 100){
-                            if ($gamesList[$i]->win) $wins++;
-                            $gamecount++;
-                        //}
+                        if ($gamesList[$i]->win) $wins++;
+                        $gamecount++;
                     } else {
                         $gamesList[$i]->chance = 0;
                     }
+                    if($i<100)$gamesList2[$i] = $gamesList[$i];
                     $i++;
                 }
             } else {
@@ -201,7 +201,7 @@ class PagesController extends Controller
             }
             $wins = $winz;
             $games = $gamecount;
-            $list = $gamesList;
+            $list = $gamesList2;
             $tradeurl = $user->trade_link;
 
             

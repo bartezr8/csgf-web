@@ -56,8 +56,11 @@ class BGameController extends Controller
         $game = BGame::orderBy('id', 'desc')->first();
         if (is_null($game)) $game = $this->newGame();
         $bets = $game->bets()->with(['user', 'game'])->get()->sortByDesc('created_at');
+        if (!is_null($this->user)) $user_chance = $this->_getUserChanceOfGame($this->user, $game);
+        $chances = json_encode($this->_getChancesOfGame($game));
+        if (!is_null($this->user)) $user_items = $this->user->itemsCountByBGame($game);
         parent::setTitle(round($game->price) . ' р. | ');
-        return view('pages.bgame', compact('game', 'bets'));
+        return view('pages.bgame', compact('game', 'bets', 'user_chance', 'chances', 'user_items'));
     }
     public function getLastGame()
     {
@@ -73,9 +76,9 @@ class BGameController extends Controller
     public function getWinners()
     {
         $us = $this->game->users();
-        $lastBet = BBet::where('game_id', $this->game->id)->orderBy('to', 'desc')->first();
+        $lastBet = BBet::where('b_game_id', $this->game->id)->orderBy('to', 'desc')->first();
         $winTicket = ceil($this->game->rand_number * $lastBet->to);
-        $winningBet = BBet::where('game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
+        $winningBet = BBet::where('b_game_id', $this->game->id)->where('from', '<=', $winTicket)->where('to', '>=', $winTicket)->first();
         
         $this->game->winner_id      = $winningBet->user_id;
         $this->game->price          = $lastBet->to/100;
@@ -97,7 +100,8 @@ class BGameController extends Controller
             'tickets' => $lastBet->to,
             'users' => $us,
             'userchanses' => $users,
-            'chance' => $chance
+            'chance' => $chance,
+            'winb_id' => $winningBet->id
         ];
         return response()->json($returnValue);
     }
@@ -231,7 +235,7 @@ class BGameController extends Controller
                     continue;
                 }
             }
-            if ($user->itemsCountByGame($this->game) > 0) {
+            if ($user->itemsCountByBGame($this->game) > 0) {
                 $this->redis->lrem('bich.check.list', 0, $offerJson);
                 $this->redis->rpush('bich.decline.list', $offer->offerid);
                 $this->_responseErrorToSite('Максимум 1 ставка за игру', $accountID, self::BET_DECLINE_CHANNEL);
@@ -299,7 +303,7 @@ class BGameController extends Controller
                     continue;
                 }
                 $this->redis->lrem('bich.bets.list', 0, $newBetJson);
-                $totalItems = $user->itemsCountByGame($this->game);
+                $totalItems = $user->itemsCountByBGame($this->game);
 
                 if(count($newBet['items']) == 0) continue;
                 $this->lastTicket = $this->redis->get('bich.last.ticket.' . $this->game->id);
@@ -319,7 +323,7 @@ class BGameController extends Controller
 
                 User::slchange($user->id, $newBet['price'] / 100  * config('mod_game.slimit'));
 
-                $bets = BBet::where('game_id', $this->game->id)->get();
+                $bets = BBet::where('b_game_id', $this->game->id)->get();
                 $this->game->items = $bets->sum('itemsCount');
                 $this->game->price = $bets->sum('price');
 
@@ -353,6 +357,34 @@ class BGameController extends Controller
         }
         return $this->_responseSuccess();
     }
+    public static function _getChancesOfGame($game)
+    {
+        $chances = [];
+        foreach ($game->users() as $user) {
+            $vip = false;
+            if (strpos(strtolower(' '.$user->username),  strtolower(config('app.sitename'))) != false) $vip = true;
+            $chances[] = [
+                'chance' => self::_getUserChanceOfGame($user, $game),
+                'items' => User::find($user->id)->itemsCountByBGame($game),
+                'steamid64' => $user->steamid64,
+                'username' => $user->username,
+                'avatar' => $user->avatar,
+                'vip' => $vip
+            ];
+        }
+        uasort($chances,function($f1,$f2){
+            if($f1['chance'] < $f2['chance']) return 1;
+            elseif($f1['chance'] > $f2['chance']) return -1;
+            else return 0;
+        });
+        $chs = $chances;
+        $chances = [];
+        foreach ($chs  as $ch) {
+            if($ch['steamid64'] == config('mod_game.bonus_bot_steamid64'))$ch['chance'] = 'BONUS ';
+            $chances[] = $ch;
+        }
+        return $chances;
+    }
     private function _responseErrorToSite($message, $user, $channel)
     {
         return $this->redis->publish($channel, json_encode([
@@ -360,6 +392,22 @@ class BGameController extends Controller
             'msg' => $message
         ]));
     }
+    public static function _getUserChanceOfGame($user, $game)
+    {
+        $chance = 0;
+        if (!is_null($user)) {
+            if ($user->steamid64 != config('mod_game.bonus_bot_steamid64')) {
+                $bet = BBet::where('b_game_id', $game->id)
+                    ->where('user_id', $user->id)
+                    ->sum('price');
+                if ($game->price > 0 && $bet) $chance = round($bet / $game->price, 3) * 100; 
+            } else {
+                $chance = 0;
+            }
+        }
+        return $chance;
+    }
+
     private function _responseMessageToSite($message, $userid)
     {
         CCentrifugo::publish('notification#'.$userid , ['message' => $message]);

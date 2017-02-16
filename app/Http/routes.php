@@ -170,8 +170,18 @@ Route::group(['middleware' => 'auth'], function () {
     post('/coin/nbet', ['as' => 'coinflip_new_bet', 'uses' => 'CoinFlipController@nbet']);
 });
 /* BICH GAME */
-/*get('/bich', ['as' => 'bich', 'uses' => 'BGameController@currentGame']);
-Route::group(['middleware' => 'auth'], function () {});*/
+get('/bich', ['as' => 'bich', 'uses' => 'BGameController@currentGame']);
+Route::group(['middleware' => 'auth'], function () {
+    get('/bdep', ['as' => 'bdeposit', 'uses' => 'BGameController@deposit']);
+});
+Route::group(['prefix' => 'api', 'middleware' => 'secretKey'], function () {
+    post('/bcheckOffer', 'BGameController@checkOffer');
+    post('/newBBet', 'BGameController@newBet');
+    post('/bsetPrizeStatus', 'BGameController@setPrizeStatus');
+    post('/bgetWinners', 'BGameController@getWinners');
+    post('/newBgame', 'BGameController@newGame');
+    post('/checkBrokenBGames', 'BGameController@checkBrokenGames');
+});
 /* DICE ROUTES */
 get('/dice', ['as' => 'dicegame', 'uses' => 'DiceController@index']);
 Route::group(['middleware' => 'auth'], function () {

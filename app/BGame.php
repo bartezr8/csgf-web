@@ -15,6 +15,7 @@ class BGame extends Model
     const STATUS_PRIZE_SEND = 1;
     const STATUS_PRIZE_SEND_ERROR = 2;
 
+    protected $table = 'b_games';
     protected $fillable = ['rand_number'];
 
     public function winner()
@@ -24,10 +25,10 @@ class BGame extends Model
 
     public function users()
     {
-        return \DB::table('bgames')
-            ->join('bbets', 'bgames.id', '=', 'bbets.game_id')
-            ->join('users', 'bbets.user_id', '=', 'users.id')
-            ->where('bgames.id', $this->id)
+        return \DB::table('b_games')
+            ->join('b_bets', 'b_games.id', '=', 'b_bets.b_game_id')
+            ->join('users', 'b_bets.user_id', '=', 'users.id')
+            ->where('b_games.id', $this->id)
             ->groupBy('users.id')
             ->select('users.*')
             ->get();
@@ -48,10 +49,10 @@ class BGame extends Model
 
     public static function usersToday()
     {
-        return count(\DB::table('bgames')
-            ->join('bbets', 'bgames.id', '=', 'bbets.game_id')
-            ->join('users', 'bbets.user_id', '=', 'users.id')
-            ->where('bgames.created_at', '>=', Carbon::today())
+        return count(\DB::table('b_games')
+            ->join('b_bets', 'b_games.id', '=', 'b_bets.b_game_id')
+            ->join('users', 'b_bets.user_id', '=', 'users.id')
+            ->where('b_games.created_at', '>=', Carbon::today())
             ->groupBy('users.username')
             ->select('users.username')->get());
     }

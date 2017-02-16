@@ -177,7 +177,7 @@
                 <span class="icon-arrow-right"></span>
                 <p>
                     Победитель определится когда наберется<br>
-                    <span class="color-lightblue">100 предметов</span> или пройдет <span class="color-lightblue">120 секунд</span>
+                    <span class="color-lightblue">{{ config('mod_game.game_items') }} предметов</span> или пройдет <span class="color-lightblue">120 секунд</span>
                 </p>
                 <span class="icon-arrow-right" style="margin: 0 20px;"></span>
                 <a href="/login" class="add-deposit" style="padding: 10px 40px;">принять участие</a>

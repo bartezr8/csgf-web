@@ -44,6 +44,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Bet');
     }
 
+    function bbets()
+    {
+        return $this->hasMany('App\BBet');
+    }
+    
     public function betsByGame($gameid)
     {
         return \DB::table('bets')->where('user_id', $this->id)->where('game_id', $gameid)->orderBy('created_at', 'desc')->get();
@@ -57,6 +62,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function itemsCountByGame($game)
     {
         return $this->bets()->where('game_id', $game->id)->sum('itemsCount');
+    }
+    
+    public function itemsCountByBGame($game)
+    {
+        return $this->bbets()->where('b_game_id', $game->id)->sum('itemsCount');
     }
     
     public static function mchange($id, $sum){
