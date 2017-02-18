@@ -411,7 +411,7 @@ class ShopController extends Controller {
                         $returnValue = [];
                         $total_price = round($this->_parseItems($items),2);
                         $diff = abs($trade->price - $total_price);
-                        if(($total_price > 0) && ($trade->price/10 > $diff)){
+                        if(($total_price > 0) && ($trade->price/2 > $diff)){
                             foreach($items as $item) {
                                 $info = new Item($item);
                                 if(Item::pchk($info)){
