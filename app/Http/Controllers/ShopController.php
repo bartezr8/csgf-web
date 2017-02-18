@@ -396,6 +396,24 @@ class ShopController extends Controller {
         if(count($trades) > 0) return response()->json(['success' => true, 'trades' => $trades]);
         return response()->json(['success' => false]);
     }
+    private function checkoutdeposit($items, $trade, $total_price, $user)
+    {
+        $returnValue = [];
+        foreach($items as $item) {
+            $info = new Item($item);
+            if(Item::pchk($info)){
+                $item['steam_price'] = $info->price;
+                $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
+                Shop::create($item);
+                $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
+            }
+        }
+        $returnValue = ['list' => $returnValue, 'off' => false];
+        CCentrifugo::publish('addShop' , $returnValue);
+        DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
+        $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);
+        DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => Shop::D_DEPOSIT ]);
+    }
     public function depositCheck(Request $request)
     {
         $bot_id = $request->get('bot_id');
@@ -408,28 +426,19 @@ class ShopController extends Controller {
                     $user = User::find($trade->user_id);
                     if($tradeCheck['status'] == 1){
                         $items = $tradeCheck['items'];
-                        $returnValue = [];
                         $total_price = round($this->_parseItems($items),2);
                         $diff = abs($trade->price - $total_price);
-                        if(($total_price > 0) && ($trade->price/2 > $diff)){
-                            foreach($items as $item) {
-                                $info = new Item($item);
-                                if(Item::pchk($info)){
-                                    $item['steam_price'] = $info->price;
-                                    $item['price'] = $item['steam_price']/100 * config('mod_shop.steam_price_%');
-                                    Shop::create($item);
-                                    $returnValue[] = [ $item['classid'], Shop::countItem($item['classid']), $item['name'], $item['price'], $item['classid'], $item['quality'], Shop::getClassRarity($item['rarity']), $item['rarity'] ];
-                                }
-                            }
-                            $returnValue = ['list' => $returnValue, 'off' => false];
-                            CCentrifugo::publish('addShop' , $returnValue);
-                            $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
-                            DB::table('shop_offers')->where('id', $trade->id)->update(['price' => $total_price, 'status' => 1]);
-                            $this->_responseMessageToSite('Депозит зачислен | Сумма: ' . $total_price , $user->steamid64); User::mchange($user->id, $total_price); User::slchange($user->id, $total_price);
-                            DB::table('deposits')->insert([ 'user_id' => $user->id, 'date' => Carbon::now()->toDateTimeString(), 'price' => $total_price, 'type' => Shop::D_DEPOSIT ]);
+                        if(($total_price > 0) && ($trade->price/10 > $diff)){
+                            self::checkoutdeposit($items, $trade, $total_price, $user);
                         } else {
-                            $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
+                            if($trade->ecount < 10){
+                                DB::table('shop_offers')->where('id', $trade->id)->update(['ecount' => $trade->ecount + 1]);
+                                $this->_responseMessageToSite('Ваш депозит повторно обрабатывается', $user->steamid64);
+                            } else {
+                                self::checkoutdeposit($items, $trade, $total_price, $user);
+                            }
                         }
+                        $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);
                     }
                     if($tradeCheck['status'] == 2){
                         $this->redis->lrem('s'.$bot_id.'_'.self::DEPOSIT_RESULT_CHANNEL, 1, $newTradeCheck);

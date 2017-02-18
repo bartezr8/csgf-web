@@ -20,6 +20,7 @@ class CreateShopOffersTable extends Migration {
 			$table->integer('user_id')->unsigned()->nullable()->index('shop_depositor_id_foreign');
 			$table->integer('status');
 			$table->float('price');
+            $table->integer('ecount');
 			$table->dateTime('date')->default('0000-00-00 00:00:00');
 		});
 	}

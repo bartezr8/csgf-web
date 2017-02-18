@@ -13,6 +13,10 @@ class CreateMigrateTable extends Migration {
 	 */
 	public function up()
 	{
+        Schema::table('shop_offers', function ($table) {
+            $table->integer('ecount');
+        });
+
 	}
 
 	/**
