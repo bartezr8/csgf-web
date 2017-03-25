@@ -7,6 +7,6 @@ Installation:
 1. clone
 2. configure
 3. php composer.phar install
-4. php artisian migrate
+4. php artisan migrate
 
 Good luck!
